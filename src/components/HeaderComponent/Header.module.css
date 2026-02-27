@@ -1,0 +1,78 @@
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.Header {
+    margin: 0;
+    height: 12vh;
+    width: 100%;
+    background-color: rgba(53, 53, 55, 1);
+    justify-content: space-between;
+}
+.logoBox {
+    margin-left: 3.5%;
+    width: 20vw;
+}
+.logoBox img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.infoBlock {
+    width: 40%;
+    justify-content: space-between;
+}
+.infoBlock button {
+    width: 7.3vw;
+    height: 33px;
+    border: rgba(193, 138, 102, 0.96) 2px solid;
+    border-radius: 10px;
+    background-color: rgba(53, 53, 55, 1);
+    color: rgba(193, 138, 102, 0.96);
+    font-weight: bold;
+    transition: 500ms;
+    font-size: 1vw;
+    cursor: pointer;
+}
+.infoBlock button:hover {
+    background-color: rgba(193, 138, 102, 0.96);
+    color: rgb(255, 255, 255);
+}
+.btn2 {
+    letter-spacing: 0;
+}
+
+.btn2:hover,
+.btn2:active {
+    letter-spacing: 5px;
+}
+
+.btn2:after,
+.btn2:before {
+    backface-visibility: hidden;
+    border: 1px solid rgb(19, 18, 18);
+    content: " ";
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    transition: all 280ms ease-in-out;
+    width: 0;
+}
+
+.btn2:hover:after,
+.btn2:hover:before {
+    backface-visibility: hidden;
+    border-color: #fff;
+    transition: width 350ms ease-in-out;
+    width: 70%;
+}
+
+.btn2:hover:before {
+    bottom: auto;
+    top: 0;
+    width: 70%;
+}
+.naviBox{
+    width: 15vw;
+}

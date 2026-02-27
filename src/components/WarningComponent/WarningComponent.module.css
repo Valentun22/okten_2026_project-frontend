@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+.boxSize{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    padding: 24px;
+}
+
+.boxWarning {
+    width: min(650px, 100vw);
+    border-radius: 1vh;
+    padding: 30px;
+    transition: 700ms;
+
+    background-image: url('../../img/img15.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border: rgba(193, 138, 102, 0.96) 3px solid;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.boxWarning::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+}
+
+.boxWarningText,
+.buttonBox{
+    position: relative;
+    z-index: 1;
+}
+
+.boxWarning:hover {
+    color: rgb(124, 66, 27);
+}
+
+.boxWarningText{
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.boxWarningText h2 {
+    font-size: clamp(20px, 3vw, 35px);
+    color: white;
+    margin: 0 0 10px 0;
+}
+
+.boxWarningText p {
+    margin: 0;
+    font-size: clamp(10px, 1.5vw, 20px);
+    color: white;
+    font-family: "PT Serif", serif;
+    font-weight: 700;
+    font-style: italic;
+    padding: 0 35px;
+
+    line-height: 1.45;
+    margin-bottom: 4vh;
+}
+
+.buttonBox{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.buttonBoxSize{
+    margin-top: 26px;
+    width: min(280px, 45vw);
+    border-radius: 5px;
+    color: rgb(140, 87, 52);
+    font-size: 2vh;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 500ms;
+    text-align: center;
+}
+
+.buttonBox button {
+    width: 100%;
+    height: 5vh;
+    border-radius: 5px;
+    border: rgba(53, 53, 55, 1) 2px solid;
+    color: rgba(53, 53, 55, 1);
+    font-size: 110%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 500ms;
+}
+
+.buttonBoxOne button{
+    background-color: rgba(193, 138, 102, 0.96);
+}
+
+.buttonTwoLink{
+    text-decoration: none;
+    display: block;
+}
+
+.buttonTwoLink button{
+    background-color: rgba(234, 30, 30, 0.75);
+}
+
+.buttonBoxOne button:hover {
+    background-color: green;
+    font-size: 130%;
+    border: green 2px solid;
+    color: rgb(255, 255, 255);
+}
+
+.buttonTwoLink button:hover{
+    background-color: red;
+    font-size: 90%;
+    border: red 2px solid;
+    color: rgb(255, 255, 255);
+}
+
+.btn5 {
+    border: 0 solid;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0);
+    outline: 1px solid;
+    outline-color: rgba(255, 255, 255, .5);
+    outline-offset: 0px;
+    text-shadow: none;
+    transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.btn5:hover {
+    border: 1px solid;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
+    outline-color: rgba(255, 255, 255, 0);
+    outline-offset: 15px;
+    text-shadow: 1px 1px 2px #427388;
+}

@@ -1,0 +1,15 @@
+.MoviesModule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90vw;
+    margin: 0 5vw 0 5vw;
+    background-color: rgba(51, 51, 51, 0.26);
+}
+
+.moviesList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}

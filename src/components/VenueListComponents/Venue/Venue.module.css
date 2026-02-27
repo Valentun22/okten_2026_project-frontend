@@ -1,0 +1,33 @@
+.Venue {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 22vw;
+    height: 600px;
+    padding-top: 20px;
+    font-size: 190%;
+    transition: transform 0.3s;
+    margin: 20px 0 20px 0;
+    text-align: center;
+}
+.Venue:hover {
+    transform: scale(0.97);
+    cursor: pointer;
+}
+.poster {
+    background-color: #626f9b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    width: 80%;
+    height: 700px;
+    border: 3px solid #131212;
+}
+.titleText {
+    height: 110px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.33);
+    text-align: center;
+}

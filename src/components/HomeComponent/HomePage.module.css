@@ -1,0 +1,380 @@
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+       /*Article One*/
+.articleOne {
+    height: 77vh;
+    background-color: rgba(59, 59, 61, 0.96);
+    position: relative;
+    transition: 500ms;
+}
+.articleOne:hover {
+    background-color: rgba(54, 54, 55, 0.96);
+}
+.boxOneArticleOne {
+    width: 52%;
+}
+.boxTwoArticleOne {
+    width: 48%;
+    height: 100%;
+}
+.boxTwoArticleOne img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+.boxOneInfo {
+    height: 70%;
+    padding: 7%;
+    z-index: 5;
+}
+.boxOneInfo h2{
+    height: 22%;
+    width: 92%;
+    color: rgba(255, 255, 255, 1);
+    font-size: 5.55vw;
+    font-weight: bold;
+    position: relative;
+    z-index: 6;
+}
+.boxOneInfo img{
+    height: 3vh;
+    width: 9.4vw;
+    margin: 4.5%;
+    position: relative;
+    z-index: 7;
+}
+.boxOneInfo h4{
+    height: 10%;
+    width: 68%;
+    font-size: 2.35vw;
+    color: rgba(255, 255, 255, 1);
+    position: relative;
+}
+.boxOneArticleOne button {
+    height: 6.6vh;
+    width: 17vw;
+    background-color: rgba(193, 138, 102, 1);
+    border-radius: 10px;
+    color: rgba(59, 59, 61, 0.96);
+    font-size: 1.68vw;
+    font-weight: bold;
+    padding: 1.5%;
+    border: rgba(193, 138, 102, 1) 3px solid;
+    cursor: pointer;
+    transition: 500ms;
+    align-items: center;
+    justify-content: center;
+    margin-left: 7%;
+    z-index: 6;
+    position: relative;
+}
+.boxOneArticleOne button:hover {
+    background-color: rgba(138, 98, 72, 0.96);
+    border: rgba(138, 98, 72, 0.96) 3px solid;
+    color: rgb(19, 18, 18);
+    font-size: 1.7vw;
+}
+.boxOneInfoBackground {
+    position: absolute;
+    height: 78%;
+    width: 30%;
+}
+.boxOneInfoBackground img {
+    z-index: 1;
+    width: 54%;
+    height: auto;
+}
+
+       /*Article Two*/
+.articleTwo{
+    height: 77vh;
+    position: relative;
+    background: rgba(186, 185, 185, 0.81);
+    transition: background-color 500ms;
+    overflow: hidden;
+}
+
+.articleTwo::before{
+    content: "";
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+
+    background:
+            radial-gradient(
+                    ellipse 100% 100% at bottom right,
+                    rgba(80, 80, 80, 0.99) 10%,
+                    rgba(80, 80, 80, 0.99) 20%,
+                    rgba(80, 80, 80, 0.99) 32%,
+                    rgba(80, 80, 80, 0.79) 42%,
+                    transparent 65%
+            ),
+            radial-gradient(
+                    ellipse 120% 90% at center,
+                    transparent 55%,
+                    rgba(0,0,0,0.10) 100%
+            );
+
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 2000ms;
+}
+
+.articleTwo:hover{
+    background-color: rgba(217, 217, 217, 1);
+}
+
+.articleTwo:hover::before{
+    opacity: 1;
+}
+
+.articleTwo:hover {
+    background: rgba(217, 217, 217, 1);
+}
+
+.articleTwo:hover::before {
+    opacity: 1;
+}
+.boxOneArticleTwo {
+    width: 50%;
+}
+.boxTwoArticleTwo {
+    width: 50%;
+}
+.boxOneArticleTwoInfo h2 {
+    color: rgba(53, 53, 55, 1);
+    width: 23vw;
+    height: 8.5vh;
+    font-size: 5.55vw;
+    font-weight: bold;
+    transition: 500ms;
+}
+.boxOneArticleTwoInfo img {
+    height: 3vh;
+    width: 9.4vw;
+    margin: 9% 0 9% 0;
+}
+.boxOneArticleTwoInfo h3 {
+    height: 26%;
+    width: 100%;
+    font-size: 2.2vw;
+    margin-bottom: 9%;
+    font-weight: 400;
+}
+.boxOneArticleTwoInfo button {
+    height: 8.5vh;
+    width: 17vw;
+    background-color: rgba(193, 138, 102, 1);
+    border-radius: 10px;
+    color: rgba(59, 59, 61, 0.96);
+    font-size: 1.68vw;
+    font-weight: bold;
+    transition: 500ms;
+    align-items: center;
+    justify-content: center;
+}
+.boxOneArticleTwoInfo button:hover {
+    background-color: rgba(59, 59, 61, 0.96);
+    font-size: 1.8vw;
+    color: rgb(255, 255, 255);
+}
+.boxOneArticleTwoInfo {
+    margin: 11%;
+}
+.boxTwoArticleTwoImgBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    height: 40vh;
+    width: 48vw;
+}
+.boxTwoArticleTwoImgOne {
+    margin-top: 5%;
+    height: auto;
+    width: 75%;
+    margin-right: 10%;
+    position: relative;
+    z-index: 5;
+    display: block;
+}
+.boxTwoArticleTwoImgTwo {
+    margin: 2% 0 5% 5%;
+    height: auto;
+    width: 75%;
+    position: absolute;
+    z-index: 4;
+}
+.boxTwoArticleTwoImgBoxBackground {
+    position: absolute;
+    height: 75vh;
+    width: 79%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    bottom: -43%;
+    left: 22%;
+}
+.boxTwoArticleTwoImgThree {
+    position: absolute;
+    height: 80%;
+    width: 50%;
+    z-index: 3;
+}
+.boxTwoArticleTwoImgFour {
+    position: absolute;
+    height: 80%;
+    width: 45%;
+    z-index: 1;
+    right: 51%;
+}
+
+            /*Article Three*/
+.articleThree {
+    height: 77vh;
+    background-color: rgba(193, 138, 102, 1);
+    transition: 500ms;
+}
+.articleThree:hover{
+    background-color: rgb(188, 130, 91);
+    .boxOneArticleThreeInfo h2{
+        color: rgb(19, 18, 18);
+    }
+}
+.boxOneArticleThree {
+    height: 24.5vh;
+    width: 100%
+}
+.boxOneArticleThreeInfo {
+    width: 67vw;
+    height: 24.5vh;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.boxOneArticleThreeInfo h2{
+    margin-top: 3vh;
+    font-size: 6.3vw;
+    height: 50%;
+    width: 100%;
+    color: rgba(53, 53, 55, 1);
+    align-items: center;
+    transition: 500ms;
+}
+.boxOneArticleThreeInfoImg {
+    margin-top: 2%;
+    height: 5vh;
+    width: 9.4vw;
+}
+.boxOneArticleThreeInfoImg img {
+    height: auto;
+    width: 9.4vw;
+    margin: 2% 0 9% 0;
+}
+.boxTwoArticleThree {
+    height: 52vh;
+    width: 100%
+}
+.articleThreeInfoBox {
+    width: 65vw;
+    height: 47.5vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0.5%;
+}
+.articleThreeInfoBoxSize {
+    height: 43vh;
+    width: 17.5vw;
+    background-color: rgba(217, 217, 217, 1);
+    text-align: center;
+    border: rgba(217, 217, 217, 1) 2px solid;
+    transition: 1500ms;
+}
+.articleThreeInfoBoxSize:hover {
+    border: rgb(135, 79, 40) 2px solid;
+    background-color: rgb(255, 255, 255);
+    .articleThreeInfoBoxSize h3 {
+        color: rgb(31, 31, 32);
+    }
+  }
+.articleThreeInfoBoxSize img {
+    width: auto;
+    height: 14vh;
+    margin-top: 1%;
+}
+.articleThreeInfoBoxSize h3{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: 6vh;
+    font-size: 1.9vw;
+    font-weight: bold;
+    color: rgba(58, 58, 60, 1);
+    margin: 3% 5% 0 5%;
+}
+.articleThreeInfoBoxSize h4{
+    text-align: center;
+    width: 90%;
+    height: 16.5vh;
+    font-size: 1.4vw;
+    font-weight: lighter;
+    margin: 10% 5% 0 5%;
+}
+.boxTwoArticleThreeImgDots {
+    height: 52vh;
+    width: 16vw;
+}
+.boxTwoArticleThreeImgDots img {
+    height: 100%;
+    width: 98%;
+}
+.btn {
+    background: transparent;
+    position: relative;
+    transition: 0.5s ease;
+    cursor: pointer;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 0;
+    background-color: #131212;
+    transition: 0.5s ease;
+}
+
+.btn:hover {
+    transition-delay: 0.5s;
+}
+
+.btn:hover::before {
+    width: 100%;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 0;
+    width: 100%;
+    transition: 0.4s ease;
+    z-index: -1;
+}
+
+.btn:hover::after {
+    height: 100%;
+    transition-delay: 0.4s;
+    color: aliceblue;
+}

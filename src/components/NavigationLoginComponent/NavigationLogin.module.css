@@ -1,0 +1,75 @@
+.boxAll {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 15vw;
+    margin-right: 6vw;
+}
+
+.boxAuth {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 3%;
+}
+
+.buttonPrimary,
+.buttonSecondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 7vw;
+    height: 34px;
+    padding: 0 16px;
+
+    border-radius: 10px;
+    font-size: 1.5vh;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.buttonPrimary {
+    background: rgba(193, 138, 102, 0.96);
+    border: 2px solid rgba(193, 138, 102, 0.96);
+    color: #fff;
+}
+
+.buttonPrimary:hover {
+    background: rgb(168, 118, 88);
+    border-color: rgb(168, 118, 88);
+    transform: translateY(-1px);
+}
+
+.buttonSecondary {
+    background: transparent;
+    border: 2px solid rgba(193, 138, 102, 0.6);
+    color: rgba(193, 138, 102, 0.96);
+}
+
+.buttonSecondary:hover {
+    background: rgba(193, 138, 102, 0.12);
+    border-color: rgba(193, 138, 102, 0.96);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+}
+
+.icon img {
+    width: 2.5vh;
+    object-fit: contain;
+}
+
+.active {
+    color: rgba(193, 138, 102, 0.96);
+}

@@ -1,0 +1,44 @@
+.footerBox {
+    display: flex;
+    justify-content: space-between;
+    height: 60px;
+    background-color: rgba(53, 53, 55, 1);
+    color: white;
+    align-items: center;
+}
+.footerStyle {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-right: 4%;
+}
+.footerImage {
+    height: 30px;
+    margin-right: 10px;
+    transition: 300ms;
+
+}
+.footerImage:hover {
+    height: 37px;
+    margin-right: 10px;
+}
+.footerLogo {
+    display: flex;
+    align-items: center;
+    margin-left: 4%;
+}
+.footerLogo img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    width: auto;
+    margin-left: 15%;
+}
+.footerImg {
+    width: 40px;
+}
+
+.text {
+    text-align: center;
+}
