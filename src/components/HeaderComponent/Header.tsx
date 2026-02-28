@@ -15,10 +15,10 @@ const Header = () => {
             </div>
 
             <div className={`${css.infoBlock} ${css.flex}`}>
-                <button className={css.btn2} onClick={() => navigate("/#about-section")}>Про нас</button>
+                <button className={css.btn2} onClick={() => navigate("aboutUs")}>Про нас</button>
                 <button className={css.btn2} onClick={() => navigate("/")}>Головна</button>
-                <button className={css.btn2} onClick={() => navigate("/searchVenue")}>Пошук</button>
-                <button className={css.btn2} onClick={() => navigate("/topVenues")}>Топ</button>
+                <button className={css.btn2} onClick={() => navigate("/search/:query")}>Пошук</button>
+                <button className={css.btn2} onClick={() => navigate("/topVenue")}>Топ</button>
                 <button className={css.btn2} onClick={() => navigate("/news")}>Новини</button>
             </div>
 

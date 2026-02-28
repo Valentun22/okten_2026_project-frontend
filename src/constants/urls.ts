@@ -1,4 +1,4 @@
-const baseUrl = 'localhost:3001';
+const baseUrl = 'localhost:3000';
 
 const urls = {
     auth: {
