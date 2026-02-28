@@ -7,12 +7,12 @@ export const venueService = {
     getAll: (page: number): IPromise<IVenueInterface[]> =>
         axiosInstance.get(urls.venue.base, { params: { page } }),
 
-    getById: (venueId: string): IPromise<IVenueInterface> =>
-        axiosInstance.get(urls.venue.venueById(venueId)),
+    getByMovieId: (id: string): IPromise<IVenueInterface> =>
+        axiosInstance.get(urls.venue.venueById(id)),
 
     create: (payload: Partial<IVenueInterface>): IPromise<IVenueInterface> =>
         axiosInstance.post(urls.venue.base, payload),
 
-    update: (venueId: string, payload: Partial<IVenueInterface>): IPromise<IVenueInterface> =>
-        axiosInstance.patch(urls.venue.update(venueId), payload),
+    update: (id: string, payload: Partial<IVenueInterface>): IPromise<IVenueInterface> =>
+        axiosInstance.patch(urls.venue.update(id), payload),
 };

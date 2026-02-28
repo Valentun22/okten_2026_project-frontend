@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IVenueInterface } from "../../interfaces/IVenueInterface";
 import { venueService } from "../../services/venue.service";
+import {AxiosError} from "axios";
 
 type VenuesState = {
     venues: IVenueInterface[];
     page: number;
     loading: boolean;
     error: string | null;
+    venueCard: IVenueInterface | null;
 };
 
 const initialState: VenuesState = {
@@ -14,6 +16,7 @@ const initialState: VenuesState = {
     page: 1,
     loading: false,
     error: null,
+    venueCard: null,
 };
 
 const getAll = createAsyncThunk<
@@ -25,12 +28,34 @@ const getAll = createAsyncThunk<
     async (page, { rejectWithValue }) => {
         try {
             const { data } = await venueService.getAll(page);
-            return data; // якщо бек повертає масив
-        } catch {
-            return rejectWithValue("Не вдалося завантажити venues");
+            return data;
+        } catch (e) {
+            const err = e as AxiosError;
+            return rejectWithValue(
+                typeof err.response?.data === "string"
+                    ? err.response.data
+                    : "Request error"
+            );
         }
     }
 );
+
+const getByVenueId = createAsyncThunk<IVenueInterface, string>(
+    'venues/getByVenueId',
+    async (id, {rejectWithValue}) => {
+        try {
+            const {data} = await venueService.getByMovieId(id);
+            return data
+        } catch (e) {
+            const err = e as AxiosError;
+            return rejectWithValue(
+                typeof err.response?.data === "string"
+                    ? err.response.data
+                    : "Request error"
+            );
+        }
+    }
+)
 
 const venuesSlice = createSlice({
     name: "venues",
@@ -60,6 +85,7 @@ const venuesSlice = createSlice({
 export const venuesActions = {
     ...venuesSlice.actions,
     getAll,
+    getByVenueId
 };
 
 export const venuesReducer = venuesSlice.reducer;

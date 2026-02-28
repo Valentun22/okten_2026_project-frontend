@@ -28,6 +28,10 @@ const urls = {
     search: {
         base: `${baseUrl}/search/venue`
     },
+    categories: {
+        base: `${baseUrl}/categories`,
+        categoryById: (id: string): string => `${baseUrl}/categories/${id}`,
+    },
 };
 export {
     baseUrl,

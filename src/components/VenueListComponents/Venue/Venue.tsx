@@ -15,6 +15,7 @@ const Venue: FC<IProps> = ({venue}) => {
             <img className={css.poster} src={`${logoVenue}`} alt={'img'}/>
             <div className={css.titleText}>{city}</div>
             <div className={css.titleText}>{name}</div>
+            <h1>Venue</h1>
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import {Header} from "../components/HeaderComponent/Header";
 import WarningModal from "../components/WarningComponent/WarningComponent";
 import {HomePage} from "../components/HomeComponent/HomePage";
+import {Outlet} from "react-router-dom";
 
 const MainLayout = () => {
     return (
@@ -8,7 +9,7 @@ const MainLayout = () => {
             <Header/>
             <WarningModal/>
             <HomePage/>
-            {/*<Outlet/>*/}
+            <Outlet/>
         </div>
     );
 };

@@ -8,7 +8,7 @@ interface IProps {
 const sizeStars= {
     colors: {
         backgroundDefault: 'lightgray',
-        backgroundColorActive: '#d82727',
+        backgroundColorActive: '#ffd500',
         backgroundColorHover: '#0a3186'
     },
     size: 22

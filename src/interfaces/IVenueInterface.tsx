@@ -1,8 +1,4 @@
-export enum VenueCategoryEnum {
-    CAFE = 'CAFE',
-    BAR = 'BAR',
-    RESTAURANT = 'RESTAURANT',
-}
+import {IVenueCategoryInterface} from "./IVenueCategoryInterface";
 
 export type WorkingHours = Partial<{
     mon: string;
@@ -51,7 +47,7 @@ export interface IVenueInterface extends IBaseModel {
     city?: string;
     address?: string;
 
-    categories?: VenueCategoryEnum[];
+    categories?: IVenueCategoryInterface[];
 
     isModerated: boolean;
     isActive: boolean;
@@ -80,6 +76,7 @@ export interface IVenueInterface extends IBaseModel {
     likesCount?: number;
     commentsCount?: number;
     averageRating?: number;
+
 
     likes?: number;
     // comments?: IComment[];

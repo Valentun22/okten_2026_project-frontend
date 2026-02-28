@@ -17,6 +17,9 @@ const Venues = () => {
             <div className={css.venueList}>
                 {venues.map(venue => <Venue key={venue.id} venue={venue} />)}
             </div>
+            <div>
+                <h1>Venues</h1>
+            </div>
         </div>
     );
 };

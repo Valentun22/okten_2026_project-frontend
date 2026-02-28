@@ -11,7 +11,6 @@ const WarningModal = () => {
         if (hasAccepted !== "true") setShowModal(true);
     }, []);
 
-    // блокуємо скрол, поки модалка відкрита
     useEffect(() => {
         if (!showModal) return;
 
@@ -30,8 +29,6 @@ const WarningModal = () => {
 
     const handleExit = () => {
         localStorage.setItem(STORAGE_KEY, "false");
-        // якщо хочеш - можна ще закрити модалку перед виходом:
-        // setShowModal(false);
     };
 
     if (!showModal) return null;
