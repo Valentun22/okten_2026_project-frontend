@@ -52,9 +52,18 @@
     text-transform: uppercase;
 }
 
-.general   { background: #e8f4ff; color: #1a6ec7; }
-.promotion { background: #fff3e0; color: #d4700a; }
-.event     { background: #f0fff4; color: #1e8a4a; }
+.general   {
+    background: #e8f4ff;
+    color: #1a6ec7;
+}
+.promotion {
+    background: #fff3e0;
+    color: #d4700a;
+}
+.event     {
+    background: #f0fff4;
+    color: #1e8a4a;
+}
 
 .content {
     padding: 18px 20px 20px;

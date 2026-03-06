@@ -5,14 +5,14 @@
 }
 .Header {
     margin: 0;
-    height: 12vh;
+    height: 9vh;
     width: 100%;
     background-color: rgba(53, 53, 55, 1);
     justify-content: space-between;
 }
 .logoBox {
     margin-left: 3.5%;
-    width: 20vw;
+    width: 15vw;
 }
 .logoBox img {
     width: 100%;
@@ -20,11 +20,11 @@
     object-fit: contain;
 }
 .infoBlock {
-    width: 40%;
+    width: 45%;
     justify-content: space-between;
 }
 .infoBlock button {
-    width: 7.3vw;
+    width: 7vw;
     height: 33px;
     border: rgba(193, 138, 102, 0.96) 2px solid;
     border-radius: 10px;
@@ -32,7 +32,7 @@
     color: rgba(193, 138, 102, 0.96);
     font-weight: bold;
     transition: 500ms;
-    font-size: 1vw;
+    font-size: 0.95vw;
     cursor: pointer;
 }
 .infoBlock button:hover {

@@ -7,6 +7,7 @@
     border: 1.5px solid #ebebeb;
     background: #fff;
     transition: border-color .2s, box-shadow .2s, transform .2s;
+    cursor: pointer;
 }
 .card:hover {
     border-color: #222;
@@ -81,7 +82,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.meta {
+.meta  {
     display: flex;
     gap: 12px;
     align-items: center;
@@ -91,7 +92,7 @@
     font-weight: 700;
     color: #f6ad1c;
 }
-.check  {
+.check {
     font-size: 13px;
     color: #888;
 }
