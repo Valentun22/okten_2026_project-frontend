@@ -1,39 +1,43 @@
 .footerBox {
     display: flex;
     justify-content: space-between;
-    height: 60px;
+    height: 4.5vh;
     background-color: rgba(53, 53, 55, 1);
     color: white;
     align-items: center;
 }
 .footerStyle {
     display: flex;
+    width: 5vw;
     justify-content: right;
     align-items: center;
     margin-right: 4%;
 }
 .footerImage {
-    height: 30px;
+    height: 3vh;
     margin-right: 10px;
     transition: 300ms;
 
 }
 .footerImage:hover {
-    height: 37px;
+    height: 3.3vh;
     margin-right: 10px;
 }
 .footerLogo {
     display: flex;
     align-items: center;
-    margin-left: 4%;
+    margin-left: 3%;
 }
 .footerLogo img {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 35px;
+    height: 4.6vh;
     width: auto;
     margin-left: 15%;
+}
+.footerLogo h2 {
+    font-size: 2.3vh;
 }
 .footerImg {
     width: 40px;

@@ -1,0 +1,8 @@
+.page {
+    min-height: calc(100vh - 12vh);
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1;
+}

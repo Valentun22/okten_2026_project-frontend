@@ -1,13 +1,13 @@
 import {Outlet} from "react-router-dom";
 import {FooterComponent} from "../components/FooterComponent/FooterComponent";
 import css from './css/page.module.css';
-import {News} from "../components/NewsComponent/News/News";
+import {SearchVenue} from "../components/VenueSearchComponents/SearchVenue/SearchVenue";
 
-const NewsPage = () => {
+const SearchVenuePage = () => {
     return (
         <div className={css.page}>
             <div className={css.content}>
-                <News/>
+                <SearchVenue/>
                 <Outlet/>
             </div>
             <FooterComponent/>
@@ -15,4 +15,4 @@ const NewsPage = () => {
     );
 };
 
-export {NewsPage};
+export {SearchVenuePage};
