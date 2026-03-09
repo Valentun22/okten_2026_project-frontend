@@ -1,13 +1,13 @@
 import {Outlet} from "react-router-dom";
-import css from "./css/page.module.css";
 import {FooterComponent} from "../components/FooterComponent/FooterComponent";
-import AboutUs from "../components/AboutUsComponent/AboutUs";
+import css from './css/page.module.css';
+import {EditVenueComponent} from "../components/CreateVenueComponent/EditVenueComponent/EditVenueComponent";
 
-const AboutUsPage = () => {
+const EditVenuePage = () => {
     return (
         <div className={css.page}>
             <div className={css.content}>
-                <AboutUs/>
+                <EditVenueComponent/>
                 <Outlet/>
             </div>
             <FooterComponent/>
@@ -15,4 +15,4 @@ const AboutUsPage = () => {
     );
 };
 
-export {AboutUsPage};
+export {EditVenuePage};

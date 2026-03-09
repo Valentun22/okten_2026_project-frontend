@@ -1,12 +1,15 @@
 import { FC, useState } from 'react';
 import { IVenueInterface } from '../../../interfaces/IVenueInterface';
 import { venueService } from '../../../services/venue.service';
+import { axiosInstance } from '../../../services/axiosInstance.service';
+import { urls } from '../../../constants/urls';
+import { PyachokModal } from '../../PyachokComponents/PyachokModal/PyachokModal';
+import { VenuePyachokList } from '../../PyachokComponents/VenuePyachokList/VenuePyachokList';
+import { ComplaintModal } from '../../PyachokComponents/ComplaintModal/ComplaintModal';
 import css from './VenueCard.module.css';
-import {PyachokModal} from "../../PyachokComponents/PyachokModal/PyachokModal";
+import {VenueComments} from "../../VenueCommentsComponent/VenueComments";
 
-interface IProps {
-    venueCard: IVenueInterface;
-}
+interface IProps { venueCard: IVenueInterface; }
 
 const DAYS_UK: Record<string, string> = {
     mon: 'Пн', tue: 'Вт', wed: 'Ср',
@@ -23,69 +26,65 @@ const FEATURES: { key: keyof IVenueInterface; label: string; icon: string }[] = 
     { key: 'cardPayment',    label: 'Картка',       icon: '💳' },
 ];
 
-const StarBar: FC<{ value?: number }> = ({ value }) => {
-    if (!value) return null;
-    const stars = Math.round(value / 2);
-    return (
-        <div className={css.stars}>
-            {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} className={i < stars ? css.starOn : css.starOff}>★</span>
-            ))}
-            <span className={css.ratingVal}>{value.toFixed(1)} / 10</span>
-            {(venueCard as any)?.ratingCount && (
-                <span className={css.ratingCount}>({(venueCard as any).ratingCount} оцінок)</span>
-            )}
-        </div>
-    );
-};
-
-let venueCard: IVenueInterface;
-
 const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
-    venueCard = vc;
+    const [showPyachok,    setShowPyachok]    = useState(false);
+    const [showComplaint,  setShowComplaint]  = useState(false);
 
-    const [showContact,  setShowContact]  = useState(false);
-    const [contactMsg,   setContactMsg]   = useState('');
-    const [contactSent,  setContactSent]  = useState(false);
+    const [isFav,          setIsFav]          = useState(!!(vc as any).isFavorite);
+    const [favLoading,     setFavLoading]     = useState(false);
+    const [isLiked,        setIsLiked]        = useState(!!(vc as any).isLiked);
+    const [likeLoading,    setLikeLoading]    = useState(false);
+    const [likeCount,      setLikeCount]      = useState<number>((vc as any).likesCount ?? 0);
+
+    const [userRating,     setUserRating]     = useState<number | null>(null);
+    const [ratingHover,    setRatingHover]    = useState<number | null>(null);
+    const [ratingLoading,  setRatingLoading]  = useState(false);
+    const [ratingDone,     setRatingDone]     = useState(false);
+
+    const [contactMsg,     setContactMsg]     = useState('');
+    const [contactSent,    setContactSent]    = useState(false);
     const [contactLoading, setContactLoading] = useState(false);
 
-    const [showPyachok,  setShowPyachok]  = useState(false);
-    const [isFav,        setIsFav]        = useState(!!(vc as any).isFavorite);
-    const [favLoading,   setFavLoading]   = useState(false);
-
-    const [userRating,   setUserRating]   = useState<number | null>(null);
-    const [ratingHover,  setRatingHover]  = useState<number | null>(null);
-    const [ratingLoading, setRatingLoading] = useState(false);
-    const [ratingDone,   setRatingDone]   = useState(false);
+    const ratingAvg: number | undefined = (vc as any).ratingAvg;
 
     const handleFav = async () => {
         setFavLoading(true);
         try {
             if (isFav) { await venueService.removeFromFavorites(vc.id); setIsFav(false); }
-            else        { await venueService.addToFavorites(vc.id);    setIsFav(true); }
-        } catch { /* ignore, user may not be logged in */ }
+            else        { await venueService.addToFavorites(vc.id);     setIsFav(true);  }
+        } catch { /* ignore */ }
         setFavLoading(false);
+    };
+
+    const handleLike = async () => {
+        setLikeLoading(true);
+        try {
+            if (isLiked) {
+                await axiosInstance.delete(urls.likes.remove(vc.id));
+                setIsLiked(false); setLikeCount(c => Math.max(0, c - 1));
+            } else {
+                await axiosInstance.post(urls.likes.add(vc.id));
+                setIsLiked(true); setLikeCount(c => c + 1);
+            }
+        } catch { /* ignore */ }
+        setLikeLoading(false);
     };
 
     const handleRating = async (val: number) => {
         if (ratingLoading || ratingDone) return;
         setRatingLoading(true);
         setUserRating(val);
-        try {
-            await venueService.setRating(vc.id, val);
-            setRatingDone(true);
-        } catch { setUserRating(null); }
+        try { await venueService.setRating(vc.id, val); setRatingDone(true); }
+        catch { setUserRating(null); }
         setRatingLoading(false);
     };
 
     const handleContact = async () => {
         if (!contactMsg.trim()) return;
         setContactLoading(true);
-        try {
-            await venueService.contactManager(vc.id, contactMsg);
-            setContactSent(true);
-            setContactMsg('');
-        } catch { setContactSent(true); }
+        try { await venueService.contactManager(vc.id, contactMsg); }
+        catch { /* stub */ }
+        setContactSent(true);
         setContactLoading(false);
     };
 
@@ -93,44 +92,46 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
 
     return (
         <div className={css.page}>
+
             <div className={css.hero}>
-                {photos.length > 0 ? (
-                    <img src={photos[0]} alt={vc.name} className={css.heroImg} />
-                ) : (
-                    <div className={css.heroPlaceholder}>🏠</div>
-                )}
+                {photos.length > 0
+                    ? <img src={photos[0]} alt={vc.name} className={css.heroImg} />
+                    : <div className={css.heroPlaceholder}>🏠</div>
+                }
                 <div className={css.heroOverlay}>
                     <div className={css.heroContent}>
                         <h1 className={css.heroTitle}>{vc.name}</h1>
                         <div className={css.heroMeta}>
                             {vc.city && <span className={css.heroCity}>📍 {vc.city}{vc.address ? `, ${vc.address}` : ''}</span>}
-                            {(vc as any).ratingAvg && (
-                                <span className={css.heroRating}>⭐ {Number((vc as any).ratingAvg).toFixed(1)}</span>
-                            )}
+                            {ratingAvg   && <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
                             {vc.averageCheck && <span className={css.heroCheck}>≈ {vc.averageCheck} ₴</span>}
                         </div>
                     </div>
                 </div>
-
                 <div className={css.heroActions}>
                     <button
-                        className={`${css.favBtn} ${isFav ? css.favActive : ''}`}
-                        onClick={handleFav}
-                        disabled={favLoading}
-                        title={isFav ? 'Видалити з улюблених' : 'Додати в улюблені'}
-                    >
-                        {isFav ? '♥' : '♡'}
+                        className={`${css.likeBtn} ${isLiked ? css.likeBtnActive : ''}`}
+                        onClick={handleLike} disabled={likeLoading}
+                        title={isLiked ? 'Прибрати лайк' : 'Подобається'}>
+                        👍 {likeCount > 0 ? likeCount : ''}
                     </button>
                     <button
-                        className={css.pyachokBtn}
-                        onClick={() => setShowPyachok(true)}
-                    >
+                        className={`${css.favBtn} ${isFav ? css.favActive : ''}`}
+                        onClick={handleFav} disabled={favLoading}
+                        title={isFav ? 'Видалити з улюблених' : 'Додати в улюблені'}>
+                        {isFav ? '♥' : '♡'}
+                    </button>
+                    <button className={css.pyachokBtn} onClick={() => setShowPyachok(true)}>
                         🍺 Пиячок
+                    </button>
+                    <button className={css.complaintBtn} onClick={() => setShowComplaint(true)} title="Поскаржитися">
+                        ⚠️
                     </button>
                 </div>
             </div>
 
             <div className={css.body}>
+
                 <div className={css.left}>
                     {vc.description && (
                         <section className={css.section}>
@@ -144,9 +145,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <h2 className={css.sectionTitle}>Категорії</h2>
                             <div className={css.chips}>
                                 {vc.categories.map((c: any) => (
-                                    <span key={c?.id ?? c} className={css.chip}>
-                                        {c?.name ?? c}
-                                    </span>
+                                    <span key={c?.id ?? c} className={css.chip}>{c?.name ?? c}</span>
                                 ))}
                             </div>
                         </section>
@@ -157,9 +156,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <h2 className={css.sectionTitle}>Теги</h2>
                             <div className={css.chips}>
                                 {vc.tags.map((t: any) => (
-                                    <span key={t?.id ?? t} className={`${css.chip} ${css.tagChip}`}>
-                                        #{t?.name ?? t}
-                                    </span>
+                                    <span key={t?.id ?? t} className={`${css.chip} ${css.tagChip}`}>#{t?.name ?? t}</span>
                                 ))}
                             </div>
                         </section>
@@ -169,10 +166,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                         <h2 className={css.sectionTitle}>Особливості</h2>
                         <div className={css.features}>
                             {FEATURES.map(({ key, label, icon }) => (
-                                <div
-                                    key={key}
-                                    className={`${css.feature} ${vc[key] ? css.featureOn : css.featureOff}`}
-                                >
+                                <div key={key} className={`${css.feature} ${vc[key] ? css.featureOn : css.featureOff}`}>
                                     <span className={css.featureIcon}>{icon}</span>
                                     <span>{label}</span>
                                 </div>
@@ -182,11 +176,20 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
 
                     <section className={css.section}>
                         <h2 className={css.sectionTitle}>Рейтинг закладу</h2>
-                        <StarBar value={(vc as any).ratingAvg} />
-
+                        {ratingAvg && (
+                            <div className={css.stars}>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <span key={i} className={i < Math.round(ratingAvg / 2) ? css.starOn : css.starOff}>★</span>
+                                ))}
+                                <span className={css.ratingVal}>{Number(ratingAvg).toFixed(1)} / 10</span>
+                                {(vc as any).ratingCount && (
+                                    <span className={css.ratingCount}>({(vc as any).ratingCount} оцінок)</span>
+                                )}
+                            </div>
+                        )}
                         <div className={css.ratingForm}>
                             <p className={css.ratingFormLabel}>
-                                {ratingDone ? '✅ Дякуємо за оцінку!' : 'Поставте свою оцінку:'}
+                                {ratingDone ? '✅ Дякуємо за оцінку!' : 'Поставте свою оцінку (1–10):'}
                             </p>
                             {!ratingDone && (
                                 <div className={css.ratingStars}>
@@ -194,13 +197,11 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                                         const val = i + 1;
                                         const active = (ratingHover ?? userRating ?? 0) >= val;
                                         return (
-                                            <span
-                                                key={val}
-                                                className={active ? css.rStarOn : css.rStarOff}
-                                                onMouseEnter={() => setRatingHover(val)}
-                                                onMouseLeave={() => setRatingHover(null)}
-                                                onClick={() => handleRating(val)}
-                                            >★</span>
+                                            <span key={val}
+                                                  className={active ? css.rStarOn : css.rStarOff}
+                                                  onMouseEnter={() => setRatingHover(val)}
+                                                  onMouseLeave={() => setRatingHover(null)}
+                                                  onClick={() => handleRating(val)}>★</span>
                                         );
                                     })}
                                     {ratingHover && <span className={css.ratingNum}>{ratingHover}</span>}
@@ -208,47 +209,40 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             )}
                         </div>
                     </section>
+
+                    <VenuePyachokList venueId={vc.id} venueName={vc.name} />
+
+                    <VenueComments venueId={vc.id} />
                 </div>
 
                 <div className={css.right}>
                     {vc.workingHours && Object.keys(vc.workingHours).length > 0 && (
                         <section className={css.card}>
                             <h3 className={css.cardTitle}>🕐 Графік роботи</h3>
-                            <table className={css.hoursTable}>
-                                <tbody>
-                                {(Object.entries(vc.workingHours) as [string, string][]).map(([day, hours]) => (
-                                    <tr key={day}>
-                                        <td className={css.dayCell}>{DAYS_UK[day] ?? day}</td>
-                                        <td className={css.hoursCell}>{hours ?? '—'}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                            <table className={css.hoursTable}><tbody>
+                            {(Object.entries(vc.workingHours) as [string, string][]).map(([day, hours]) => (
+                                <tr key={day}>
+                                    <td className={css.dayCell}>{DAYS_UK[day] ?? day}</td>
+                                    <td className={css.hoursCell}>{hours ?? '—'}</td>
+                                </tr>
+                            ))}
+                            </tbody></table>
                         </section>
                     )}
 
-                    {/* Контакти */}
                     <section className={css.card}>
                         <h3 className={css.cardTitle}>📞 Контакти</h3>
                         <div className={css.contacts}>
-                            {vc.phone   && <a href={`tel:${vc.phone}`}   className={css.contactLink}>📱 {vc.phone}</a>}
+                            {vc.phone   && <a href={`tel:${vc.phone}`}    className={css.contactLink}>📱 {vc.phone}</a>}
                             {vc.email   && <a href={`mailto:${vc.email}`} className={css.contactLink}>✉️ {vc.email}</a>}
                             {vc.website && <a href={vc.website} target="_blank" rel="noreferrer" className={css.contactLink}>🌐 Сайт</a>}
-                            {vc.socials?.instagram && (
-                                <a href={vc.socials.instagram} target="_blank" rel="noreferrer" className={css.contactLink}>📸 Instagram</a>
-                            )}
-                            {vc.socials?.facebook && (
-                                <a href={vc.socials.facebook} target="_blank" rel="noreferrer" className={css.contactLink}>👥 Facebook</a>
-                            )}
-                            {vc.socials?.telegram && (
-                                <a href={vc.socials.telegram} target="_blank" rel="noreferrer" className={css.contactLink}>✈️ Telegram</a>
-                            )}
+                            {vc.socials?.instagram && <a href={vc.socials.instagram} target="_blank" rel="noreferrer" className={css.contactLink}>📸 Instagram</a>}
+                            {vc.socials?.facebook  && <a href={vc.socials.facebook}  target="_blank" rel="noreferrer" className={css.contactLink}>👥 Facebook</a>}
+                            {vc.socials?.telegram  && <a href={vc.socials.telegram}  target="_blank" rel="noreferrer" className={css.contactLink}>✈️ Telegram</a>}
                             {vc.city && vc.address && (
-                                <a
-                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${vc.name} ${vc.city} ${vc.address}`)}`}
-                                    target="_blank" rel="noreferrer"
-                                    className={`${css.contactLink} ${css.mapLink}`}
-                                >
+                                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${vc.name} ${vc.city} ${vc.address}`)}`}
+                                   target="_blank" rel="noreferrer"
+                                   className={`${css.contactLink} ${css.mapLink}`}>
                                     🗺 Маршрут до закладу
                                 </a>
                             )}
@@ -261,18 +255,12 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <p className={css.contactSuccess}>✅ Повідомлення надіслано!</p>
                         ) : (
                             <>
-                                <textarea
-                                    className={css.contactTextarea}
-                                    rows={4}
-                                    placeholder="Ваше запитання або скарга..."
-                                    value={contactMsg}
-                                    onChange={e => setContactMsg(e.target.value)}
-                                />
-                                <button
-                                    className={css.contactSubmit}
-                                    onClick={handleContact}
-                                    disabled={contactLoading || !contactMsg.trim()}
-                                >
+                                <textarea className={css.contactTextarea} rows={4}
+                                          placeholder="Ваше запитання або пропозиція..."
+                                          value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
+                                <button className={css.contactSubmit}
+                                        onClick={handleContact}
+                                        disabled={contactLoading || !contactMsg.trim()}>
                                     {contactLoading ? '...' : 'Надіслати'}
                                 </button>
                             </>
@@ -298,40 +286,10 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
             </div>
 
             {showPyachok && (
-                <PyachokModal
-                    venueId={vc.id}
-                    venueName={vc.name}
-                    onClose={() => setShowPyachok(false)}
-                />
+                <PyachokModal venueId={vc.id} venueName={vc.name} onClose={() => setShowPyachok(false)} />
             )}
-
-            {showContact && (
-                <div className={css.modalOverlay} onClick={() => setShowContact(false)}>
-                    <div className={css.modal} onClick={e => e.stopPropagation()}>
-                        <h3>Написати менеджеру</h3>
-                        {contactSent ? (
-                            <p>✅ Повідомлення надіслано!</p>
-                        ) : (
-                            <>
-                                <textarea
-                                    className={css.contactTextarea}
-                                    rows={5}
-                                    placeholder="Ваше запитання..."
-                                    value={contactMsg}
-                                    onChange={e => setContactMsg(e.target.value)}
-                                />
-                                <button
-                                    className={css.contactSubmit}
-                                    onClick={handleContact}
-                                    disabled={contactLoading}
-                                >
-                                    {contactLoading ? 'Надсилання...' : 'Надіслати'}
-                                </button>
-                            </>
-                        )}
-                        <button className={css.modalClose} onClick={() => setShowContact(false)}>✕</button>
-                    </div>
-                </div>
+            {showComplaint && (
+                <ComplaintModal venueId={vc.id} venueName={vc.name} onClose={() => setShowComplaint(false)} />
             )}
         </div>
     );

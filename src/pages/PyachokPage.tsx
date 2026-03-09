@@ -1,13 +1,13 @@
 import {Outlet} from "react-router-dom";
-import css from "./css/page.module.css";
 import {FooterComponent} from "../components/FooterComponent/FooterComponent";
-import AboutUs from "../components/AboutUsComponent/AboutUs";
+import css from './css/page.module.css';
+import {PyachokComponent} from "../components/PyachokComponents/PyachokComponent/PyachokComponent";
 
-const AboutUsPage = () => {
+const PyachokPage = () => {
     return (
         <div className={css.page}>
             <div className={css.content}>
-                <AboutUs/>
+                <PyachokComponent/>
                 <Outlet/>
             </div>
             <FooterComponent/>
@@ -15,4 +15,4 @@ const AboutUsPage = () => {
     );
 };
 
-export {AboutUsPage};
+export {PyachokPage};

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/useReduxHooks';
 import { authActions } from '../../redux/slices/authSlice';
-import css from './RegisterPage.module.css';
+import css from './RegisterUser.module.css';
 
-const RegisterPage = () => {
+const RegisterUser = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { loading, error } = useAppSelector(state => state.auth);
@@ -55,4 +55,4 @@ const RegisterPage = () => {
     );
 };
 
-export { RegisterPage };
+export { RegisterUser};
