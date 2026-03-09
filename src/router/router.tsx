@@ -13,6 +13,7 @@ import {LoginPage} from "../pages/LoginPage";
 import {RegisterPage} from "../pages/RegisterPage";
 import {EditVenuePage} from "../pages/EditVenuePage";
 import {AdminPage} from "../pages/AdminPage";
+import {UserPublicPage} from "../pages/UserPublicPage";
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
             {path: '/venues/:id/edit', element: <EditVenuePage/>},
             {path: '/profile', element: <ProfilePage/>},
             {path: '/pyachok', element: <PyachokPage/>},
+            {path: '/users/:id', element: <UserPublicPage/>},
         ],
     },
     {path: '/login', element: <LoginPage/>},

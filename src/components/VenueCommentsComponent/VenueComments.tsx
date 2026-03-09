@@ -3,6 +3,8 @@ import css from './VenueComments.module.css';
 import {CommentRecommendationEnum, IComment, ICreateCommentDto} from "../../interfaces/ICommentInterface";
 import { commentService } from '../../services/comment.service';
 import {useAppSelector} from "../../hooks/useReduxHooks";
+import {axiosInstance} from "../../services/axiosInstance.service";
+import {urls} from "../../constants/urls";
 
 interface IProps { venueId: string }
 
@@ -28,8 +30,13 @@ const StarPicker: FC<{ value: number; onChange: (v: number) => void; disabled?: 
     );
 };
 
-const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void }> = ({ comment, onDelete }) => {
-    const [deleting, setDeleting] = useState(false);
+const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpdate: (updated: IComment) => void }> = ({ comment, onDelete, onUpdate }) => {
+    const [deleting,  setDeleting]  = useState(false);
+    const [editMode,  setEditMode]  = useState(false);
+    const [editTitle, setEditTitle] = useState(comment.title);
+    const [editBody,  setEditBody]  = useState(comment.body);
+    const [editRating,setEditRating]= useState(comment.rating);
+    const [saving,    setSaving]    = useState(false);
 
     const handleDelete = async () => {
         setDeleting(true);
@@ -37,7 +44,37 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void }> = (
         catch { setDeleting(false); }
     };
 
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            const { data } = await commentService.update(comment.id, {
+                title: editTitle, body: editBody, rating: editRating,
+            });
+            onUpdate(data);
+            setEditMode(false);
+        } catch { /* ignore */ }
+        setSaving(false);
+    };
+
     const rec = comment.recommendation;
+
+    if (editMode) return (
+        <article className={`${css.commentCard} ${css.commentCardEditing}`}>
+            <div className={css.editCommentForm}>
+                <StarPicker value={editRating} onChange={setEditRating} />
+                <input className={css.editCommentInput} value={editTitle}
+                       onChange={e => setEditTitle(e.target.value)} placeholder="Заголовок" />
+                <textarea className={css.editCommentTextarea} rows={3} value={editBody}
+                          onChange={e => setEditBody(e.target.value)} placeholder="Текст відгуку" />
+                <div className={css.editCommentActions}>
+                    <button className={css.editCommentCancel} onClick={() => setEditMode(false)}>Скасувати</button>
+                    <button className={css.editCommentSave} onClick={handleSave} disabled={saving}>
+                        {saving ? '...' : 'Зберегти'}
+                    </button>
+                </div>
+            </div>
+        </article>
+    );
 
     return (
         <article className={css.commentCard}>
@@ -81,9 +118,12 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void }> = (
             )}
 
             {comment.isOwner && (
-                <button className={css.deleteBtn} onClick={handleDelete} disabled={deleting}>
-                    {deleting ? '...' : '🗑 Видалити'}
-                </button>
+                <div className={css.ownerActions}>
+                    <button className={css.editCommentBtn} onClick={() => setEditMode(true)}>✏️ Редагувати</button>
+                    <button className={css.deleteBtn} onClick={handleDelete} disabled={deleting}>
+                        {deleting ? '...' : '🗑 Видалити'}
+                    </button>
+                </div>
             )}
         </article>
     );
@@ -104,6 +144,33 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
     const [form, setForm] = useState<ICreateCommentDto>({ title: '', body: '', rating: 0 });
     const setF = (k: keyof ICreateCommentDto, v: any) => setForm(p => ({ ...p, [k]: v }));
 
+    // ── Фото чека ──
+    const [checkFile,       setCheckFile]       = useState<File | null>(null);
+    const [checkPreview,    setCheckPreview]     = useState('');
+    const [checkUploading,  setCheckUploading]   = useState(false);
+
+    const handleCheckFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setCheckFile(file);
+        setCheckPreview(URL.createObjectURL(file));
+        setF('image_check', ''); // буде замінено після upload
+    };
+
+    const uploadCheckFile = async (): Promise<string | undefined> => {
+        if (!checkFile) return undefined;
+        setCheckUploading(true);
+        try {
+            const fd = new FormData();
+            fd.append('file', checkFile);
+            const { data } = await axiosInstance.post(urls.comments.uploadCheck, fd, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            return data?.url ?? data?.key ?? data;
+        } catch { return undefined; }
+        finally { setCheckUploading(false); }
+    };
+
     const fetchComments = async (reset = false) => {
         const off = reset ? 0 : offset;
         reset ? setLoading(true) : setLoadingMore(true);
@@ -117,7 +184,7 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
         reset ? setLoading(false) : setLoadingMore(false);
     };
 
-    useEffect(() => { fetchComments(true); }, [venueId]);
+    useEffect(() => { fetchComments(true); }, [venueId]); // eslint-disable-line
 
     const handleSubmit = async () => {
         if (!form.title.trim()) { setFormError("Вкажіть заголовок"); return; }
@@ -126,10 +193,17 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
         setFormError('');
         setSubmitting(true);
         try {
-            const { data } = await commentService.create(venueId, form);
+            // Якщо є файл — спочатку завантажуємо
+            let checkUrl = form.image_check;
+            if (checkFile) {
+                const uploaded = await uploadCheckFile();
+                if (uploaded) checkUrl = uploaded;
+            }
+            const { data } = await commentService.create(venueId, { ...form, image_check: checkUrl });
             setComments(prev => [data, ...prev]);
             setTotal(t => t + 1);
             setForm({ title: '', body: '', rating: 0 });
+            setCheckFile(null); setCheckPreview('');
             setShowForm(false);
         } catch (e: any) {
             setFormError(e?.response?.data?.message ?? 'Помилка при збереженні');
@@ -155,6 +229,7 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
                 )}
             </div>
 
+            {/* ── Форма відгуку ── */}
             {showForm && (
                 <div className={css.form}>
                     <h3 className={css.formTitle}>Ваш відгук</h3>
@@ -195,17 +270,49 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
 
                     {formError && <p className={css.formError}>{formError}</p>}
 
+                    {/* ── Фото чека ── */}
+                    <div className={css.formField}>
+                        <label className={css.formLabel}>Фото чека (необов'язково)</label>
+                        <div className={css.checkUploadArea}>
+                            {checkPreview ? (
+                                <div className={css.checkPreviewWrap}>
+                                    <img src={checkPreview} alt="чек" className={css.checkPreviewImg} />
+                                    <button className={css.checkRemoveBtn}
+                                            onClick={() => { setCheckFile(null); setCheckPreview(''); setF('image_check', undefined); }}>
+                                        ✕ Видалити
+                                    </button>
+                                </div>
+                            ) : (
+                                <label className={css.checkUploadLabel}>
+                                    <input type="file" accept="image/*" className={css.checkFileInput}
+                                           onChange={handleCheckFile} />
+                                    <span className={css.checkUploadIcon}>📸</span>
+                                    <span>Завантажити фото чека</span>
+                                    <span className={css.checkUploadHint}>JPG, PNG до 5 МБ</span>
+                                </label>
+                            )}
+                        </div>
+                        {/* Або вказати URL вручну */}
+                        {!checkPreview && (
+                            <input className={css.formInput} style={{ marginTop: '8px' }}
+                                   placeholder="Або вставте URL фото..."
+                                   value={form.image_check ?? ''}
+                                   onChange={e => setF('image_check', e.target.value || undefined)} />
+                        )}
+                    </div>
+
                     <div className={css.formActions}>
                         <button className={css.cancelBtn} onClick={() => { setShowForm(false); setFormError(''); }}>
                             Скасувати
                         </button>
-                        <button className={css.submitBtn} onClick={handleSubmit} disabled={submitting}>
-                            {submitting ? <span className={css.spinner} /> : 'Опублікувати'}
+                        <button className={css.submitBtn} onClick={handleSubmit} disabled={submitting || checkUploading}>
+                            {checkUploading ? '📤 Завантаження...' : submitting ? <span className={css.spinner} /> : 'Опублікувати'}
                         </button>
                     </div>
                 </div>
             )}
 
+            {/* ── Список ── */}
             {loading && (
                 <div className={css.skeletons}>
                     {Array.from({ length: 3 }).map((_, i) => <div key={i} className={css.skeleton} />)}
@@ -222,7 +329,8 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
             {!loading && comments.length > 0 && (
                 <div className={css.list}>
                     {comments.map(c => (
-                        <CommentCard key={c.id} comment={c} onDelete={handleDelete} />
+                        <CommentCard key={c.id} comment={c} onDelete={handleDelete}
+                                     onUpdate={updated => setComments(p => p.map(x => x.id === updated.id ? updated : x))} />
                     ))}
                 </div>
             )}

@@ -150,6 +150,7 @@
     margin: 0;
 }
 
+
 .chips {
     display: flex;
     flex-wrap: wrap;
@@ -496,4 +497,75 @@
     background: rgba(229, 83, 62, .5);
     border-color: rgba(229, 83, 62, .7);
     color: #fff;
+}
+
+.ownerBadge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(234, 179, 8, .9);
+    color: #1a1a0e;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.editBtn {
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 2px solid rgba(255, 255, 255, .5);
+    background: rgba(0, 0, 0, .35);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.editBtn:hover {
+    background: rgba(255, 255, 255, .25);
+    border-color: rgba(255, 255, 255, .8);
+}
+
+.ownerLink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    padding: 6px 0;
+}
+
+.ownerLink:hover .ownerName {
+    text-decoration: underline;
+    color: rgba(193, 138, 102, .96);
+}
+
+.ownerAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ebebeb;
+}
+
+.ownerAvatarPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(193, 138, 102, .2);
+    color: rgba(193, 138, 102, .96);
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ownerName {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
 }

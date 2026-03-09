@@ -1,4 +1,4 @@
-const baseUrl = 'localhost:3000';
+const baseUrl = 'http://localhost:3000';
 
 const urls = {
     auth: {
@@ -32,8 +32,8 @@ const urls = {
         remove: (venueId: string) => `${baseUrl}/venues/${venueId}/rating`,
     },
     favorites: {
-        add:    (venueId: string) => `${baseUrl}/venues/${venueId}/favorites`,
-        remove: (venueId: string) => `${baseUrl}/venues/${venueId}/favorites`,
+        add:    (venueId: string) => `${baseUrl}/venues/${venueId}/favorite`,
+        remove: (venueId: string) => `${baseUrl}/venues/${venueId}/favorite`,
         myList: `${baseUrl}/users/me/favorites`,
     },
     likes: {
@@ -47,10 +47,11 @@ const urls = {
         create: (venueId: string) => `${baseUrl}/venues/${venueId}/complaints`,
     },
     comments: {
-        list:   (venueId: string) => `${baseUrl}/venues/${venueId}/comments`,
-        create: (venueId: string) => `${baseUrl}/venues/${venueId}/comments`,
-        update: (commentId: string) => `${baseUrl}/comments/${commentId}`,
-        delete: (commentId: string) => `${baseUrl}/comments/${commentId}`,
+        list:        (venueId: string)  => `${baseUrl}/venues/${venueId}/comments`,
+        create:      (venueId: string)  => `${baseUrl}/venues/${venueId}/comments`,
+        update:      (commentId: string) => `${baseUrl}/comments/${commentId}`,
+        delete:      (commentId: string) => `${baseUrl}/comments/${commentId}`,
+        uploadCheck: `${baseUrl}/upload-check`,
     },
     users: {
         me:           `${baseUrl}/users/me`,
@@ -59,7 +60,15 @@ const urls = {
         myComments:   `${baseUrl}/users/me/comments`,
         myRatings:    `${baseUrl}/users/me/ratings`,
         myFavorites:  `${baseUrl}/users/me/favorites`,
-        uploadAvatar: `${baseUrl}/users/me/avatar`,
+        uploadAvatar:  `${baseUrl}/users/me/avatar`,
+        deleteAvatar:  `${baseUrl}/users/me/avatar`,
+        publicById:    (id: string) => `${baseUrl}/users/${id}`,
+        followAdd:     (id: string) => `${baseUrl}/users/${id}/follow`,
+        followRemove:  (id: string) => `${baseUrl}/users/${id}/follow`,
+        criticAdd:    `${baseUrl}/users/me/critic`,
+        criticRemove: `${baseUrl}/users/me/critic`,
+        venueAdminAdd:    `${baseUrl}/users/me/venue-admin`,
+        venueAdminRemove: `${baseUrl}/users/me/venue-admin`,
     },
     pyachok: {
         venueList: (venueId: string) => `${baseUrl}/venues/${venueId}/pyachok`,
@@ -85,9 +94,11 @@ const urls = {
         complaints:        `${baseUrl}/admin/complaints`,
         complaintById:     (id: string) => `${baseUrl}/admin/complaints/${id}`,
         complaintStatus:   (id: string) => `${baseUrl}/admin/complaints/${id}/status`,
-        topCategories:     `${baseUrl}/admin/top/categories`,
-        topCategory:       (id: string) => `${baseUrl}/admin/top/categories/${id}`,
-        topCategoryVenues: (id: string) => `${baseUrl}/admin/top/categories/${id}/venues`,
+        topCategories:        `${baseUrl}/admin/top/categories`,
+        topCategory:          (id: string) => `${baseUrl}/admin/top/categories/${id}`,
+        topCategoryVenues:    (id: string) => `${baseUrl}/admin/top/categories/${id}/venues`,
+        topCategoriesOrder:   `${baseUrl}/admin/top/categories/order`,
+        topCategoryVenueOrder:(id: string) => `${baseUrl}/admin/top/categories/${id}/venues/order`,
         removeTopVenue:    (catId: string, venueId: string) => `${baseUrl}/admin/top/categories/${catId}/venues/${venueId}`,
         viewsSummary:      (venueId: string) => `${baseUrl}/admin/analytics/venues/${venueId}/views/summary`,
         viewsTimeseries:   (venueId: string) => `${baseUrl}/admin/analytics/venues/${venueId}/views/timeseries`,

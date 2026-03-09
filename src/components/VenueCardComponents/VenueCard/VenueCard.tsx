@@ -1,11 +1,13 @@
-import { FC, useState } from 'react';
-import { IVenueInterface } from '../../../interfaces/IVenueInterface';
-import { venueService } from '../../../services/venue.service';
-import { axiosInstance } from '../../../services/axiosInstance.service';
-import { urls } from '../../../constants/urls';
-import { PyachokModal } from '../../PyachokComponents/PyachokModal/PyachokModal';
-import { VenuePyachokList } from '../../PyachokComponents/VenuePyachokList/VenuePyachokList';
-import { ComplaintModal } from '../../PyachokComponents/ComplaintModal/ComplaintModal';
+import {FC, useState} from 'react';
+import {IVenueInterface} from '../../../interfaces/IVenueInterface';
+import {venueService} from '../../../services/venue.service';
+import {axiosInstance} from '../../../services/axiosInstance.service';
+import {urls} from '../../../constants/urls';
+import {PyachokModal} from '../../PyachokComponents/PyachokModal/PyachokModal';
+import {VenuePyachokList} from '../../PyachokComponents/VenuePyachokList/VenuePyachokList';
+import {ComplaintModal} from '../../PyachokComponents/ComplaintModal/ComplaintModal';
+import {VenueNews} from '../VenueNews/VenueNews';
+import {VenueAnalytics} from '../VenueAnalytics/VenueAnalytics';
 import css from './VenueCard.module.css';
 import {VenueComments} from "../../VenueCommentsComponent/VenueComments";
 
@@ -47,12 +49,18 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
 
     const ratingAvg: number | undefined = (vc as any).ratingAvg;
 
+    const userRaw  = localStorage.getItem('user');
+    const userId   = userRaw ? JSON.parse(userRaw)?.id : null;
+    const roles    = (() => { try { const u = JSON.parse(userRaw ?? '{}'); return ([] as string[]).concat(u.role ?? []).filter(Boolean); } catch { return [] as string[]; } })();
+    const isOwner  = !!(userId && vc.user && (vc.user as any).id === userId)
+        || roles.some((r: string) => r === 'superadmin');
+
     const handleFav = async () => {
         setFavLoading(true);
         try {
-            if (isFav) { await venueService.removeFromFavorites(vc.id); setIsFav(false); }
-            else        { await venueService.addToFavorites(vc.id);     setIsFav(true);  }
-        } catch { /* ignore */ }
+            if (isFav) { await axiosInstance.delete(urls.favorites.remove(vc.id)); setIsFav(false); }
+            else        { await axiosInstance.post(urls.favorites.add(vc.id));     setIsFav(true);  }
+        } catch {}
         setFavLoading(false);
     };
 
@@ -66,14 +74,13 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                 await axiosInstance.post(urls.likes.add(vc.id));
                 setIsLiked(true); setLikeCount(c => c + 1);
             }
-        } catch { /* ignore */ }
+        } catch {}
         setLikeLoading(false);
     };
 
     const handleRating = async (val: number) => {
         if (ratingLoading || ratingDone) return;
-        setRatingLoading(true);
-        setUserRating(val);
+        setRatingLoading(true); setUserRating(val);
         try { await venueService.setRating(vc.id, val); setRatingDone(true); }
         catch { setUserRating(null); }
         setRatingLoading(false);
@@ -84,8 +91,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
         setContactLoading(true);
         try { await venueService.contactManager(vc.id, contactMsg); }
         catch { /* stub */ }
-        setContactSent(true);
-        setContactLoading(false);
+        setContactSent(true); setContactLoading(false);
     };
 
     const photos = [vc.avatarVenue, ...(vc.image ?? [])].filter(Boolean) as string[];
@@ -105,25 +111,29 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             {vc.city && <span className={css.heroCity}>📍 {vc.city}{vc.address ? `, ${vc.address}` : ''}</span>}
                             {ratingAvg   && <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
                             {vc.averageCheck && <span className={css.heroCheck}>≈ {vc.averageCheck} ₴</span>}
+                            {isOwner && <span className={css.ownerBadge}>👑 Ви власник</span>}
                         </div>
                     </div>
                 </div>
                 <div className={css.heroActions}>
-                    <button
-                        className={`${css.likeBtn} ${isLiked ? css.likeBtnActive : ''}`}
-                        onClick={handleLike} disabled={likeLoading}
-                        title={isLiked ? 'Прибрати лайк' : 'Подобається'}>
+                    <button className={`${css.likeBtn} ${isLiked ? css.likeBtnActive : ''}`}
+                            onClick={handleLike} disabled={likeLoading}
+                            title={isLiked ? 'Прибрати лайк' : 'Подобається'}>
                         👍 {likeCount > 0 ? likeCount : ''}
                     </button>
-                    <button
-                        className={`${css.favBtn} ${isFav ? css.favActive : ''}`}
-                        onClick={handleFav} disabled={favLoading}
-                        title={isFav ? 'Видалити з улюблених' : 'Додати в улюблені'}>
+                    <button className={`${css.favBtn} ${isFav ? css.favActive : ''}`}
+                            onClick={handleFav} disabled={favLoading}
+                            title={isFav ? 'Видалити з улюблених' : 'Додати в улюблені'}>
                         {isFav ? '♥' : '♡'}
                     </button>
                     <button className={css.pyachokBtn} onClick={() => setShowPyachok(true)}>
                         🍺 Пиячок
                     </button>
+                    {isOwner && (
+                        <a href={`/venues/${vc.id}/edit`} className={css.editBtn}>
+                            ✏️ Редагувати
+                        </a>
+                    )}
                     <button className={css.complaintBtn} onClick={() => setShowComplaint(true)} title="Поскаржитися">
                         ⚠️
                     </button>
@@ -210,6 +220,10 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                         </div>
                     </section>
 
+                    <VenueNews venueId={vc.id} isOwner={isOwner} />
+
+                    {isOwner && <VenueAnalytics venueId={vc.id} />}
+
                     <VenuePyachokList venueId={vc.id} venueName={vc.name} />
 
                     <VenueComments venueId={vc.id} />
@@ -279,6 +293,19 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <h3 className={css.cardTitle}>📋 Меню</h3>
                             <a href={vc.menu} target="_blank" rel="noreferrer" className={css.menuLink}>
                                 Переглянути меню →
+                            </a>
+                        </section>
+                    )}
+
+                    {vc.user && (
+                        <section className={css.card}>
+                            <h3 className={css.cardTitle}>👤 Власник</h3>
+                            <a href={`/users/${(vc.user as any).id}`} className={css.ownerLink}>
+                                {(vc.user as any).avatar
+                                    ? <img src={(vc.user as any).avatar} alt="" className={css.ownerAvatar} />
+                                    : <div className={css.ownerAvatarPlaceholder}>{vc.user.name?.[0]?.toUpperCase() ?? '?'}</div>
+                                }
+                                <span className={css.ownerName}>{vc.user.name ?? 'Власник'}</span>
                             </a>
                         </section>
                     )}

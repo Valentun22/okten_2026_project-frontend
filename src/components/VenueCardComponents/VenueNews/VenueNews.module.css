@@ -1,0 +1,342 @@
+.section {
+    margin-top: 40px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #111;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    font-size: 13px;
+    font-weight: 700;
+    background: #f3f0ea;
+    color: rgba(193, 138, 102, .96);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.addBtn {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 2px solid rgba(193, 138, 102, .96);
+    background: transparent;
+    color: rgba(193, 138, 102, .96);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.addBtn:hover {
+    background: rgba(193, 138, 102, .96);
+    color: #fff;
+}
+
+.skeletons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeleton {
+    height: 120px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: sh 1.4s infinite;
+}
+
+@keyframes sh {
+    0% {
+        background-position: 200% 0
+    }
+    100% {
+        background-position: -200% 0
+    }
+}
+
+.empty {
+    text-align: center;
+    padding: 32px;
+    color: #bbb;
+    font-size: 14px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.card {
+    background: #fff;
+    border: 1.5px solid #ebebeb;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    gap: 0;
+    transition: border-color .15s;
+}
+
+.card:hover {
+    border-color: rgba(193, 138, 102, .35);
+}
+
+.cardInactive {
+    opacity: .55;
+}
+
+.cardImg {
+    width: 140px;
+    min-height: 120px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.cardBody {
+    padding: 16px 20px;
+    flex: 1;
+    min-width: 0;
+}
+
+.cardMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.typeBadge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.cardDate {
+    font-size: 12px;
+    color: #bbb;
+}
+
+.inactiveBadge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.cardTitle {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 6px;
+}
+
+.cardText {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.ownerActions {
+    display: flex;
+    gap: 8px;
+}
+
+.toggleBtn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.toggleBtn:hover {
+    border-color: #888;
+}
+
+.deleteBtn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.deleteBtn:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+.loadMore {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px;
+    border-radius: 100px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.loadMore:hover {
+    border-color: #222;
+    background: #222;
+    color: #fff;
+}
+
+.form {
+    background: #f8f8f8;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.formTitle {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 16px;
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.formLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.typeRow {
+    display: flex;
+    gap: 8px;
+}
+
+.typeBtn {
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.typeBtn:hover {
+    border-color: #999;
+}
+
+.typeBtnActive {
+    color: #fff !important;
+}
+
+.formInput {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    transition: border .15s;
+}
+
+.formInput:focus {
+    border-color: #222;
+}
+
+.formTextarea {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    resize: vertical;
+    font-family: inherit;
+    transition: border .15s;
+}
+
+.formTextarea:focus {
+    border-color: #222;
+}
+
+.formError {
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+.formActions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.cancelBtn {
+    padding: 9px 18px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.submitBtn {
+    padding: 9px 22px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+    opacity: .8;
+}
+
+.submitBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}

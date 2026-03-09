@@ -87,3 +87,10 @@ export interface IVenueInterface extends IBaseModel {
     // pyachok?: IPyachok[];
     favoritedBy?: IUserShort[];
 }
+export interface IVenueExtended extends IVenueInterface {
+    ratingAvg?:    number;
+    ratingCount?:  number;
+    isLiked?:      boolean;
+    isFavorite?:   boolean;
+    likesCount?:   number;
+}

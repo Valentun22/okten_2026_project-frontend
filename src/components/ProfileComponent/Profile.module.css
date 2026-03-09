@@ -133,8 +133,7 @@
     padding: 32px;
 }
 
-.section { /* nothing extra */
-}
+.section { }
 
 .sectionTitle {
     font-size: 20px;
@@ -197,6 +196,7 @@
     background: rgba(193, 138, 102, .96);
     color: #fff;
 }
+
 
 .listGrid {
     display: flex;
@@ -418,4 +418,387 @@
     background: rgba(193, 138, 102, .96);
     color: #fff;
     border-color: rgba(193, 138, 102, .96);
+}
+
+.rolesSection {
+    margin: 20px 0 0;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 14px;
+}
+
+.rolesSectionTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin: 0 0 14px;
+}
+
+.rolesRow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.roleCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #fff;
+    border: 1.5px solid #ebebeb;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.roleCardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.roleLabel {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+}
+
+.roleDesc {
+    font-size: 12px;
+    color: #999;
+}
+
+.roleBtn {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+}
+
+.roleBtn:hover:not(:disabled) {
+    border-color: #222;
+    color: #111;
+}
+
+.roleBtnActive {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #16a34a;
+}
+
+.roleBtnActive:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.roleBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.editProfileBtn {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.editProfileBtn:hover {
+    border-color: #222;
+    color: #111;
+}
+
+.editForm {
+    background: #f8f8f8;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.editField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.editLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.editInput {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #222;
+    outline: none;
+    background: #fff;
+    transition: border .15s;
+}
+
+.editInput:focus {
+    border-color: #222;
+}
+
+.editTextarea {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #222;
+    outline: none;
+    background: #fff;
+    resize: vertical;
+    font-family: inherit;
+    transition: border .15s;
+}
+
+.editTextarea:focus {
+    border-color: #222;
+}
+
+.editError {
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+.editSuccess {
+    font-size: 13px;
+    color: #16a34a;
+    font-weight: 700;
+    margin: 0 0 12px;
+}
+
+.editActions {
+    display: flex;
+    gap: 10px;
+}
+
+.editCancelBtn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.editCancelBtn:hover {
+    border-color: #999;
+}
+
+.editSaveBtn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+
+.editSaveBtn:hover:not(:disabled) {
+    opacity: .8;
+}
+
+.editSaveBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.ratingsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ratingCard {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border: 1.5px solid #ebebeb;
+    border-radius: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s;
+}
+
+.ratingCard:hover {
+    border-color: rgba(193, 138, 102, .4);
+}
+
+.ratingImg {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1.5px solid #ebebeb;
+}
+
+.ratingInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.ratingVenue {
+    font-size: 15px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 4px;
+}
+
+.ratingStars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 4px;
+}
+
+.ratingNum {
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+    margin-left: 8px;
+}
+
+.ratingDate {
+    font-size: 12px;
+    color: #bbb;
+    margin: 0;
+}
+
+.commentList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.commentCard {
+    background: #fff;
+    border: 1.5px solid #ebebeb;
+    border-radius: 14px;
+    padding: 16px 20px;
+    transition: border-color .15s;
+}
+
+.commentCard:hover {
+    border-color: rgba(193, 138, 102, .3);
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.commentRating {
+    font-size: 14px;
+    color: #f59e0b;
+    letter-spacing: 1px;
+}
+
+.commentDate {
+    font-size: 12px;
+    color: #bbb;
+}
+
+.commentVenue {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 6px;
+    cursor: pointer;
+}
+
+.commentVenue:hover {
+    color: rgba(193, 138, 102, .96);
+    text-decoration: underline;
+}
+
+.commentTitle {
+    font-size: 15px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 4px;
+}
+
+.commentBody {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.pyachokActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.closeBtn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #86efac;
+    background: #f0fdf4;
+    color: #16a34a;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.closeBtn:hover {
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+}
+
+.deleteBtn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.deleteBtn:hover {
+    background: #dc2626;
+    color: #fff;
 }
