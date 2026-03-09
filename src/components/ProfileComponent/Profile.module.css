@@ -133,7 +133,7 @@
     padding: 32px;
 }
 
-.section {
+.section { /* nothing extra */
 }
 
 .sectionTitle {
@@ -397,4 +397,25 @@
     padding: 3px 10px;
     border-radius: 20px;
     margin-top: 4px;
+}
+
+.adminBtn {
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1.5px solid rgba(193, 138, 102, .5);
+    background: rgba(193, 138, 102, .1);
+    color: rgba(193, 138, 102, .96);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+}
+
+.adminBtn:hover {
+    background: rgba(193, 138, 102, .96);
+    color: #fff;
+    border-color: rgba(193, 138, 102, .96);
 }

@@ -1,4 +1,6 @@
-.wrap { position: relative; }
+.wrap {
+    position: relative;
+}
 
 .toggleBtn {
     display: flex;
@@ -14,11 +16,13 @@
     cursor: pointer;
     transition: all .18s;
 }
+
 .toggleBtn:hover, .toggleBtn.open {
     border-color: rgba(193, 138, 102, 1);
     background: rgba(193, 138, 102, 1);
     color: #fff;
 }
+
 .badge {
     background: rgba(59, 59, 61, 0.96);
     color: #fff;
@@ -54,6 +58,7 @@
     flex-direction: column;
     gap: 8px;
 }
+
 .label {
     font-size: 12px;
     font-weight: 700;
@@ -67,6 +72,7 @@
     display: flex;
     gap: 8px;
 }
+
 .select, .input {
     flex: 1;
     padding: 8px 12px;
@@ -78,6 +84,7 @@
     transition: border .18s;
     background: #fafafa;
 }
+
 .select:focus, .input:focus {
     border-color: #222;
 }
@@ -87,7 +94,8 @@
     flex-wrap: wrap;
     gap: 6px;
 }
-.chip  {
+
+.chip {
     padding: 5px 12px;
     border-radius: 20px;
     border: 1.5px solid #e0e0e0;
@@ -97,9 +105,11 @@
     cursor: pointer;
     transition: all .15s;
 }
+
 .chip:hover {
     border-color: #999;
 }
+
 .chipActive {
     background: rgba(193, 138, 102, 1);
     border-color: rgba(193, 138, 102, 1);
@@ -108,9 +118,11 @@
 
 .actions {
     display: flex;
-    gap: 10px; padding-top:
-        4px; border-top: 1px solid #f0f0f0;
+    gap: 10px;
+    padding-top: 4px;
+    border-top: 1px solid #f0f0f0;
 }
+
 .resetBtn {
     flex: 1;
     padding: 10px;
@@ -122,9 +134,11 @@
     cursor: pointer;
     transition: all .15s;
 }
+
 .resetBtn:hover {
     border-color: #999;
 }
+
 .applyBtn {
     flex: 2;
     padding: 10px;
@@ -137,6 +151,7 @@
     cursor: pointer;
     transition: opacity .15s;
 }
+
 .applyBtn:hover {
     opacity: .85;
 }

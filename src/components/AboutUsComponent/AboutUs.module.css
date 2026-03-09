@@ -15,7 +15,7 @@
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    border-bottom: 5px solid rgba(53, 53, 55, 0.44);
+    border-bottom: 3px solid rgba(53, 53, 55, 0.44);
 }
 
 .overlay {

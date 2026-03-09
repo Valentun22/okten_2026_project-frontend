@@ -1,0 +1,695 @@
+.page {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f5f7;
+    font-family: inherit;
+}
+
+.sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebarLogo {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.sidebarLogo h2 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.sidebarNav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebarBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, .65);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+    width: 100%;
+}
+
+.sidebarBtn:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.sidebarActive {
+    background: rgba(255, 255, 255, .14) !important;
+    color: #fff !important;
+    font-weight: 700;
+}
+
+.sidebarIcon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.backBtn {
+    margin: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .15);
+    background: transparent;
+    color: rgba(255, 255, 255, .5);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+}
+
+.backBtn:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.mainHeader {
+    background: #fff;
+    padding: 20px 32px;
+    border-bottom: 1px solid #e8e8e8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.mainTitle {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+}
+
+.mainContent {
+    padding: 28px 32px;
+    flex: 1;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.searchInput {
+    flex: 1;
+    min-width: 180px;
+    max-width: 340px;
+    padding: 9px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    transition: border .15s;
+}
+
+.searchInput:focus {
+    border-color: #222;
+}
+
+.filter {
+    padding: 9px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    font-size: 13px;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+}
+
+.totalCount {
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.tableWrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1.5px solid #e8e8e8;
+    background: #fff;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.table th {
+    padding: 11px 14px;
+    text-align: left;
+    background: #f8f8f8;
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1.5px solid #e8e8e8;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover td {
+    background: #fafafa;
+}
+
+.thumbImg {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1.5px solid #ebebeb;
+}
+
+.thumbPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f0f0f0;
+    color: #aaa;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.venueName {
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+}
+
+.venueName:hover {
+    color: rgba(193, 138, 102, .96);
+}
+
+.cellBold {
+    font-weight: 700;
+    color: #111;
+}
+
+.cell {
+    color: #666;
+}
+
+.badgeGreen {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f0fdf4;
+    color: #16a34a;
+    white-space: nowrap;
+}
+
+.badgeRed {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #fef2f2;
+    color: #dc2626;
+    white-space: nowrap;
+}
+
+.actionBtns {
+    display: flex;
+    gap: 6px;
+}
+
+.approveBtn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+
+.approveBtn:hover:not(:disabled) {
+    background: #16a34a;
+    color: #fff;
+}
+
+.approveBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.editBtn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.editBtn:hover {
+    background: #f5f5f5;
+}
+
+.deleteBtn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.deleteBtn:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+.roleChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.roleChip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    color: #555;
+}
+
+.roleChipCritic {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.loadMoreRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.loadMoreBtn {
+    padding: 10px 28px;
+    border-radius: 100px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.loadMoreBtn:hover {
+    border-color: #222;
+    background: #222;
+    color: #fff;
+}
+
+.loadingRow {
+    text-align: center;
+    padding: 32px;
+    color: #999;
+    font-size: 14px;
+}
+
+.pendingList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pendingCard {
+    background: #fff;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    transition: border-color .15s;
+}
+
+.pendingCard:hover {
+    border-color: rgba(193, 138, 102, .4);
+}
+
+.pendingLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pendingImg {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pendingImgPlaceholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    background: #f0f0f0;
+    color: #aaa;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pendingName {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    cursor: pointer;
+    margin: 0 0 4px;
+}
+
+.pendingName:hover {
+    text-decoration: underline;
+}
+
+.pendingCity {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+}
+
+.pendingOwner {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+.pendingCats {
+    font-size: 12px;
+    color: #aaa;
+    margin: 0;
+}
+
+.pendingActions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.complaintsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.complaintCard {
+    background: #fff;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: border-color .15s;
+}
+
+.complaintCard:hover {
+    border-color: #ccc;
+}
+
+.complaintHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+.complaintMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+}
+
+.complaintType {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.complaintVenue {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    text-decoration: underline dotted;
+}
+
+.complaintVenue:hover {
+    color: rgba(193, 138, 102, .96);
+}
+
+.complaintUser {
+    font-size: 13px;
+    color: #666;
+}
+
+.complaintDate {
+    font-size: 12px;
+    color: #bbb;
+    margin-left: auto;
+}
+
+.complaintStatusBadge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.complaintReason {
+    font-size: 14px;
+    color: #444;
+    margin: 0 0 14px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 8px;
+    line-height: 1.5;
+}
+
+.complaintActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.statusLabel {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+}
+
+.statusBtn {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.statusBtn:hover {
+    opacity: .75;
+}
+
+.createCatRow {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.topCatList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.topCatCard {
+    background: #fff;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.topCatHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.topCatName {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+}
+
+.topCatSlug {
+    font-size: 13px;
+    color: #aaa;
+    flex: 1;
+}
+
+.topVenueChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.topVenueChip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 12px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.topVenueChip button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 12px;
+    padding: 0;
+    line-height: 1;
+}
+
+.topVenueChip button:hover {
+    color: #dc2626;
+}
+
+.addVenueRow {
+    display: flex;
+    gap: 8px;
+}
+
+.addVenueInput {
+    flex: 1;
+    max-width: 300px;
+    padding: 7px 12px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    transition: border .15s;
+}
+
+.addVenueInput:focus {
+    border-color: #222;
+}
+
+.addVenueBtn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #222;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+
+.addVenueBtn:hover {
+    opacity: .8;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.emptyState span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 14px;
+}
+
+.emptyState p {
+    font-size: 15px;
+    color: #999;
+}
