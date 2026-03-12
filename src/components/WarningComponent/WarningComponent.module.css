@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-.boxSize{
+.boxSize {
     position: fixed;
     inset: 0;
     z-index: 9999;
@@ -33,15 +33,15 @@
     overflow: hidden;
 }
 
-.boxWarning::before{
+.boxWarning::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
 }
 
 .boxWarningText,
-.buttonBox{
+.buttonBox {
     position: relative;
     z-index: 1;
 }
@@ -50,7 +50,7 @@
     color: rgb(124, 66, 27);
 }
 
-.boxWarningText{
+.boxWarningText {
     display: flex;
     text-align: center;
     flex-direction: column;
@@ -76,7 +76,7 @@
     margin-bottom: 4vh;
 }
 
-.buttonBox{
+.buttonBox {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -85,7 +85,7 @@
     flex-wrap: wrap;
 }
 
-.buttonBoxSize{
+.buttonBoxSize {
     margin-top: 26px;
     width: min(280px, 45vw);
     border-radius: 5px;
@@ -109,16 +109,16 @@
     transition: 500ms;
 }
 
-.buttonBoxOne button{
+.buttonBoxOne button {
     background-color: rgba(193, 138, 102, 0.96);
 }
 
-.buttonTwoLink{
+.buttonTwoLink {
     text-decoration: none;
     display: block;
 }
 
-.buttonTwoLink button{
+.buttonTwoLink button {
     background-color: rgba(234, 30, 30, 0.75);
 }
 
@@ -129,7 +129,7 @@
     color: rgb(255, 255, 255);
 }
 
-.buttonTwoLink button:hover{
+.buttonTwoLink button:hover {
     background-color: red;
     font-size: 90%;
     border: red 2px solid;

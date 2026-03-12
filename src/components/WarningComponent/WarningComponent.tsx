@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import css from "./WarningComponent.module.css";
 
 const STORAGE_KEY = "userAcceptedWarnings";
@@ -40,8 +40,8 @@ const WarningModal = () => {
                     <h2>Увага!</h2>
                     <p>
                         Запускаючи цей сайт, ви погоджуєтесь, що вам є 18 років.
-                        <hr />
-                        <br />
+                        <hr/>
+                        <br/>
                         Адміністрація застерігає вас бути обережними і не зустрічатися з
                         незнайомими людьми в небезпечних чи невідомих вам місцях.
                     </p>

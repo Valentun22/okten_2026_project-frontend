@@ -130,7 +130,7 @@ const VenueNews: FC<IProps> = ({venueId, isOwner}) => {
     }, [venueId, isOwner]);
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Видалити новину?')) return;
+        if (!window.confirm('Видалити новину?')) return;
         await axiosInstance.delete(urls.newsVenue.update(id)).catch(() => {
         });
         setItems(p => p.filter(n => n.id !== id));

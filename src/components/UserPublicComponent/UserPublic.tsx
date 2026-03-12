@@ -1,31 +1,41 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { axiosInstance } from '../../services/axiosInstance.service';
+import {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {axiosInstance} from '../../services/axiosInstance.service';
+import {urls} from '../../constants/urls';
 import css from './UserPublic.module.css';
 
 interface IPublicUser {
-    id: string; name?: string; email?: string;
-    bio?: string; image?: string; isCritic?: boolean;
-    isFollowed?: boolean; createdAt?: string;
+    id: string;
+    name?: string;
+    email?: string;
+    bio?: string;
+    image?: string;
+    isCritic?: boolean;
+    isFollowed?: boolean;
+    createdAt?: string;
 }
 
 const UserPublicComponent = () => {
-    const { id }         = useParams<{ id: string }>();
-    const navigate       = useNavigate();
-    const [user,     setUser]     = useState<IPublicUser | null>(null);
-    const [loading,  setLoading]  = useState(true);
+    const {id} = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const [user, setUser] = useState<IPublicUser | null>(null);
+    const [loading, setLoading] = useState(true);
     const [followed, setFollowed] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
 
-    const meRaw  = localStorage.getItem('user');
-    const meId   = meRaw ? JSON.parse(meRaw)?.id : null;
-    const isMe   = meId === id;
+    const meRaw = localStorage.getItem('user');
+    const meId = meRaw ? JSON.parse(meRaw)?.id : null;
+    const isMe = meId === id;
 
     useEffect(() => {
         if (!id) return;
-        axiosInstance.get(`localhost:3000/users/${id}`)
-            .then(({ data }) => { setUser(data); setFollowed(!!data.isFollowed); })
-            .catch(() => {})
+        axiosInstance.get(urls.users.publicById(id))
+            .then(({data}) => {
+                setUser(data);
+                setFollowed(!!data.isFollowed);
+            })
+            .catch(() => {
+            })
             .finally(() => setLoading(false));
     }, [id]);
 
@@ -33,22 +43,24 @@ const UserPublicComponent = () => {
         if (!user) return;
         setFollowLoading(true);
         try {
-            if (followed) { await axiosInstance.delete(`localhost:3000/users/${id}/follow`); setFollowed(false); }
-            else           { await axiosInstance.post(`localhost:3000/users/${id}/follow`); setFollowed(true); }
-        } catch { /* ignore */ }
+            if (followed) {
+                await axiosInstance.delete(urls.users.followRemove(id!));
+                setFollowed(false);
+            } else {
+                await axiosInstance.post(urls.users.followAdd(id!));
+                setFollowed(true);
+            }
+        } catch { /* ignore */
+        }
         setFollowLoading(false);
     };
 
     if (loading) return (
-        <div style={{ padding: '80px', textAlign: 'center', color: '#888', fontSize: '16px' }}>
-            Завантаження профілю...
-        </div>
+        <div className={css.stateBox}>Завантаження профілю...</div>
     );
 
     if (!user) return (
-        <div style={{ padding: '80px', textAlign: 'center', color: '#888', fontSize: '16px' }}>
-            Користувача не знайдено
-        </div>
+        <div className={css.stateBox}>Користувача не знайдено</div>
     );
 
     return (
@@ -56,7 +68,7 @@ const UserPublicComponent = () => {
             <div className={css.hero}>
                 <div className={css.avatarWrap}>
                     {user.image
-                        ? <img src={user.image} alt={user.name} className={css.avatar} />
+                        ? <img src={user.image} alt={user.name} className={css.avatar}/>
                         : <div className={css.avatarPlaceholder}>{user.name?.[0]?.toUpperCase() ?? '?'}</div>
                     }
                 </div>
@@ -68,13 +80,19 @@ const UserPublicComponent = () => {
                     {user.bio && <p className={css.bio}>{user.bio}</p>}
                     {user.createdAt && (
                         <p className={css.since}>
-                            На платформі з {new Date(user.createdAt).toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' })}
+                            На платформі з {new Date(user.createdAt).toLocaleDateString('uk-UA', {
+                            month: 'long',
+                            year: 'numeric'
+                        })}
                         </p>
                     )}
                     <div className={css.heroBtns}>
                         {!isMe && meId && (
-                            <button className={`${css.followBtn} ${followed ? css.followBtnActive : ''}`}
-                                    onClick={handleFollow} disabled={followLoading}>
+                            <button
+                                className={`${css.followBtn} ${followed ? css.followBtnActive : ''}`}
+                                onClick={handleFollow}
+                                disabled={followLoading}
+                            >
                                 {followLoading ? '...' : followed ? '✓ Ви підписані' : '+ Підписатись'}
                             </button>
                         )}
@@ -90,4 +108,4 @@ const UserPublicComponent = () => {
     );
 };
 
-export { UserPublicComponent };
+export {UserPublicComponent};

@@ -12,7 +12,7 @@
 }
 
 .heroTitle {
-    font-size: clamp(22px,3vw,44px);
+    font-size: clamp(22px, 3vw, 44px);
     font-weight: 900;
     letter-spacing: -0.03em;
     color: rgba(53, 53, 55, 1);
@@ -81,8 +81,12 @@
 }
 
 @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 .error {
@@ -107,7 +111,9 @@
     transition: opacity 0.2s;
 }
 
-.retryBtn:hover { opacity: 0.8; }
+.retryBtn:hover {
+    opacity: 0.8;
+}
 
 .empty {
     text-align: center;
@@ -115,8 +121,16 @@
     color: #aaa;
 }
 
-.empty span { font-size: 48px; display: block; margin-bottom: 12px; }
-.empty p { font-size: 18px; margin: 0; }
+.empty span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.empty p {
+    font-size: 18px;
+    margin: 0;
+}
 
 .loadMoreWrap {
     display: flex;
@@ -164,5 +178,7 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }

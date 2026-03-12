@@ -1,10 +1,10 @@
-import { axiosInstance } from './axiosInstance.service';
-import { urls } from '../constants/urls';
-import { IComment, ICommentListResponse, ICreateCommentDto } from '../interfaces/ICommentInterface';
+import {axiosInstance} from './axiosInstance.service';
+import {urls} from '../constants/urls';
+import {IComment, ICommentListResponse, ICreateCommentDto} from '../interfaces/ICommentInterface';
 
 export const commentService = {
     getList: (venueId: string, params?: { limit?: number; offset?: number }) =>
-        axiosInstance.get<ICommentListResponse>(urls.comments.list(venueId), { params }),
+        axiosInstance.get<ICommentListResponse>(urls.comments.list(venueId), {params}),
 
     create: (venueId: string, dto: ICreateCommentDto) =>
         axiosInstance.post<IComment>(urls.comments.create(venueId), dto),

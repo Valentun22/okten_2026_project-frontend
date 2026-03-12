@@ -10,8 +10,11 @@ import {VenueNews} from '../VenueNews/VenueNews';
 import {VenueAnalytics} from '../VenueAnalytics/VenueAnalytics';
 import css from './VenueCard.module.css';
 import {VenueComments} from "../../VenueCommentsComponent/VenueComments";
+import {useNavigate} from "react-router-dom";
 
-interface IProps { venueCard: IVenueInterface; }
+interface IProps {
+    venueCard: IVenueInterface;
+}
 
 const DAYS_UK: Record<string, string> = {
     mon: 'Пн', tue: 'Вт', wed: 'Ср',
@@ -19,48 +22,61 @@ const DAYS_UK: Record<string, string> = {
 };
 
 const FEATURES: { key: keyof IVenueInterface; label: string; icon: string }[] = [
-    { key: 'hasWiFi',        label: 'Wi-Fi',        icon: '📶' },
-    { key: 'hasParking',     label: 'Паркінг',      icon: '🅿️' },
-    { key: 'liveMusic',      label: 'Live-музика',  icon: '🎵' },
-    { key: 'petFriendly',    label: 'Pet-friendly', icon: '🐾' },
-    { key: 'hasTerrace',     label: 'Тераса',       icon: '☀️' },
-    { key: 'smokingAllowed', label: 'Куріння',      icon: '🚬' },
-    { key: 'cardPayment',    label: 'Картка',       icon: '💳' },
+    {key: 'hasWiFi', label: 'Wi-Fi', icon: '📶'},
+    {key: 'hasParking', label: 'Паркінг', icon: '🅿️'},
+    {key: 'liveMusic', label: 'Live-музика', icon: '🎵'},
+    {key: 'petFriendly', label: 'Pet-friendly', icon: '🐾'},
+    {key: 'hasTerrace', label: 'Тераса', icon: '☀️'},
+    {key: 'smokingAllowed', label: 'Куріння', icon: '🚬'},
+    {key: 'cardPayment', label: 'Картка', icon: '💳'},
 ];
 
-const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
-    const [showPyachok,    setShowPyachok]    = useState(false);
-    const [showComplaint,  setShowComplaint]  = useState(false);
+const VenueCard: FC<IProps> = ({venueCard: vc}) => {
+    const [showPyachok, setShowPyachok] = useState(false);
+    const [showComplaint, setShowComplaint] = useState(false);
 
-    const [isFav,          setIsFav]          = useState(!!(vc as any).isFavorite);
-    const [favLoading,     setFavLoading]     = useState(false);
-    const [isLiked,        setIsLiked]        = useState(!!(vc as any).isLiked);
-    const [likeLoading,    setLikeLoading]    = useState(false);
-    const [likeCount,      setLikeCount]      = useState<number>((vc as any).likesCount ?? 0);
+    const [isFav, setIsFav] = useState(!!(vc as any).isFavorite);
+    const [favLoading, setFavLoading] = useState(false);
+    const [isLiked, setIsLiked] = useState(!!(vc as any).isLiked);
+    const [likeLoading, setLikeLoading] = useState(false);
+    const [likeCount, setLikeCount] = useState<number>((vc as any).likesCount ?? 0);
 
-    const [userRating,     setUserRating]     = useState<number | null>(null);
-    const [ratingHover,    setRatingHover]    = useState<number | null>(null);
-    const [ratingLoading,  setRatingLoading]  = useState(false);
-    const [ratingDone,     setRatingDone]     = useState(false);
+    const [userRating, setUserRating] = useState<number | null>(null);
+    const [ratingHover, setRatingHover] = useState<number | null>(null);
+    const [ratingLoading, setRatingLoading] = useState(false);
+    const [ratingDone, setRatingDone] = useState(false);
 
-    const [contactMsg,     setContactMsg]     = useState('');
-    const [contactSent,    setContactSent]    = useState(false);
+    const [contactMsg, setContactMsg] = useState('');
+    const [contactSent, setContactSent] = useState(false);
     const [contactLoading, setContactLoading] = useState(false);
 
     const ratingAvg: number | undefined = (vc as any).ratingAvg;
 
-    const userRaw  = localStorage.getItem('user');
-    const userId   = userRaw ? JSON.parse(userRaw)?.id : null;
-    const roles    = (() => { try { const u = JSON.parse(userRaw ?? '{}'); return ([] as string[]).concat(u.role ?? []).filter(Boolean); } catch { return [] as string[]; } })();
-    const isOwner  = !!(userId && vc.user && (vc.user as any).id === userId)
+    const userRaw = localStorage.getItem('user');
+    const userId = userRaw ? JSON.parse(userRaw)?.id : null;
+    const roles = (() => {
+        try {
+            const u = JSON.parse(userRaw ?? '{}');
+            return ([] as string[]).concat(u.role ?? []).filter(Boolean);
+        } catch {
+            return [] as string[];
+        }
+    })();
+    const isOwner = !!(userId && vc.user && (vc.user as any).id === userId)
         || roles.some((r: string) => r === 'superadmin');
 
     const handleFav = async () => {
         setFavLoading(true);
         try {
-            if (isFav) { await axiosInstance.delete(urls.favorites.remove(vc.id)); setIsFav(false); }
-            else        { await axiosInstance.post(urls.favorites.add(vc.id));     setIsFav(true);  }
-        } catch {}
+            if (isFav) {
+                await axiosInstance.delete(urls.favorites.remove(vc.id));
+                setIsFav(false);
+            } else {
+                await axiosInstance.post(urls.favorites.add(vc.id));
+                setIsFav(true);
+            }
+        } catch {
+        }
         setFavLoading(false);
     };
 
@@ -69,47 +85,60 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
         try {
             if (isLiked) {
                 await axiosInstance.delete(urls.likes.remove(vc.id));
-                setIsLiked(false); setLikeCount(c => Math.max(0, c - 1));
+                setIsLiked(false);
+                setLikeCount(c => Math.max(0, c - 1));
             } else {
                 await axiosInstance.post(urls.likes.add(vc.id));
-                setIsLiked(true); setLikeCount(c => c + 1);
+                setIsLiked(true);
+                setLikeCount(c => c + 1);
             }
-        } catch {}
+        } catch {
+        }
         setLikeLoading(false);
     };
 
     const handleRating = async (val: number) => {
         if (ratingLoading || ratingDone) return;
-        setRatingLoading(true); setUserRating(val);
-        try { await venueService.setRating(vc.id, val); setRatingDone(true); }
-        catch { setUserRating(null); }
+        setRatingLoading(true);
+        setUserRating(val);
+        try {
+            await venueService.setRating(vc.id, val);
+            setRatingDone(true);
+        } catch {
+            setUserRating(null);
+        }
         setRatingLoading(false);
     };
 
     const handleContact = async () => {
         if (!contactMsg.trim()) return;
         setContactLoading(true);
-        try { await venueService.contactManager(vc.id, contactMsg); }
-        catch { /* stub */ }
-        setContactSent(true); setContactLoading(false);
+        try {
+            await venueService.contactManager(vc.id, contactMsg);
+        } catch {
+        }
+        setContactSent(true);
+        setContactLoading(false);
     };
 
     const photos = [vc.avatarVenue, ...(vc.image ?? [])].filter(Boolean) as string[];
+    const navigate = useNavigate();
 
     return (
         <div className={css.page}>
 
             <div className={css.hero}>
                 {photos.length > 0
-                    ? <img src={photos[0]} alt={vc.name} className={css.heroImg} />
+                    ? <img src={photos[0]} alt={vc.name} className={css.heroImg}/>
                     : <div className={css.heroPlaceholder}>🏠</div>
                 }
                 <div className={css.heroOverlay}>
                     <div className={css.heroContent}>
                         <h1 className={css.heroTitle}>{vc.name}</h1>
                         <div className={css.heroMeta}>
-                            {vc.city && <span className={css.heroCity}>📍 {vc.city}{vc.address ? `, ${vc.address}` : ''}</span>}
-                            {ratingAvg   && <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
+                            {vc.city &&
+                                <span className={css.heroCity}>📍 {vc.city}{vc.address ? `, ${vc.address}` : ''}</span>}
+                            {ratingAvg && <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
                             {vc.averageCheck && <span className={css.heroCheck}>≈ {vc.averageCheck} ₴</span>}
                             {isOwner && <span className={css.ownerBadge}>👑 Ви власник</span>}
                         </div>
@@ -166,7 +195,12 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <h2 className={css.sectionTitle}>Теги</h2>
                             <div className={css.chips}>
                                 {vc.tags.map((t: any) => (
-                                    <span key={t?.id ?? t} className={`${css.chip} ${css.tagChip}`}>#{t?.name ?? t}</span>
+                                    <span key={t?.id ?? t}
+                                          className={`${css.chip} ${css.tagChip} ${css.tagClickable}`}
+                                          title="Знайти заклади з цим тегом"
+                                          onClick={() => navigate(`/searchVenue?tag=${encodeURIComponent(t?.name ?? t)}`)}>
+                                        #{t?.name ?? t}
+                                    </span>
                                 ))}
                             </div>
                         </section>
@@ -175,7 +209,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                     <section className={css.section}>
                         <h2 className={css.sectionTitle}>Особливості</h2>
                         <div className={css.features}>
-                            {FEATURES.map(({ key, label, icon }) => (
+                            {FEATURES.map(({key, label, icon}) => (
                                 <div key={key} className={`${css.feature} ${vc[key] ? css.featureOn : css.featureOff}`}>
                                     <span className={css.featureIcon}>{icon}</span>
                                     <span>{label}</span>
@@ -188,8 +222,9 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                         <h2 className={css.sectionTitle}>Рейтинг закладу</h2>
                         {ratingAvg && (
                             <div className={css.stars}>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <span key={i} className={i < Math.round(ratingAvg / 2) ? css.starOn : css.starOff}>★</span>
+                                {Array.from({length: 5}).map((_, i) => (
+                                    <span key={i}
+                                          className={i < Math.round(ratingAvg / 2) ? css.starOn : css.starOff}>★</span>
                                 ))}
                                 <span className={css.ratingVal}>{Number(ratingAvg).toFixed(1)} / 10</span>
                                 {(vc as any).ratingCount && (
@@ -203,7 +238,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             </p>
                             {!ratingDone && (
                                 <div className={css.ratingStars}>
-                                    {Array.from({ length: 10 }).map((_, i) => {
+                                    {Array.from({length: 10}).map((_, i) => {
                                         const val = i + 1;
                                         const active = (ratingHover ?? userRating ?? 0) >= val;
                                         return (
@@ -220,39 +255,46 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                         </div>
                     </section>
 
-                    <VenueNews venueId={vc.id} isOwner={isOwner} />
+                    <VenueNews venueId={vc.id} isOwner={isOwner}/>
 
-                    {isOwner && <VenueAnalytics venueId={vc.id} />}
+                    {isOwner && <VenueAnalytics venueId={vc.id}/>}
 
-                    <VenuePyachokList venueId={vc.id} venueName={vc.name} />
+                    <VenuePyachokList venueId={vc.id} venueName={vc.name}/>
 
-                    <VenueComments venueId={vc.id} />
+                    <VenueComments venueId={vc.id}/>
                 </div>
 
                 <div className={css.right}>
                     {vc.workingHours && Object.keys(vc.workingHours).length > 0 && (
                         <section className={css.card}>
                             <h3 className={css.cardTitle}>🕐 Графік роботи</h3>
-                            <table className={css.hoursTable}><tbody>
-                            {(Object.entries(vc.workingHours) as [string, string][]).map(([day, hours]) => (
-                                <tr key={day}>
-                                    <td className={css.dayCell}>{DAYS_UK[day] ?? day}</td>
-                                    <td className={css.hoursCell}>{hours ?? '—'}</td>
-                                </tr>
-                            ))}
-                            </tbody></table>
+                            <table className={css.hoursTable}>
+                                <tbody>
+                                {(Object.entries(vc.workingHours) as [string, string][]).map(([day, hours]) => (
+                                    <tr key={day}>
+                                        <td className={css.dayCell}>{DAYS_UK[day] ?? day}</td>
+                                        <td className={css.hoursCell}>{hours ?? '—'}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
                         </section>
                     )}
 
                     <section className={css.card}>
                         <h3 className={css.cardTitle}>📞 Контакти</h3>
                         <div className={css.contacts}>
-                            {vc.phone   && <a href={`tel:${vc.phone}`}    className={css.contactLink}>📱 {vc.phone}</a>}
-                            {vc.email   && <a href={`mailto:${vc.email}`} className={css.contactLink}>✉️ {vc.email}</a>}
-                            {vc.website && <a href={vc.website} target="_blank" rel="noreferrer" className={css.contactLink}>🌐 Сайт</a>}
-                            {vc.socials?.instagram && <a href={vc.socials.instagram} target="_blank" rel="noreferrer" className={css.contactLink}>📸 Instagram</a>}
-                            {vc.socials?.facebook  && <a href={vc.socials.facebook}  target="_blank" rel="noreferrer" className={css.contactLink}>👥 Facebook</a>}
-                            {vc.socials?.telegram  && <a href={vc.socials.telegram}  target="_blank" rel="noreferrer" className={css.contactLink}>✈️ Telegram</a>}
+                            {vc.phone && <a href={`tel:${vc.phone}`} className={css.contactLink}>📱 {vc.phone}</a>}
+                            {vc.email && <a href={`mailto:${vc.email}`} className={css.contactLink}>✉️ {vc.email}</a>}
+                            {vc.website &&
+                                <a href={vc.website} target="_blank" rel="noreferrer" className={css.contactLink}>🌐
+                                    Сайт</a>}
+                            {vc.socials?.instagram && <a href={vc.socials.instagram} target="_blank" rel="noreferrer"
+                                                         className={css.contactLink}>📸 Instagram</a>}
+                            {vc.socials?.facebook && <a href={vc.socials.facebook} target="_blank" rel="noreferrer"
+                                                        className={css.contactLink}>👥 Facebook</a>}
+                            {vc.socials?.telegram && <a href={vc.socials.telegram} target="_blank" rel="noreferrer"
+                                                        className={css.contactLink}>✈️ Telegram</a>}
                             {vc.city && vc.address && (
                                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${vc.name} ${vc.city} ${vc.address}`)}`}
                                    target="_blank" rel="noreferrer"
@@ -271,7 +313,7 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <>
                                 <textarea className={css.contactTextarea} rows={4}
                                           placeholder="Ваше запитання або пропозиція..."
-                                          value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
+                                          value={contactMsg} onChange={e => setContactMsg(e.target.value)}/>
                                 <button className={css.contactSubmit}
                                         onClick={handleContact}
                                         disabled={contactLoading || !contactMsg.trim()}>
@@ -302,8 +344,9 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
                             <h3 className={css.cardTitle}>👤 Власник</h3>
                             <a href={`/users/${(vc.user as any).id}`} className={css.ownerLink}>
                                 {(vc.user as any).avatar
-                                    ? <img src={(vc.user as any).avatar} alt="" className={css.ownerAvatar} />
-                                    : <div className={css.ownerAvatarPlaceholder}>{vc.user.name?.[0]?.toUpperCase() ?? '?'}</div>
+                                    ? <img src={(vc.user as any).avatar} alt="" className={css.ownerAvatar}/>
+                                    : <div
+                                        className={css.ownerAvatarPlaceholder}>{vc.user.name?.[0]?.toUpperCase() ?? '?'}</div>
                                 }
                                 <span className={css.ownerName}>{vc.user.name ?? 'Власник'}</span>
                             </a>
@@ -313,13 +356,13 @@ const VenueCard: FC<IProps> = ({ venueCard: vc }) => {
             </div>
 
             {showPyachok && (
-                <PyachokModal venueId={vc.id} venueName={vc.name} onClose={() => setShowPyachok(false)} />
+                <PyachokModal venueId={vc.id} venueName={vc.name} onClose={() => setShowPyachok(false)}/>
             )}
             {showComplaint && (
-                <ComplaintModal venueId={vc.id} venueName={vc.name} onClose={() => setShowComplaint(false)} />
+                <ComplaintModal venueId={vc.id} venueName={vc.name} onClose={() => setShowComplaint(false)}/>
             )}
         </div>
     );
 };
 
-export { VenueCard };
+export {VenueCard};

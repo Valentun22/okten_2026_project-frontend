@@ -39,7 +39,7 @@ const RoleToggle = ({active, label, desc, onAdd, onRemove}: IRoleToggleProps) =>
     );
 };
 
-type Tab = 'info' | 'favorites' | 'comments' | 'ratings' | 'pyachok';
+type Tab = 'info' | 'venues' | 'favorites' | 'comments' | 'ratings' | 'pyachok';
 
 interface IFavoriteVenue {
     id: string;
@@ -73,6 +73,15 @@ interface IPyachokRow {
     venue?: { id: string; name: string };
 }
 
+interface IMyVenue {
+    id: string;
+    name: string;
+    avatarVenue?: string;
+    city?: string;
+    isActive?: boolean;
+    isModerated?: boolean;
+}
+
 interface IFullUser {
     id: string;
     name?: string;
@@ -80,6 +89,12 @@ interface IFullUser {
     image?: string;
     bio?: string;
     isCritic?: boolean;
+    role?: string[];
+    birthdate?: string;
+    city?: string;
+    gender?: string;
+    instagram?: string;
+    interests?: string;
 }
 
 const Profile = () => {
@@ -93,6 +108,7 @@ const Profile = () => {
     const [comments, setComments] = useState<IMyComment[]>([]);
     const [ratings, setRatings] = useState<IMyRating[]>([]);
     const [pyachoks, setPyachoks] = useState<IPyachokRow[]>([]);
+    const [myVenues, setMyVenues] = useState<IMyVenue[]>([]);
     const [loading, setLoading] = useState(false);
     const [meLoading, setMeLoading] = useState(true);
 
@@ -100,6 +116,11 @@ const Profile = () => {
     const [editName, setEditName] = useState('');
     const [editBio, setEditBio] = useState('');
     const [editAvatar, setEditAvatar] = useState('');
+    const [editBirthdate, setEditBirthdate] = useState('');
+    const [editCity, setEditCity] = useState('');
+    const [editGender, setEditGender] = useState('');
+    const [editInstagram, setEditInstagram] = useState('');
+    const [editInterests, setEditInterests] = useState('');
     const [editLoading, setEditLoading] = useState(false);
     const [editError, setEditError] = useState('');
     const [editSuccess, setEditSuccess] = useState(false);
@@ -108,9 +129,12 @@ const Profile = () => {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const avatarInputRef = useRef<HTMLInputElement>(null);
 
+    const [avatarError, setAvatarError] = useState('');
+
     const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        setAvatarError('');
         setAvatarPreview(URL.createObjectURL(file));
         setAvatarUploading(true);
         try {
@@ -122,10 +146,13 @@ const Profile = () => {
             const {data} = await userService.getMe();
             setMe(data);
             setAvatarPreview(null);
-        } catch {
+        } catch (err: any) {
+            console.error('Avatar upload error:', err?.response?.data ?? err);
+            setAvatarError('Помилка завантаження фото');
             setAvatarPreview(null);
         }
         setAvatarUploading(false);
+        if (avatarInputRef.current) avatarInputRef.current.value = '';
     };
 
     const handleDeleteAvatar = async () => {
@@ -172,6 +199,18 @@ const Profile = () => {
                     const {data} = await pyachokService.getMyList({limit: 50});
                     setPyachoks(data?.data ?? data ?? []);
                 }
+                if (tab === 'venues') {
+                    const meResp = await userService.getMe().catch(() => null);
+                    const ownId = meResp?.data?.id;
+                    if (!ownId) {
+                        setMyVenues([]);
+                    } else {
+                        const {data} = await axiosInstance.get(
+                            `${urls.venue.base}?limit=50&sortBy=created&sortOrder=DESC&ownerId=${ownId}`
+                        ).catch(() => ({data: []}));
+                        setMyVenues(data?.data ?? data ?? []);
+                    }
+                }
             } catch { /* ignore */
             }
             setLoading(false);
@@ -194,6 +233,11 @@ const Profile = () => {
         setEditName(me?.name ?? '');
         setEditBio(me?.bio ?? '');
         setEditAvatar(me?.image ?? '');
+        setEditBirthdate(me?.birthdate ?? '');
+        setEditCity(me?.city ?? '');
+        setEditGender(me?.gender ?? '');
+        setEditInstagram(me?.instagram ?? '');
+        setEditInterests(me?.interests ?? '');
         setEditError('');
         setEditSuccess(false);
         setEditMode(true);
@@ -208,12 +252,32 @@ const Profile = () => {
         setEditError('');
         setEditSuccess(false);
         try {
-            const {data} = await userService.updateMe({name: editName.trim(), bio: editBio.trim() || undefined});
-            setMe(data);
+            const payload: Record<string, string> = {
+                name: editName.trim(),
+            };
+            if (editBio.trim()) payload.bio = editBio.trim();
+            if (editBirthdate) payload.birthdate = editBirthdate;
+            if (editCity.trim()) payload.city = editCity.trim();
+            if (editGender) payload.gender = editGender;
+            if (editInstagram.trim()) payload.instagram = editInstagram.trim().replace(/^@/, '');
+            if (editInterests.trim()) payload.interests = editInterests.trim();
+
+            const {data} = await userService.updateMe(payload);
+            setMe(prev => ({...prev!, ...data}));
             setEditSuccess(true);
             setEditMode(false);
         } catch (e: any) {
-            setEditError(e?.response?.data?.message ?? 'Помилка збереження');
+            console.error('updateMe error:', e?.response?.data);
+            const resp = e?.response?.data;
+            if (Array.isArray(resp?.message)) {
+                setEditError(resp.message.join(' | '));
+            } else if (typeof resp?.message === 'string') {
+                setEditError(resp.message);
+            } else if (resp?.error) {
+                setEditError(`${resp.error} (${resp.statusCode ?? '?'})`);
+            } else {
+                setEditError('Помилка збереження. Відкрийте консоль (F12) для деталей.');
+            }
         }
         setEditLoading(false);
     };
@@ -232,11 +296,20 @@ const Profile = () => {
 
     const userRaw = localStorage.getItem('user');
     const userObj = userRaw ? JSON.parse(userRaw) : null;
-    const roles = Array.isArray(userObj?.role) ? userObj.role : (userObj?.role ? [userObj.role] : []);
-    const isAdmin = roles.some((r: string) => r === 'superadmin' || r === 'venue_admin');
+    const getRolesArray = (src: any): string[] => {
+        if (!src) return [];
+        if (Array.isArray(src.role)) return src.role;
+        if (typeof src.role === 'string') return [src.role];
+        return [];
+    };
+    const roles: string[] = me ? getRolesArray(me) : getRolesArray(userObj);
+    const isVenueAdmin = roles.includes('venue_admin');
+    const isSuperAdmin = roles.includes('superadmin');
+    const isAdmin = isVenueAdmin || isSuperAdmin;
 
     const TABS: { key: Tab; label: string; icon: string }[] = [
         {key: 'info', label: 'Мій профіль', icon: '👤'},
+        {key: 'venues', label: 'Мої заклади', icon: '🏠'},
         {key: 'favorites', label: 'Улюблені', icon: '❤️'},
         {key: 'comments', label: 'Відгуки', icon: '💬'},
         {key: 'ratings', label: 'Оцінки', icon: '⭐'},
@@ -245,7 +318,7 @@ const Profile = () => {
 
     return (
         <div className={css.page}>
-            <div className={css.content}>
+            <div className={css.layout}>
                 <aside className={css.sidebar}>
                     <div className={css.avatarBox}>
                         <div className={css.avatarWrap}>
@@ -253,7 +326,6 @@ const Profile = () => {
                                 ? <img src={avatarPreview ?? me!.image!} alt="" className={css.avatar}/>
                                 : <div className={css.avatarPlaceholder}>{me?.name?.[0]?.toUpperCase() ?? '?'}</div>
                             }
-                            {/* Upload overlay */}
                             <label
                                 className={`${css.avatarOverlay} ${avatarUploading ? css.avatarOverlayLoading : ''}`}>
                                 {avatarUploading ? '⏳' : '📷'}
@@ -268,10 +340,18 @@ const Profile = () => {
                                 🗑
                             </button>
                         )}
+                        {avatarError && <p style={{
+                            fontSize: 11,
+                            color: '#dc2626',
+                            margin: '4px 0 0',
+                            textAlign: 'center'
+                        }}>{avatarError}</p>}
                         <div className={css.sidebarInfo}>
-                            <h2 className={css.sidebarName}>{me?.name ?? '...'}</h2>
+                            <h2 className={css.sidebarName}>{me?.name ?? (meLoading ? '...' : '—')}</h2>
                             <p className={css.sidebarEmail}>{me?.email ?? ''}</p>
                             {me?.isCritic && <span className={css.criticBadge}>🏅 Критик</span>}
+                            {roles.includes('venue_admin') &&
+                                <span className={css.criticBadge} style={{background: '#e0f2fe', color: '#0369a1'}}>🏠 Власник</span>}
                         </div>
                     </div>
 
@@ -293,10 +373,8 @@ const Profile = () => {
                     <button className={css.logoutBtn} onClick={handleSignOut}>🚪 Вийти</button>
                 </aside>
 
-                {/* ── Main ── */}
                 <main className={css.main}>
 
-                    {/* ── INFO TAB ── */}
                     {tab === 'info' && (
                         <section className={css.section}>
                             <div className={css.sectionHeader}>
@@ -307,18 +385,63 @@ const Profile = () => {
                             </div>
 
                             {meLoading ? <div className={css.loadingMsg}>Завантаження...</div> : editMode ? (
-                                /* ── Edit form ── */
                                 <div className={css.editForm}>
                                     <div className={css.editField}>
                                         <label className={css.editLabel}>Ім'я *</label>
                                         <input className={css.editInput} value={editName}
+                                               placeholder="Іван Петренко"
                                                onChange={e => setEditName(e.target.value)}/>
+                                    </div>
+                                    <div className={css.editRow}>
+                                        <div className={css.editField}>
+                                            <label className={css.editLabel}>Дата народження</label>
+                                            <input className={css.editInput} type="date"
+                                                   value={editBirthdate}
+                                                   max={new Date().toISOString().split('T')[0]}
+                                                   onChange={e => setEditBirthdate(e.target.value)}/>
+                                        </div>
+                                        <div className={css.editField}>
+                                            <label className={css.editLabel}>Стать</label>
+                                            <select className={css.editSelect} value={editGender}
+                                                    onChange={e => setEditGender(e.target.value)}>
+                                                <option value="">— не вказано —</option>
+                                                <option value="male">Чоловіча</option>
+                                                <option value="female">Жіноча</option>
+                                                <option value="other">Інша</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className={css.editField}>
+                                        <label className={css.editLabel}>Місто</label>
+                                        <input className={css.editInput} value={editCity}
+                                               placeholder="Київ"
+                                               onChange={e => setEditCity(e.target.value)}/>
+                                    </div>
+                                    <div className={css.editField}>
+                                        <label className={css.editLabel}>Instagram</label>
+                                        <div className={css.editInputPrefix}>
+                                            <span className={css.editPrefix}>@</span>
+                                            <input className={css.editInputWithPrefix}
+                                                   value={editInstagram.replace(/^@/, '')}
+                                                   placeholder="username"
+                                                   onChange={e => setEditInstagram(e.target.value)}/>
+                                        </div>
                                     </div>
                                     <div className={css.editField}>
                                         <label className={css.editLabel}>Про себе</label>
                                         <textarea className={css.editTextarea} rows={4}
-                                                  placeholder="Розкажіть про себе..."
+                                                  placeholder="Розкажіть про себе — місто, захоплення..."
                                                   value={editBio} onChange={e => setEditBio(e.target.value)}/>
+                                        <span className={css.editHint}>{editBio.length} / 300 символів</span>
+                                    </div>
+                                    <div className={css.editField}>
+                                        <label className={css.editLabel}>Мої інтереси</label>
+                                        <textarea className={css.editTextarea} rows={3}
+                                                  placeholder="крафтове пиво, суші, живі концерти, тераси..."
+                                                  value={editInterests}
+                                                  onChange={e => setEditInterests(e.target.value)}/>
+                                        <span
+                                            className={css.editHint}>Через кому — що любиш, що шукаєш у закладах</span>
                                     </div>
                                     {editError && <p className={css.editError}>{editError}</p>}
                                     {editSuccess && <p className={css.editSuccess}>✅ Збережено!</p>}
@@ -333,49 +456,129 @@ const Profile = () => {
                                     </div>
                                 </div>
                             ) : (
-                                /* ── Info view ── */
                                 <div className={css.infoCard}>
-                                    {[
-                                        {k: "Ім'я", v: me?.name},
-                                        {k: 'Email', v: me?.email},
-                                        {k: 'Про себе', v: me?.bio},
-                                        {k: 'Статус', v: me?.isCritic ? '🏅 Критик' : 'Користувач'},
-                                    ].map(({k, v}) => v ? (
-                                        <div className={css.infoRow} key={k}>
-                                            <span className={css.infoKey}>{k}</span>
-                                            <span className={css.infoVal}>{v}</span>
-                                        </div>
-                                    ) : null)}
+                                    {(() => {
+                                        const calcAge = (bd: string) => {
+                                            const today = new Date();
+                                            const birth = new Date(bd);
+                                            let age = today.getFullYear() - birth.getFullYear();
+                                            const m = today.getMonth() - birth.getMonth();
+                                            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                                            return age;
+                                        };
+                                        const genderLabel: Record<string, string> = {
+                                            male: 'Чоловіча', female: 'Жіноча', other: 'Інша'
+                                        };
+                                        const rows = [
+                                            {k: "Ім'я", v: me?.name},
+                                            {k: 'Email', v: me?.email},
+                                            {k: 'Місто', v: me?.city},
+                                            {
+                                                k: 'Вік', v: me?.birthdate
+                                                    ? `${calcAge(me.birthdate)} років (${new Date(me.birthdate).toLocaleDateString('uk-UA')})`
+                                                    : undefined
+                                            },
+                                            {
+                                                k: 'Стать',
+                                                v: me?.gender ? genderLabel[me.gender] ?? me.gender : undefined
+                                            },
+                                            {k: 'Instagram', v: me?.instagram ? `@${me.instagram}` : undefined},
+                                            {k: 'Про себе', v: me?.bio},
+                                            {k: 'Інтереси', v: me?.interests},
+                                            {
+                                                k: 'Статус', v: (() => {
+                                                    const parts = [];
+                                                    if (me?.isCritic) parts.push('🏅 Критик');
+                                                    if (roles.includes('venue_admin')) parts.push('🏠 Власник закладів');
+                                                    if (roles.includes('superadmin')) parts.push('⚙️ Адмін');
+                                                    return parts.length ? parts.join(' · ') : '👤 Користувач';
+                                                })()
+                                            },
+                                        ];
+                                        return rows.map(({k, v}) => v ? (
+                                            <div className={css.infoRow} key={k}>
+                                                <span className={css.infoKey}>{k}</span>
+                                                <span className={css.infoVal}>{v}</span>
+                                            </div>
+                                        ) : null);
+                                    })()}
                                 </div>
                             )}
 
-                            {/* Ролі */}
                             {!meLoading && me && (
                                 <div className={css.rolesSection}>
                                     <h3 className={css.rolesSectionTitle}>Ролі та статуси</h3>
                                     <div className={css.rolesRow}>
-                                        <RoleToggle
-                                            active={!!me.isCritic}
-                                            label="🏅 Критик"
-                                            desc="Ваші відгуки будуть позначені як критичні"
-                                            onAdd={() => axiosInstance.post(urls.users.criticAdd).then(({data}) => setMe((p: any) => ({
-                                                ...p,
-                                                isCritic: true, ...data
-                                            })))}
-                                            onRemove={() => axiosInstance.delete(urls.users.criticRemove).then(() => setMe((p: any) => ({
-                                                ...p,
-                                                isCritic: false
-                                            })))}
-                                        />
-                                        <RoleToggle
-                                            active={roles.includes('venue_admin')}
-                                            label="🏠 Власник закладу"
-                                            desc="Дозволяє створювати та керувати закладами"
-                                            onAdd={() => axiosInstance.post(urls.users.venueAdminAdd).then(() => {
-                                            })}
-                                            onRemove={() => axiosInstance.delete(urls.users.venueAdminRemove).then(() => {
-                                            })}
-                                        />
+
+                                        <div className={css.roleCard}>
+                                            <div className={css.roleCardInfo}>
+                                                <span className={css.roleLabel}>🏅 Критик</span>
+                                                <span
+                                                    className={css.roleDesc}>Ваші відгуки будуть позначені як критичні</span>
+                                            </div>
+                                            <RoleToggle active={!!me.isCritic} label="" desc=""
+                                                        onAdd={() => axiosInstance.post(urls.users.criticAdd)
+                                                            .then(({data}) => {
+                                                                console.log('critic+', data);
+                                                                setMe((p: any) => {
+                                                                    const updated = {
+                                                                        ...p,
+                                                                        isCritic: true,
+                                                                        role: data?.role ?? [...(p?.role ?? []), 'critic']
+                                                                    };
+                                                                    localStorage.setItem('user', JSON.stringify(updated));
+                                                                    return updated;
+                                                                });
+                                                            })
+                                                            .catch(e => console.error('critic+ error', e?.response?.data))}
+                                                        onRemove={() => axiosInstance.delete(urls.users.criticRemove)
+                                                            .then(({data}) => setMe((p: any) => {
+                                                                const updated = {
+                                                                    ...p,
+                                                                    isCritic: false,
+                                                                    role: data?.role ?? (p?.role ?? []).filter((r: string) => r !== 'critic')
+                                                                };
+                                                                localStorage.setItem('user', JSON.stringify(updated));
+                                                                return updated;
+                                                            }))
+                                                            .catch(e => console.error('critic- error', e?.response?.data))}
+                                            />
+                                        </div>
+
+                                        <div className={css.roleCard}>
+                                            <div className={css.roleCardInfo}>
+                                                <span className={css.roleLabel}>🏠 Власник закладу</span>
+                                                <span className={css.roleDesc}>
+                                                    {isVenueAdmin ? 'Активна — можете додавати заклади' : 'Отримайте щоб додавати заклади на платформу'}
+                                                </span>
+                                            </div>
+                                            <RoleToggle active={isVenueAdmin} label="" desc=""
+                                                        onAdd={() => axiosInstance.post(urls.users.venueAdminAdd)
+                                                            .then(({data}) => {
+                                                                console.log('venue_admin+', data);
+                                                                setMe((p: any) => {
+                                                                    const updated = {
+                                                                        ...p,
+                                                                        role: data?.role ?? [...(p?.role ?? []), 'venue_admin']
+                                                                    };
+                                                                    localStorage.setItem('user', JSON.stringify(updated));
+                                                                    return updated;
+                                                                });
+                                                            })
+                                                            .catch(e => console.error('venue_admin+ error', e?.response?.data))}
+                                                        onRemove={() => axiosInstance.delete(urls.users.venueAdminRemove)
+                                                            .then(({data}) => setMe((p: any) => {
+                                                                const updated = {
+                                                                    ...p,
+                                                                    role: data?.role ?? (p?.role ?? []).filter((r: string) => r !== 'venue_admin')
+                                                                };
+                                                                localStorage.setItem('user', JSON.stringify(updated));
+                                                                return updated;
+                                                            }))
+                                                            .catch(e => console.error('venue_admin- error', e?.response?.data))}
+                                            />
+                                        </div>
+
                                     </div>
                                 </div>
                             )}
@@ -384,15 +587,68 @@ const Profile = () => {
                                 <button className={css.actionBtn} onClick={() => navigate('/searchVenue')}>🔍 Знайти
                                     заклад
                                 </button>
-                                <button className={css.actionBtn} onClick={() => navigate('/venues/create')}>＋ Додати
-                                    заклад
-                                </button>
+                                {isVenueAdmin && (
+                                    <button className={css.actionBtn} onClick={() => navigate('/venues/create')}>＋
+                                        Додати заклад</button>
+                                )}
                                 <button className={css.actionBtn} onClick={() => navigate('/news')}>📰 Новини</button>
                             </div>
                         </section>
                     )}
 
-                    {/* ── FAVORITES TAB ── */}
+
+                    {tab === 'venues' && (
+                        <section className={css.section}>
+                            <div className={css.sectionHeader}>
+                                <h2 className={css.sectionTitle}>Мої заклади</h2>
+                                <button className={css.editProfileBtn} onClick={() => navigate('/venues/create')}>
+                                    ＋ Додати заклад
+                                </button>
+                            </div>
+                            {loading && <div className={css.loadingMsg}>Завантаження...</div>}
+                            {!loading && myVenues.length === 0 && (
+                                <div className={css.emptyState}>
+                                    <span>🏠</span>
+                                    <p>Ви ще не додали жодного закладу</p>
+                                    <button className={css.actionBtn} onClick={() => navigate('/venues/create')}>
+                                        ＋ Додати перший заклад
+                                    </button>
+                                </div>
+                            )}
+                            <div className={css.favGrid}>
+                                {myVenues.map(v => (
+                                    <div key={v.id} className={css.favCard} onClick={() => navigate(`/venues/${v.id}`)}>
+                                        <div className={css.favImg}>
+                                            {v.avatarVenue
+                                                ? <img src={v.avatarVenue} alt={v.name}/>
+                                                : <span>🏠</span>
+                                            }
+                                        </div>
+                                        <div className={css.favInfo}>
+                                            <h3 className={css.favName}>{v.name}</h3>
+                                            {v.city && <p className={css.favCity}>📍 {v.city}</p>}
+                                            <div className={css.venueStatusRow}>
+                                                {v.isModerated
+                                                    ? <span className={css.statusBadgeActive}>✓ Активний</span>
+                                                    : <span className={css.statusBadgePending}>⏳ На модерації</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <button
+                                            className={css.favRemove}
+                                            title="Редагувати"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                navigate(`/venues/${v.id}/edit`);
+                                            }}
+                                        >✏️
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
                     {tab === 'favorites' && (
                         <section className={css.section}>
                             <h2 className={css.sectionTitle}>Улюблені заклади</h2>
@@ -421,7 +677,6 @@ const Profile = () => {
                         </section>
                     )}
 
-                    {/* ── COMMENTS TAB ── */}
                     {tab === 'comments' && (
                         <section className={css.section}>
                             <h2 className={css.sectionTitle}>Мої відгуки</h2>
@@ -454,7 +709,6 @@ const Profile = () => {
                         </section>
                     )}
 
-                    {/* ── RATINGS TAB ── */}
                     {tab === 'ratings' && (
                         <section className={css.section}>
                             <h2 className={css.sectionTitle}>Мої оцінки</h2>
@@ -488,7 +742,6 @@ const Profile = () => {
                         </section>
                     )}
 
-                    {/* ── PYACHOK TAB ── */}
                     {tab === 'pyachok' && (
                         <section className={css.section}>
                             <h2 className={css.sectionTitle}>Мій Пиячок</h2>

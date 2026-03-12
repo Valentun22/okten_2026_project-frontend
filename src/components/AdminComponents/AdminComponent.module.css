@@ -818,3 +818,288 @@
     background: #dc2626;
     color: #fff;
 }
+
+/* ── Responsive Admin ── */
+@media (max-width: 900px) {
+    .page {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 12px;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .sidebarLogo {
+        display: none;
+    }
+
+    .sidebarNav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .sidebarBtn {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+        width: auto;
+    }
+
+    .sidebarIcon {
+        display: none;
+    }
+
+    .backBtn {
+        margin-top: 0;
+        width: auto;
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+
+    .main {
+        padding: 16px 12px;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 6px;
+    }
+
+    .tableWrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebarBtn span:last-child {
+        display: none;
+    }
+
+    .sidebarIcon {
+        display: inline;
+    }
+}
+
+/* ── Drag highlight ── */
+.dragging {
+    opacity: 0.5;
+    border: 2px dashed rgba(193, 138, 102, .6) !important;
+    background: rgba(193, 138, 102, .05) !important;
+    transform: scale(0.98);
+}
+
+.topCatCard {
+    touch-action: none;
+}
+
+.topVenueItem {
+    touch-action: none;
+}
+
+/* ── CMS Tab ── */
+.cmsWrap {
+    max-width: 640px;
+}
+
+.cmsHint {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.6;
+    background: #f8f8f8;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 3px solid rgba(193, 138, 102, .6);
+}
+
+.cmsForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cmsField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cmsLabel {
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.cmsInput {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color .15s;
+    outline: none;
+}
+
+.cmsInput:focus {
+    border-color: rgba(193, 138, 102, .8);
+}
+
+.cmsTextarea {
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color .15s;
+    outline: none;
+    line-height: 1.6;
+}
+
+.cmsTextarea:focus {
+    border-color: rgba(193, 138, 102, .8);
+}
+
+.cmsActions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.cmsSaved {
+    color: #16a34a;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .cmsWrap {
+        max-width: 100%;
+    }
+}
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.modalBox {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.modalTitle {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+}
+.modalDesc {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+.modalLabel {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.modalInput {
+    padding: 10px 13px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222;
+    outline: none;
+    font-family: monospace;
+    transition: border .15s;
+}
+.modalInput:focus { border-color: rgba(193,138,102,.8); }
+.modalRange {
+    width: 100%;
+    accent-color: rgba(193,138,102,.96);
+}
+.modalRangeTicks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: -4px;
+}
+.modalActions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+.modalCancelBtn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+}
+.modalCancelBtn:hover { background: #f5f5f5; }
+.modalPrimaryBtn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(193,138,102,.96);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+.modalPrimaryBtn:hover:not(:disabled) { opacity: .88; }
+.modalPrimaryBtn:disabled { opacity: .5; cursor: not-allowed; }
+.modalDangerBtn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #dc2626;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+.modalDangerBtn:hover { opacity: .88; }
+
+@media (max-width: 480px) {
+    .modalBox { padding: 24px 18px 20px; }
+}

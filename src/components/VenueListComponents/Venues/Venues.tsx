@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxHooks';
-import { venuesActions } from '../../../redux/slices/venuesSlice';
-import { Venue } from '../Venue/Venue';
+import {useEffect, useState} from 'react';
+import {useAppDispatch, useAppSelector} from '../../../hooks/useReduxHooks';
+import {venuesActions} from '../../../redux/slices/venuesSlice';
+import {Venue} from '../Venue/Venue';
 import css from './Venues.module.css';
 
 const LIMIT = 12;
 
 const Venues = () => {
-    const { venues, loading, error } = useAppSelector(state => state.venues);
-    const dispatch  = useAppDispatch();
+    const {venues, loading, error} = useAppSelector(state => state.venues);
+    const dispatch = useAppDispatch();
     const [page, setPage] = useState(1);
 
     useEffect(() => {
@@ -24,8 +24,8 @@ const Venues = () => {
 
             {loading && (
                 <div className={css.grid}>
-                    {Array.from({ length: LIMIT }).map((_, i) => (
-                        <div key={i} className={css.skeleton} />
+                    {Array.from({length: LIMIT}).map((_, i) => (
+                        <div key={i} className={css.skeleton}/>
                     ))}
                 </div>
             )}
@@ -49,7 +49,7 @@ const Venues = () => {
 
             {!loading && venues.length > 0 && (
                 <div className={css.grid}>
-                    {venues.map(v => <Venue key={v.id} venue={v} />)}
+                    {venues.map(v => <Venue key={v.id} venue={v}/>)}
                 </div>
             )}
 
@@ -68,4 +68,4 @@ const Venues = () => {
     );
 };
 
-export { Venues };
+export {Venues};

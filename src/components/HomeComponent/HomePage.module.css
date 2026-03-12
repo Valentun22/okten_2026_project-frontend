@@ -6,7 +6,7 @@
 
 /*Article One*/
 .articleOne {
-    height: 77vh;
+    height: 45vw;
     background-color: rgba(59, 59, 61, 0.96);
     position: relative;
     transition: 500ms;
@@ -39,17 +39,16 @@
 }
 
 .boxOneInfo h2 {
-    height: 22%;
-    width: 92%;
+    height: 13vw;
+    width: 98%;
     color: rgba(255, 255, 255, 1);
-    font-size: 5.55vw;
+    font-size: 5.8vw;
     font-weight: bold;
     position: relative;
     z-index: 6;
 }
 
 .boxOneInfo img {
-    height: 3vh;
     width: 9.4vw;
     margin: 4.5%;
     position: relative;
@@ -65,7 +64,7 @@
 }
 
 .boxOneArticleOne button {
-    height: 6.6vh;
+    height: 4.3vw;
     width: 17vw;
     background-color: rgba(193, 138, 102, 1);
     border-radius: 10px;
@@ -104,7 +103,7 @@
 
 /*Article Two*/
 .articleTwo {
-    height: 77vh;
+    height: 45vw;
     position: relative;
     background: rgba(186, 185, 185, 0.81);
     transition: background-color 500ms;
@@ -154,6 +153,10 @@
 
 .boxOneArticleTwo {
     width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .boxTwoArticleTwo {
@@ -163,20 +166,17 @@
 .boxOneArticleTwoInfo h2 {
     color: rgba(53, 53, 55, 1);
     width: 23vw;
-    height: 8.5vh;
     font-size: 5.55vw;
     font-weight: bold;
     transition: 500ms;
 }
 
 .boxOneArticleTwoInfo img {
-    height: 3vh;
     width: 9.4vw;
-    margin: 9% 0 9% 0;
+    margin: 1.6vw 2vw;
 }
 
 .boxOneArticleTwoInfo h3 {
-    height: 26%;
     width: 100%;
     font-size: 2.2vw;
     margin-bottom: 9%;
@@ -184,14 +184,14 @@
 }
 
 .boxOneArticleTwoInfo button {
-    height: 8.5vh;
-    width: 17vw;
+    height: 4.3vw;
+    width: 18vw;
     background-color: rgba(193, 138, 102, 1);
     border-radius: 10px;
     color: rgba(59, 59, 61, 0.96);
     font-size: 1.68vw;
     font-weight: bold;
-    transition: 500ms;
+    transition: 300ms;
     align-items: center;
     justify-content: center;
 }
@@ -203,7 +203,9 @@
 }
 
 .boxOneArticleTwoInfo {
-    margin: 11%;
+    height: 70%;
+    padding: 7%;
+    z-index: 5;
 }
 
 .boxTwoArticleTwoImgBox {
@@ -254,14 +256,14 @@
 .boxTwoArticleTwoImgFour {
     position: absolute;
     height: 80%;
-    width: 45%;
+    width: 43%;
     z-index: 1;
     right: 51%;
 }
 
 /*Article Three*/
 .articleThree {
-    height: 77vh;
+    height: 45vw;
     background-color: rgba(193, 138, 102, 1);
     transition: 500ms;
 }
@@ -275,13 +277,12 @@
 }
 
 .boxOneArticleThree {
-    height: 24.5vh;
-    width: 100%
+    width: 100%;
+    padding-top: 1vw;
 }
 
 .boxOneArticleThreeInfo {
     width: 67vw;
-    height: 24.5vh;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -289,8 +290,7 @@
 }
 
 .boxOneArticleThreeInfo h2 {
-    margin-top: 3vh;
-    font-size: 6.3vw;
+    font-size: 5.6vw;
     height: 50%;
     width: 100%;
     color: rgba(53, 53, 55, 1);
@@ -299,52 +299,69 @@
 }
 
 .boxOneArticleThreeInfoImg {
-    margin-top: 2%;
-    height: 5vh;
+    margin-top: 1%;
     width: 9.4vw;
 }
 
 .boxOneArticleThreeInfoImg img {
-    height: auto;
     width: 9.4vw;
-    margin: 2% 0 9% 0;
+    margin-top: 1%;
 }
 
 .boxTwoArticleThree {
-    height: 52vh;
-    width: 100%
+    width: 100%;
 }
 
 .articleThreeInfoBox {
     width: 65vw;
-    height: 47.5vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 0.5%;
 }
 
 .articleThreeInfoBoxSize {
-    height: 43vh;
+    height: 25vw;
     width: 17.5vw;
-    background-color: rgba(217, 217, 217, 1);
     text-align: center;
-    border: rgba(217, 217, 217, 1) 2px solid;
-    transition: 1500ms;
+    cursor: pointer;
+
+    --b: 1.7%;
+    --g: 5px;
+    --c: rgb(135, 79, 40);
+
+    padding: calc(var(--g) + var(--b));
+    border: 2px solid rgba(217, 217, 217, 1);
+
+    background-color: #fff;
+
+    background-image: linear-gradient(var(--c) 0 0),
+    linear-gradient(var(--c) 0 0),
+    linear-gradient(var(--c) 0 0),
+    linear-gradient(var(--c) 0 0);
+
+    background-repeat: no-repeat;
+    background-position: var(--_i, 0%) 0,
+    100% var(--_i, 0%),
+    calc(100% - var(--_i, 0%)) 100%,
+    0 calc(100% - var(--_i, 0%));
+
+    background-size: var(--_i, 0%) var(--b),
+    var(--b) var(--_i, 0%);
+
+    transition: .4s, background-position 0s;
 }
 
 .articleThreeInfoBoxSize:hover {
-    border: rgb(135, 79, 40) 2px solid;
-    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(135, 79, 40);
+    --_i: 100%;
+}
 
-    .articleThreeInfoBoxSize h3 {
-        color: rgb(31, 31, 32);
-    }
+.articleThreeInfoBoxSize:hover h3 {
+    color: rgb(31, 31, 32);
 }
 
 .articleThreeInfoBoxSize img {
-    width: auto;
-    height: 14vh;
+    width: 60%;
     margin-top: 1%;
 }
 
@@ -353,7 +370,6 @@
     justify-content: center;
     align-items: center;
     width: 90%;
-    height: 6vh;
     font-size: 1.9vw;
     font-weight: bold;
     color: rgba(58, 58, 60, 1);
@@ -363,20 +379,17 @@
 .articleThreeInfoBoxSize h4 {
     text-align: center;
     width: 90%;
-    height: 16.5vh;
     font-size: 1.4vw;
     font-weight: lighter;
     margin: 10% 5% 0 5%;
 }
 
 .boxTwoArticleThreeImgDots {
-    height: 52vh;
-    width: 16vw;
+    width: 15.85vw;
 }
 
 .boxTwoArticleThreeImgDots img {
-    height: 100%;
-    width: 98%;
+    width: 15.85vw;
 }
 
 .btn {
@@ -387,12 +400,6 @@
 }
 
 .btn::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 3px;
-    width: 0;
     background-color: #131212;
     transition: 0.5s ease;
 }
@@ -421,3 +428,23 @@
     transition-delay: 0.4s;
     color: aliceblue;
 }
+
+.iconBoxArticleThree {
+    height: 9vw;
+    min-width: 40px;
+    min-height: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 1vw;
+}
+
+.iconBoxArticleThree img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+

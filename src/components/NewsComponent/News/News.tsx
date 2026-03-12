@@ -1,20 +1,20 @@
-import { useEffect, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxHooks';
-import { newsActions } from '../../../redux/slices/newsSlice';
-import { NewsTypeEnum } from '../../../interfaces/INewsInterface';
+import {useEffect, useCallback} from 'react';
+import {useAppDispatch, useAppSelector} from '../../../hooks/useReduxHooks';
+import {newsActions} from '../../../redux/slices/newsSlice';
+import {NewsTypeEnum} from '../../../interfaces/INewsInterface';
 import css from './News.module.css';
 import {NewsCard} from "../NewsCard/NewsCard";
 
 const TYPE_FILTERS: { label: string; value: NewsTypeEnum | null }[] = [
-    { label: 'Всі',    value: null },
-    { label: 'Загальне',  value: NewsTypeEnum.GENERAL },
-    { label: 'Акції',  value: NewsTypeEnum.PROMOTION },
-    { label: 'Події',  value: NewsTypeEnum.EVENT },
+    {label: 'Всі', value: null},
+    {label: 'Загальне', value: NewsTypeEnum.GENERAL},
+    {label: 'Акції', value: NewsTypeEnum.PROMOTION},
+    {label: 'Події', value: NewsTypeEnum.EVENT},
 ];
 
 const News = () => {
     const dispatch = useAppDispatch();
-    const { news, total, offset, limit, activeType, loading, loadingMore, error } =
+    const {news, total, offset, limit, activeType, loading, loadingMore, error} =
         useAppSelector(state => state.news);
 
     const hasMore = offset < total;
@@ -29,7 +29,7 @@ const News = () => {
     }, [dispatch, activeType, limit]);
 
     useEffect(() => {
-        dispatch(newsActions.getAll({ offset: 0, limit }));
+        dispatch(newsActions.getAll({offset: 0, limit}));
     }, [dispatch, limit]);
 
     const handleTypeChange = (type: NewsTypeEnum | null) => {
@@ -70,8 +70,8 @@ const News = () => {
 
             {loading && (
                 <div className={css.skeletonGrid}>
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className={css.skeleton} />
+                    {Array.from({length: 6}).map((_, i) => (
+                        <div key={i} className={css.skeleton}/>
                     ))}
                 </div>
             )}
@@ -94,7 +94,7 @@ const News = () => {
                 <>
                     <div className={css.grid}>
                         {news.map(item => (
-                            <NewsCard key={item.id} news={item} />
+                            <NewsCard key={item.id} news={item}/>
                         ))}
                     </div>
 
@@ -106,7 +106,7 @@ const News = () => {
                                 disabled={loadingMore}
                             >
                                 {loadingMore ? (
-                                    <span className={css.spinner} />
+                                    <span className={css.spinner}/>
                                 ) : (
                                     `Завантажити ще (${total - offset} залишилось)`
                                 )}
@@ -119,4 +119,4 @@ const News = () => {
     );
 };
 
-export { News };
+export {News};

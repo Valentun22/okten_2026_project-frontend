@@ -45,7 +45,7 @@ const HomePage: FC = () => {
                             Уявіть собі систему, де вся необхідна інформація знаходиться на відстані витягнутої руки.
                             Вам не доведеться блукати лабіринтами меню чи витрачати час на пошук потрібних контактів.
                         </h3>
-                        <button className={css.btn} onClick={() => navigate('/aboutUs')}>Контакти</button>
+                        <button className={css.btn} onClick={() => navigate('/aboutUs')}>Детальніше</button>
                     </div>
                 </div>
                 <div className={css.boxTwoArticleTwo}>
@@ -76,19 +76,25 @@ const HomePage: FC = () => {
                     </div>
                     <div className={`${css.articleThreeInfoBox} ${css.flex}`}>
                         <div className={css.articleThreeInfoBoxSize}>
-                            <img src={img9} alt="img" />
+                            <div className={css.iconBoxArticleThree}>
+                                <img src={img9} alt="img"/>
+                            </div>
                             <h3>Все в одному місці</h3>
                             <h4>Контакти закладів та опис про них – все зібрано в одному місці для вашої зручності.</h4>
                         </div>
                         <div className={css.articleThreeInfoBoxSize}>
-                            <img src={img10} alt="img" />
-                            <h3>Економія часу</h3>
+                            <div className={css.iconBoxArticleThree}>
+                                <img src={img10} alt="img"/>
+                            </div>
+                            <h3>Економія <br/> часу</h3>
                             <h4>Знайдіть потрібну інформацію за лічені секунди та присвятіть час більш важливим справам.</h4>
                         </div>
                         <div className={css.articleThreeInfoBoxSize}>
-                            <img src={img11} alt="img" />
+                            <div className={css.iconBoxArticleThree}>
+                                <img src={img11} alt="img"/>
+                            </div>
                             <h3>Простота та ефективність</h3>
-                            <h4>Сайт розроблений таким чином, щоб легко з нею розібратися. Мінімум кліків – максимум результату.</h4>
+                            <h4>Сайт розроблений таким чином, щоб легко з ним розібратися. Мінімум кліків – максимум результату.</h4>
                         </div>
                     </div>
                     <div className={css.boxTwoArticleThreeImgDots}>

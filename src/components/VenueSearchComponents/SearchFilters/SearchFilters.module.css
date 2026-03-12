@@ -5,8 +5,8 @@
 .toggleBtn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+    gap: 3px;
+    padding: 5px 20px;
     border-radius: 100px;
     border: 1.5px solid #ddd;
     background: #fff;
@@ -29,7 +29,7 @@
     font-size: 11px;
     font-weight: 700;
     width: 18px;
-    height: 18px;
+    height: 15px;
     border-radius: 50%;
     display: flex;
     align-items: center;

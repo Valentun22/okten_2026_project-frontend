@@ -48,7 +48,6 @@
     color: #fff;
 }
 
-/* ── Form ── */
 .form {
     background: #fafafa;
     border: 1.5px solid #e8e8e8;
@@ -111,7 +110,6 @@
     border-color: #222;
 }
 
-/* Star picker */
 .starPicker {
     display: flex;
     gap: 4px;
@@ -133,7 +131,6 @@
     transform: scale(1.2);
 }
 
-/* Rec buttons */
 .recRow {
     display: flex;
     gap: 10px;
@@ -214,7 +211,6 @@
     cursor: not-allowed;
 }
 
-/* ── Comment cards ── */
 .list {
     display: flex;
     flex-direction: column;
@@ -376,7 +372,6 @@
     color: #e53e3e;
 }
 
-/* ── States ── */
 .skeletons {
     display: flex;
     flex-direction: column;
@@ -472,7 +467,6 @@
     }
 }
 
-/* ── Comment edit ── */
 .ownerActions {
     display: flex;
     gap: 8px;
@@ -571,7 +565,6 @@
     cursor: not-allowed;
 }
 
-/* ── Check photo upload ── */
 .checkUploadArea {
     width: 100%;
 }

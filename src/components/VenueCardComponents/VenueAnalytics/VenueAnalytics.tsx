@@ -32,7 +32,7 @@ const VenueAnalytics: FC<IProps> = ({venueId}) => {
         try {
             const [sumRes, tsRes] = await Promise.all([
                 adminService.getViewsSummary(venueId, params),
-                adminService.getViewsSummary(venueId, params), // fallback — timeseries окремий ендпоінт якщо є
+                adminService.getViewsTimeseries(venueId, params),
             ]);
             setSummary(sumRes.data ?? sumRes.data);
             setSeries(Array.isArray(tsRes.data) ? tsRes.data : []);

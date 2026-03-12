@@ -157,3 +157,10 @@
         justify-content: center;
     }
 }
+
+.stateBox {
+    padding: 80px;
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+}

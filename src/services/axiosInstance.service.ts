@@ -1,6 +1,6 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { baseUrl, urls } from '../constants/urls';
-import { tokenStorage } from './tokenStorage';
+import axios, {AxiosError, InternalAxiosRequestConfig} from 'axios';
+import {baseUrl, urls} from '../constants/urls';
+import {tokenStorage} from './tokenStorage';
 
 type RefreshRes = {
     accessToken: string;
@@ -54,11 +54,11 @@ axiosInstance.interceptors.response.use(
         isRefreshing = true;
 
         try {
-            const refreshClient = axios.create({ baseURL: baseUrl });
+            const refreshClient = axios.create({baseURL: baseUrl});
 
-            const { data } = await refreshClient.post<RefreshRes>(
+            const {data} = await refreshClient.post<RefreshRes>(
                 urls.auth.refresh,
-                { refreshToken }
+                {refreshToken}
             );
 
             tokenStorage.setAccess(data.accessToken);

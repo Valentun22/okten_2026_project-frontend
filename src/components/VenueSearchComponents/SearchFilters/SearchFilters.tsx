@@ -1,33 +1,38 @@
-import { useState } from 'react';
-import { IVenueSearchQuery, SortOrderEnum, VenueCategoryEnum, VenueSortByEnum } from '../../../interfaces/IVenueSearchInterface';
+import {useState} from 'react';
+import {
+    IVenueSearchQuery,
+    SortOrderEnum,
+    VenueCategoryEnum,
+    VenueSortByEnum
+} from '../../../interfaces/IVenueSearchInterface';
 import css from './SearchFilters.module.css';
 
 type Props = {
-    query:    IVenueSearchQuery;
-    onApply:  (q: IVenueSearchQuery) => void;
-    onReset:  () => void;
+    query: IVenueSearchQuery;
+    onApply: (q: IVenueSearchQuery) => void;
+    onReset: () => void;
 };
 
 const CATEGORIES = Object.values(VenueCategoryEnum);
 const CATEGORY_LABELS: Record<VenueCategoryEnum, string> = {
-    restaurant:'Ресторан', bar:'Бар', cafe:'Кафе', pub:'Паб',
-    club:'Клуб', fast_food:'Фастфуд', pizzeria:'Піцерія', sushi:'Суші',
-    brewery:'Пивоварня', lounge:'Лаунж', steakhouse:'Стейкхаус',
-    bakery:'Пекарня', coffee_shop:'Кавʼярня', wine_bar:'Вайн-бар',
-    food_court:'Фудкорт', street_food:'Стріт-фуд', karaoke:'Караоке', hookah:'Кальян',
+    restaurant: 'Ресторан', bar: 'Бар', cafe: 'Кафе', pub: 'Паб',
+    club: 'Клуб', fast_food: 'Фастфуд', pizzeria: 'Піцерія', sushi: 'Суші',
+    brewery: 'Пивоварня', lounge: 'Лаунж', steakhouse: 'Стейкхаус',
+    bakery: 'Пекарня', coffee_shop: 'Кавʼярня', wine_bar: 'Вайн-бар',
+    food_court: 'Фудкорт', street_food: 'Стріт-фуд', karaoke: 'Караоке', hookah: 'Кальян',
 };
 
 const FEATURES: { key: keyof IVenueSearchQuery; label: string }[] = [
-    { key: 'hasWiFi',       label: '📶 Wi-Fi' },
-    { key: 'hasParking',    label: '🅿️ Паркінг' },
-    { key: 'liveMusic',     label: '🎵 Live-музика' },
-    { key: 'petFriendly',   label: '🐾 Pet-friendly' },
-    { key: 'hasTerrace',    label: '☀️ Тераса' },
-    { key: 'smokingAllowed',label: '🚬 Куріння' },
-    { key: 'cardPayment',   label: '💳 Картка' },
+    {key: 'hasWiFi', label: '📶 Wi-Fi'},
+    {key: 'hasParking', label: '🅿️ Паркінг'},
+    {key: 'liveMusic', label: '🎵 Live-музика'},
+    {key: 'petFriendly', label: '🐾 Pet-friendly'},
+    {key: 'hasTerrace', label: '☀️ Тераса'},
+    {key: 'smokingAllowed', label: '🚬 Куріння'},
+    {key: 'cardPayment', label: '💳 Картка'},
 ];
 
-const SearchFilters = ({ query, onApply, onReset }: Props) => {
+const SearchFilters = ({query, onApply, onReset}: Props) => {
     const [local, setLocal] = useState<IVenueSearchQuery>(query);
     const [open, setOpen] = useState(false);
 
@@ -40,16 +45,24 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
     };
 
     const toggleFeature = (key: keyof IVenueSearchQuery) => {
-        setLocal(prev => ({ ...prev, [key]: prev[key] ? undefined : true }));
+        setLocal(prev => ({...prev, [key]: prev[key] ? undefined : true}));
     };
 
-    const handleApply = () => { onApply(local); setOpen(false); };
-    const handleReset = () => { setLocal({}); onReset(); setOpen(false); };
+    const handleApply = () => {
+        onApply(local);
+        setOpen(false);
+    };
+    const handleReset = () => {
+        setLocal({});
+        onReset();
+        setOpen(false);
+    };
 
     const activeCount = [
         local.categories?.length,
         local.averageCheckFrom, local.averageCheckTo,
         local.ratingFrom, local.ratingTo,
+        local.city,
         ...FEATURES.map(f => local[f.key]),
     ].filter(Boolean).length;
 
@@ -62,11 +75,18 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
             {open && (
                 <div className={css.panel}>
                     <div className={css.section}>
+                        <p className={css.label}>Місто</p>
+                        <input className={css.input} type="text" placeholder="Введіть місто..."
+                               value={local.city ?? ''}
+                               onChange={e => setLocal(p => ({...p, city: e.target.value || undefined}))}/>
+                    </div>
+
+                    <div className={css.section}>
                         <p className={css.label}>Сортування</p>
                         <div className={css.row}>
                             <select className={css.select}
                                     value={local.sortBy ?? VenueSortByEnum.CREATED}
-                                    onChange={e => setLocal(p => ({ ...p, sortBy: e.target.value as VenueSortByEnum }))}>
+                                    onChange={e => setLocal(p => ({...p, sortBy: e.target.value as VenueSortByEnum}))}>
                                 <option value={VenueSortByEnum.CREATED}>Нові</option>
                                 <option value={VenueSortByEnum.RATING}>Рейтинг</option>
                                 <option value={VenueSortByEnum.AVERAGE_CHECK}>Середній чек</option>
@@ -74,7 +94,7 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
                             </select>
                             <select className={css.select}
                                     value={local.sortOrder ?? SortOrderEnum.DESC}
-                                    onChange={e => setLocal(p => ({ ...p, sortOrder: e.target.value as SortOrderEnum }))}>
+                                    onChange={e => setLocal(p => ({...p, sortOrder: e.target.value as SortOrderEnum}))}>
                                 <option value={SortOrderEnum.DESC}>↓ Спад</option>
                                 <option value={SortOrderEnum.ASC}>↑ Зріст</option>
                             </select>
@@ -99,10 +119,16 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
                         <div className={css.row}>
                             <input className={css.input} type="number" placeholder="від"
                                    value={local.averageCheckFrom ?? ''}
-                                   onChange={e => setLocal(p => ({ ...p, averageCheckFrom: +e.target.value || undefined }))} />
+                                   onChange={e => setLocal(p => ({
+                                       ...p,
+                                       averageCheckFrom: +e.target.value || undefined
+                                   }))}/>
                             <input className={css.input} type="number" placeholder="до"
                                    value={local.averageCheckTo ?? ''}
-                                   onChange={e => setLocal(p => ({ ...p, averageCheckTo: +e.target.value || undefined }))} />
+                                   onChange={e => setLocal(p => ({
+                                       ...p,
+                                       averageCheckTo: +e.target.value || undefined
+                                   }))}/>
                         </div>
                     </div>
 
@@ -111,17 +137,17 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
                         <div className={css.row}>
                             <input className={css.input} type="number" min={1} max={10} placeholder="від"
                                    value={local.ratingFrom ?? ''}
-                                   onChange={e => setLocal(p => ({ ...p, ratingFrom: +e.target.value || undefined }))} />
+                                   onChange={e => setLocal(p => ({...p, ratingFrom: +e.target.value || undefined}))}/>
                             <input className={css.input} type="number" min={1} max={10} placeholder="до"
                                    value={local.ratingTo ?? ''}
-                                   onChange={e => setLocal(p => ({ ...p, ratingTo: +e.target.value || undefined }))} />
+                                   onChange={e => setLocal(p => ({...p, ratingTo: +e.target.value || undefined}))}/>
                         </div>
                     </div>
 
                     <div className={css.section}>
                         <p className={css.label}>Особливості</p>
                         <div className={css.chips}>
-                            {FEATURES.map(({ key, label }) => (
+                            {FEATURES.map(({key, label}) => (
                                 <button key={key}
                                         className={`${css.chip} ${local[key] ? css.chipActive : ''}`}
                                         onClick={() => toggleFeature(key)}>
@@ -141,4 +167,4 @@ const SearchFilters = ({ query, onApply, onReset }: Props) => {
     );
 };
 
-export { SearchFilters };
+export {SearchFilters};

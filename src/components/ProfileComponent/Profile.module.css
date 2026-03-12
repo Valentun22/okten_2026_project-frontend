@@ -133,7 +133,8 @@
     padding: 32px;
 }
 
-.section { }
+.section {
+}
 
 .sectionTitle {
     font-size: 20px;
@@ -801,4 +802,171 @@
 .deleteBtn:hover {
     background: #dc2626;
     color: #fff;
+}
+
+.venueStatusRow {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.statusBadgeActive {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.statusBadgePending {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.editHint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+    display: block;
+}
+
+.editRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.editSelect {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #222;
+    background: #fff;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    transition: border .15s;
+}
+
+.editSelect:focus {
+    border-color: rgba(193, 138, 102, .8);
+}
+
+.editInputPrefix {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border .15s;
+}
+
+.editInputPrefix:focus-within {
+    border-color: rgba(193, 138, 102, .8);
+}
+
+.editPrefix {
+    padding: 10px 12px;
+    background: #f5f5f5;
+    color: #888;
+    font-size: 15px;
+    font-weight: 600;
+    border-right: 1.5px solid #e0e0e0;
+    user-select: none;
+}
+
+.editInputWithPrefix {
+    flex: 1;
+    padding: 10px 13px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #222;
+    background: transparent;
+}
+
+@media (max-width: 520px) {
+    .editRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.avatarWrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 8px;
+}
+
+.avatarOverlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity .2s;
+}
+
+.avatarWrap:hover .avatarOverlay {
+    opacity: 1;
+}
+
+.avatarOverlayLoading {
+    opacity: 1 !important;
+}
+
+.avatarFileInput {
+    display: none;
+}
+
+.avatarDeleteBtn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #bbb;
+    transition: color .15s;
+    padding: 2px 6px;
+}
+
+.avatarDeleteBtn:hover {
+    color: #e53e3e;
+}
+
+.sidebarInfo {
+    margin-top: 4px;
+}
+
+.sidebarName {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 2px;
+    text-align: center;
+}
+
+.sidebarEmail {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+    text-align: center;
+    word-break: break-all;
+}
+
+.tabNav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }

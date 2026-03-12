@@ -1,20 +1,26 @@
-import { FC, useEffect, useState } from 'react';
+import {FC, useEffect, useState} from 'react';
 import css from './VenueComments.module.css';
 import {CommentRecommendationEnum, IComment, ICreateCommentDto} from "../../interfaces/ICommentInterface";
-import { commentService } from '../../services/comment.service';
+import {commentService} from '../../services/comment.service';
 import {useAppSelector} from "../../hooks/useReduxHooks";
 import {axiosInstance} from "../../services/axiosInstance.service";
 import {urls} from "../../constants/urls";
 
-interface IProps { venueId: string }
+interface IProps {
+    venueId: string
+}
 
 const LIMIT = 10;
 
-const StarPicker: FC<{ value: number; onChange: (v: number) => void; disabled?: boolean }> = ({ value, onChange, disabled }) => {
+const StarPicker: FC<{ value: number; onChange: (v: number) => void; disabled?: boolean }> = ({
+                                                                                                  value,
+                                                                                                  onChange,
+                                                                                                  disabled
+                                                                                              }) => {
     const [hover, setHover] = useState(0);
     return (
         <div className={css.starPicker}>
-            {Array.from({ length: 5 }).map((_, i) => {
+            {Array.from({length: 5}).map((_, i) => {
                 const v = i + 1;
                 return (
                     <span
@@ -30,29 +36,38 @@ const StarPicker: FC<{ value: number; onChange: (v: number) => void; disabled?: 
     );
 };
 
-const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpdate: (updated: IComment) => void }> = ({ comment, onDelete, onUpdate }) => {
-    const [deleting,  setDeleting]  = useState(false);
-    const [editMode,  setEditMode]  = useState(false);
+const CommentCard: FC<{
+    comment: IComment;
+    onDelete: (id: string) => void;
+    onUpdate: (updated: IComment) => void
+}> = ({comment, onDelete, onUpdate}) => {
+    const [deleting, setDeleting] = useState(false);
+    const [editMode, setEditMode] = useState(false);
     const [editTitle, setEditTitle] = useState(comment.title);
-    const [editBody,  setEditBody]  = useState(comment.body);
-    const [editRating,setEditRating]= useState(comment.rating);
-    const [saving,    setSaving]    = useState(false);
+    const [editBody, setEditBody] = useState(comment.body);
+    const [editRating, setEditRating] = useState(comment.rating);
+    const [saving, setSaving] = useState(false);
 
     const handleDelete = async () => {
         setDeleting(true);
-        try { await commentService.delete(comment.id); onDelete(comment.id); }
-        catch { setDeleting(false); }
+        try {
+            await commentService.delete(comment.id);
+            onDelete(comment.id);
+        } catch {
+            setDeleting(false);
+        }
     };
 
     const handleSave = async () => {
         setSaving(true);
         try {
-            const { data } = await commentService.update(comment.id, {
+            const {data} = await commentService.update(comment.id, {
                 title: editTitle, body: editBody, rating: editRating,
             });
             onUpdate(data);
             setEditMode(false);
-        } catch { /* ignore */ }
+        } catch { /* ignore */
+        }
         setSaving(false);
     };
 
@@ -61,11 +76,11 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
     if (editMode) return (
         <article className={`${css.commentCard} ${css.commentCardEditing}`}>
             <div className={css.editCommentForm}>
-                <StarPicker value={editRating} onChange={setEditRating} />
+                <StarPicker value={editRating} onChange={setEditRating}/>
                 <input className={css.editCommentInput} value={editTitle}
-                       onChange={e => setEditTitle(e.target.value)} placeholder="Заголовок" />
+                       onChange={e => setEditTitle(e.target.value)} placeholder="Заголовок"/>
                 <textarea className={css.editCommentTextarea} rows={3} value={editBody}
-                          onChange={e => setEditBody(e.target.value)} placeholder="Текст відгуку" />
+                          onChange={e => setEditBody(e.target.value)} placeholder="Текст відгуку"/>
                 <div className={css.editCommentActions}>
                     <button className={css.editCommentCancel} onClick={() => setEditMode(false)}>Скасувати</button>
                     <button className={css.editCommentSave} onClick={handleSave} disabled={saving}>
@@ -81,8 +96,9 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
             <div className={css.commentHeader}>
                 <div className={css.commentUser}>
                     {comment.user?.image
-                        ? <img src={comment.user.image} alt="" className={css.userAvatar} />
-                        : <div className={css.userAvatarPlaceholder}>{comment.user?.name?.[0]?.toUpperCase() ?? '?'}</div>
+                        ? <img src={comment.user.image} alt="" className={css.userAvatar}/>
+                        :
+                        <div className={css.userAvatarPlaceholder}>{comment.user?.name?.[0]?.toUpperCase() ?? '?'}</div>
                     }
                     <div>
                         <span className={css.userName}>
@@ -90,12 +106,16 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
                             {comment.isCritic && <span className={css.criticBadge}>🏅 Критик</span>}
                         </span>
                         <span className={css.commentDate}>
-                            {new Date(comment.created).toLocaleDateString('uk-UA', { day:'numeric', month:'long', year:'numeric' })}
+                            {new Date(comment.created).toLocaleDateString('uk-UA', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            })}
                         </span>
                     </div>
                 </div>
                 <div className={css.commentRating}>
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {Array.from({length: 5}).map((_, i) => (
                         <span key={i} className={i < comment.rating ? css.starOn : css.starOff}>★</span>
                     ))}
                 </div>
@@ -105,7 +125,8 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
             <p className={css.commentBody}>{comment.body}</p>
 
             {rec && (
-                <span className={`${css.recBadge} ${rec === CommentRecommendationEnum.RECOMMEND ? css.recYes : css.recNo}`}>
+                <span
+                    className={`${css.recBadge} ${rec === CommentRecommendationEnum.RECOMMEND ? css.recYes : css.recNo}`}>
                     {rec === CommentRecommendationEnum.RECOMMEND ? '👍 Рекомендую' : '👎 Не рекомендую'}
                 </span>
             )}
@@ -113,7 +134,7 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
             {comment.image_check && (
                 <div className={css.checkImg}>
                     <span className={css.checkLabel}>📸 Фото чеку:</span>
-                    <img src={comment.image_check} alt="чек" className={css.checkPhoto} />
+                    <img src={comment.image_check} alt="чек" className={css.checkPhoto}/>
                 </div>
             )}
 
@@ -129,25 +150,24 @@ const CommentCard: FC<{ comment: IComment; onDelete: (id: string) => void; onUpd
     );
 };
 
-const VenueComments: FC<IProps> = ({ venueId }) => {
-    const { isAuth } = useAppSelector(state => state.auth);
+const VenueComments: FC<IProps> = ({venueId}) => {
+    const {isAuth} = useAppSelector(state => state.auth);
 
-    const [comments,    setComments]    = useState<IComment[]>([]);
-    const [total,       setTotal]       = useState(0);
-    const [offset,      setOffset]      = useState(0);
-    const [loading,     setLoading]     = useState(false);
+    const [comments, setComments] = useState<IComment[]>([]);
+    const [total, setTotal] = useState(0);
+    const [offset, setOffset] = useState(0);
+    const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
-    const [showForm,    setShowForm]    = useState(false);
-    const [submitting,  setSubmitting]  = useState(false);
-    const [formError,   setFormError]   = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [formError, setFormError] = useState('');
 
-    const [form, setForm] = useState<ICreateCommentDto>({ title: '', body: '', rating: 0 });
-    const setF = (k: keyof ICreateCommentDto, v: any) => setForm(p => ({ ...p, [k]: v }));
+    const [form, setForm] = useState<ICreateCommentDto>({title: '', body: '', rating: 0});
+    const setF = (k: keyof ICreateCommentDto, v: any) => setForm(p => ({...p, [k]: v}));
 
-    // ── Фото чека ──
-    const [checkFile,       setCheckFile]       = useState<File | null>(null);
-    const [checkPreview,    setCheckPreview]     = useState('');
-    const [checkUploading,  setCheckUploading]   = useState(false);
+    const [checkFile, setCheckFile] = useState<File | null>(null);
+    const [checkPreview, setCheckPreview] = useState('');
+    const [checkUploading, setCheckUploading] = useState(false);
 
     const handleCheckFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -163,47 +183,62 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
         try {
             const fd = new FormData();
             fd.append('file', checkFile);
-            const { data } = await axiosInstance.post(urls.comments.uploadCheck, fd, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            const {data} = await axiosInstance.post(urls.comments.uploadCheck, fd, {
+                headers: {'Content-Type': 'multipart/form-data'},
             });
             return data?.url ?? data?.key ?? data;
-        } catch { return undefined; }
-        finally { setCheckUploading(false); }
+        } catch {
+            return undefined;
+        } finally {
+            setCheckUploading(false);
+        }
     };
 
     const fetchComments = async (reset = false) => {
         const off = reset ? 0 : offset;
         reset ? setLoading(true) : setLoadingMore(true);
         try {
-            const { data } = await commentService.getList(venueId, { limit: LIMIT, offset: off });
+            const {data} = await commentService.getList(venueId, {limit: LIMIT, offset: off});
             const list = data.data ?? [];
             setComments(reset ? list : prev => [...prev, ...list]);
             setTotal(data.total ?? 0);
             setOffset(off + list.length);
-        } catch { /* ignore */ }
+        } catch {
+        }
         reset ? setLoading(false) : setLoadingMore(false);
     };
 
-    useEffect(() => { fetchComments(true); }, [venueId]); // eslint-disable-line
+    useEffect(() => {
+        fetchComments(true);
+    }, [venueId]);
 
     const handleSubmit = async () => {
-        if (!form.title.trim()) { setFormError("Вкажіть заголовок"); return; }
-        if (!form.body.trim())  { setFormError("Напишіть текст відгуку"); return; }
-        if (!form.rating)       { setFormError("Поставте оцінку"); return; }
+        if (!form.title.trim()) {
+            setFormError("Вкажіть заголовок");
+            return;
+        }
+        if (!form.body.trim()) {
+            setFormError("Напишіть текст відгуку");
+            return;
+        }
+        if (!form.rating) {
+            setFormError("Поставте оцінку");
+            return;
+        }
         setFormError('');
         setSubmitting(true);
         try {
-            // Якщо є файл — спочатку завантажуємо
             let checkUrl = form.image_check;
             if (checkFile) {
                 const uploaded = await uploadCheckFile();
                 if (uploaded) checkUrl = uploaded;
             }
-            const { data } = await commentService.create(venueId, { ...form, image_check: checkUrl });
+            const {data} = await commentService.create(venueId, {...form, image_check: checkUrl});
             setComments(prev => [data, ...prev]);
             setTotal(t => t + 1);
-            setForm({ title: '', body: '', rating: 0 });
-            setCheckFile(null); setCheckPreview('');
+            setForm({title: '', body: '', rating: 0});
+            setCheckFile(null);
+            setCheckPreview('');
             setShowForm(false);
         } catch (e: any) {
             setFormError(e?.response?.data?.message ?? 'Помилка при збереженні');
@@ -229,36 +264,35 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
                 )}
             </div>
 
-            {/* ── Форма відгуку ── */}
             {showForm && (
                 <div className={css.form}>
                     <h3 className={css.formTitle}>Ваш відгук</h3>
 
                     <div className={css.formField}>
                         <label className={css.formLabel}>Оцінка *</label>
-                        <StarPicker value={form.rating} onChange={v => setF('rating', v)} />
+                        <StarPicker value={form.rating} onChange={v => setF('rating', v)}/>
                     </div>
 
                     <div className={css.formField}>
                         <label className={css.formLabel}>Заголовок *</label>
                         <input className={css.formInput} placeholder="Коротко про ваше враження"
-                               value={form.title} onChange={e => setF('title', e.target.value)} />
+                               value={form.title} onChange={e => setF('title', e.target.value)}/>
                     </div>
 
                     <div className={css.formField}>
                         <label className={css.formLabel}>Відгук *</label>
                         <textarea className={css.formTextarea} rows={4}
                                   placeholder="Розкажіть детальніше про заклад..."
-                                  value={form.body} onChange={e => setF('body', e.target.value)} />
+                                  value={form.body} onChange={e => setF('body', e.target.value)}/>
                     </div>
 
                     <div className={css.formField}>
                         <label className={css.formLabel}>Рекомендація</label>
                         <div className={css.recRow}>
                             {[
-                                { v: CommentRecommendationEnum.RECOMMEND,     l: '👍 Рекомендую' },
-                                { v: CommentRecommendationEnum.NOT_RECOMMEND, l: '👎 Не рекомендую' },
-                            ].map(({ v, l }) => (
+                                {v: CommentRecommendationEnum.RECOMMEND, l: '👍 Рекомендую'},
+                                {v: CommentRecommendationEnum.NOT_RECOMMEND, l: '👎 Не рекомендую'},
+                            ].map(({v, l}) => (
                                 <button key={v}
                                         className={`${css.recBtn} ${form.recommendation === v ? css.recBtnActive : ''}`}
                                         onClick={() => setF('recommendation', form.recommendation === v ? undefined : v)}>
@@ -270,52 +304,58 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
 
                     {formError && <p className={css.formError}>{formError}</p>}
 
-                    {/* ── Фото чека ── */}
                     <div className={css.formField}>
                         <label className={css.formLabel}>Фото чека (необов'язково)</label>
                         <div className={css.checkUploadArea}>
                             {checkPreview ? (
                                 <div className={css.checkPreviewWrap}>
-                                    <img src={checkPreview} alt="чек" className={css.checkPreviewImg} />
+                                    <img src={checkPreview} alt="чек" className={css.checkPreviewImg}/>
                                     <button className={css.checkRemoveBtn}
-                                            onClick={() => { setCheckFile(null); setCheckPreview(''); setF('image_check', undefined); }}>
+                                            onClick={() => {
+                                                setCheckFile(null);
+                                                setCheckPreview('');
+                                                setF('image_check', undefined);
+                                            }}>
                                         ✕ Видалити
                                     </button>
                                 </div>
                             ) : (
                                 <label className={css.checkUploadLabel}>
                                     <input type="file" accept="image/*" className={css.checkFileInput}
-                                           onChange={handleCheckFile} />
+                                           onChange={handleCheckFile}/>
                                     <span className={css.checkUploadIcon}>📸</span>
                                     <span>Завантажити фото чека</span>
                                     <span className={css.checkUploadHint}>JPG, PNG до 5 МБ</span>
                                 </label>
                             )}
                         </div>
-                        {/* Або вказати URL вручну */}
                         {!checkPreview && (
-                            <input className={css.formInput} style={{ marginTop: '8px' }}
+                            <input className={css.formInput} style={{marginTop: '8px'}}
                                    placeholder="Або вставте URL фото..."
                                    value={form.image_check ?? ''}
-                                   onChange={e => setF('image_check', e.target.value || undefined)} />
+                                   onChange={e => setF('image_check', e.target.value || undefined)}/>
                         )}
                     </div>
 
                     <div className={css.formActions}>
-                        <button className={css.cancelBtn} onClick={() => { setShowForm(false); setFormError(''); }}>
+                        <button className={css.cancelBtn} onClick={() => {
+                            setShowForm(false);
+                            setFormError('');
+                        }}>
                             Скасувати
                         </button>
-                        <button className={css.submitBtn} onClick={handleSubmit} disabled={submitting || checkUploading}>
-                            {checkUploading ? '📤 Завантаження...' : submitting ? <span className={css.spinner} /> : 'Опублікувати'}
+                        <button className={css.submitBtn} onClick={handleSubmit}
+                                disabled={submitting || checkUploading}>
+                            {checkUploading ? '📤 Завантаження...' : submitting ?
+                                <span className={css.spinner}/> : 'Опублікувати'}
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* ── Список ── */}
             {loading && (
                 <div className={css.skeletons}>
-                    {Array.from({ length: 3 }).map((_, i) => <div key={i} className={css.skeleton} />)}
+                    {Array.from({length: 3}).map((_, i) => <div key={i} className={css.skeleton}/>)}
                 </div>
             )}
 
@@ -330,7 +370,7 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
                 <div className={css.list}>
                     {comments.map(c => (
                         <CommentCard key={c.id} comment={c} onDelete={handleDelete}
-                                     onUpdate={updated => setComments(p => p.map(x => x.id === updated.id ? updated : x))} />
+                                     onUpdate={updated => setComments(p => p.map(x => x.id === updated.id ? updated : x))}/>
                     ))}
                 </div>
             )}
@@ -338,7 +378,7 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
             {hasMore && !loading && (
                 <div className={css.loadMoreWrap}>
                     <button className={css.loadMoreBtn} onClick={() => fetchComments(false)} disabled={loadingMore}>
-                        {loadingMore ? <span className={css.spinner} /> : `Ще відгуки (${total - offset})`}
+                        {loadingMore ? <span className={css.spinner}/> : `Ще відгуки (${total - offset})`}
                     </button>
                 </div>
             )}
@@ -352,4 +392,4 @@ const VenueComments: FC<IProps> = ({ venueId }) => {
     );
 };
 
-export { VenueComments };
+export {VenueComments};

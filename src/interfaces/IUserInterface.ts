@@ -7,6 +7,11 @@ export interface IUser {
     role?: string | string[];
     isCritic?: boolean;
     bio?: string;
+    birthdate?: string;
+    city?: string;
+    gender?: string;
+    instagram?: string;
+    interests?: string;
     createdAt?: string;
 }
 
@@ -20,6 +25,7 @@ export interface IRegisterDto {
     name: string;
     email: string;
     password: string;
+    deviceId?: string;
 }
 
 export interface IAuthResponse {

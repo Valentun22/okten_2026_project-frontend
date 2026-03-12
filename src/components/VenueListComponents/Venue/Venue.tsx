@@ -1,29 +1,31 @@
-import { FC } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { IVenueInterface } from '../../../interfaces/IVenueInterface';
+import {FC} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {IVenueInterface} from '../../../interfaces/IVenueInterface';
 import css from './Venue.module.css';
 
-interface IProps { venue: IVenueInterface }
+interface IProps {
+    venue: IVenueInterface
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
-    restaurant:'Ресторан', bar:'Бар', cafe:'Кафе', pub:'Паб',
-    club:'Клуб', fast_food:'Фастфуд', pizzeria:'Піцерія', sushi:'Суші',
-    brewery:'Пивоварня', lounge:'Лаунж', steakhouse:'Стейкхаус',
-    bakery:'Пекарня', coffee_shop:"Кав'ярня", wine_bar:'Вайн-бар',
-    food_court:'Фудкорт', street_food:'Стріт-фуд', karaoke:'Караоке', hookah:'Кальян',
+    restaurant: 'Ресторан', bar: 'Бар', cafe: 'Кафе', pub: 'Паб',
+    club: 'Клуб', fast_food: 'Фастфуд', pizzeria: 'Піцерія', sushi: 'Суші',
+    brewery: 'Пивоварня', lounge: 'Лаунж', steakhouse: 'Стейкхаус',
+    bakery: 'Пекарня', coffee_shop: "Кав'ярня", wine_bar: 'Вайн-бар',
+    food_court: 'Фудкорт', street_food: 'Стріт-фуд', karaoke: 'Караоке', hookah: 'Кальян',
 };
 
-const Venue: FC<IProps> = ({ venue }) => {
-    const { id, name, avatarVenue, city, averageCheck, description } = venue;
+const Venue: FC<IProps> = ({venue}) => {
+    const {id, name, avatarVenue, city, averageCheck, description} = venue;
     const navigate = useNavigate();
     const rating = (venue as any).ratingAvg;
-    const cats   = (venue as any).categories as string[] | undefined;
+    const cats = (venue as any).categories as string[] | undefined;
 
     return (
         <article className={css.card} onClick={() => navigate(`/venues/${id}`)}>
             <div className={css.imgWrap}>
                 {avatarVenue
-                    ? <img src={avatarVenue} alt={name} className={css.img} />
+                    ? <img src={avatarVenue} alt={name} className={css.img}/>
                     : <div className={css.imgPlaceholder}>🏠</div>
                 }
                 {rating && (
@@ -54,4 +56,4 @@ const Venue: FC<IProps> = ({ venue }) => {
     );
 };
 
-export { Venue };
+export {Venue};

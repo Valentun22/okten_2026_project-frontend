@@ -2,6 +2,7 @@
     max-width: 1100px;
     margin: 0 auto;
 }
+
 .backBtn {
     display: inline-flex;
     align-items: center;
@@ -17,6 +18,7 @@
     cursor: pointer;
     transition: all .15s;
 }
+
 .backBtn:hover {
     border-color: #222;
     color: #111;
@@ -25,45 +27,68 @@
 .skeletonWrap {
     padding: 0 24px;
 }
+
 .skeletonHero {
     height: 380px;
     border-radius: 0 0 20px 20px;
     margin-bottom: 32px;
-    background: linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: sh 1.4s infinite;
 }
+
 .skeletonBody {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
+
 .skeletonLine {
     height: 18px;
     border-radius: 6px;
-    background: linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: sh 1.4s infinite;
 }
-.skeletonLine:nth-child(2) { width: 70%; }
-.skeletonLine:nth-child(3) { width: 50%; }
-.skeletonLine:nth-child(4) { width: 80%; }
-@keyframes sh { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+
+.skeletonLine:nth-child(2) {
+    width: 70%;
+}
+
+.skeletonLine:nth-child(3) {
+    width: 50%;
+}
+
+.skeletonLine:nth-child(4) {
+    width: 80%;
+}
+
+@keyframes sh {
+    0% {
+        background-position: 200% 0
+    }
+    100% {
+        background-position: -200% 0
+    }
+}
 
 .error {
     text-align: center;
     padding: 80px 20px;
     color: #aaa;
 }
+
 .error span {
     font-size: 52px;
     display: block;
     margin-bottom: 14px;
 }
+
 .error p {
     font-size: 16px;
     margin: 0 0 20px;
 }
+
 .retryBtn {
     padding: 11px 28px;
     border-radius: 100px;

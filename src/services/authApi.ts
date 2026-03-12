@@ -7,7 +7,7 @@ const API_URL =
 export async function oauthLogin(provider: OAuthProvider, payload: any) {
     const res = await fetch(`${API_URL}/auth/oauth/${provider}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         credentials: 'include',
         body: JSON.stringify(payload),
     });

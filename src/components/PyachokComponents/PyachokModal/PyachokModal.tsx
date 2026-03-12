@@ -1,5 +1,5 @@
-import { FC, useState } from 'react';
-import { pyachokService } from '../../../services/pyachok.service';
+import {FC, useState} from 'react';
+import {pyachokService} from '../../../services/pyachok.service';
 import {
     ICreatePyachokDto,
     PyachokGenderEnum,
@@ -8,28 +8,28 @@ import {
 import css from './PyachokModal.module.css';
 
 interface IProps {
-    venueId:   string;
+    venueId: string;
     venueName: string;
-    onClose:   () => void;
+    onClose: () => void;
 }
 
 const WARNING_KEY = 'pyachokWarningAccepted';
 
-const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
+const PyachokModal: FC<IProps> = ({venueId, venueName, onClose}) => {
     const warningShown = localStorage.getItem(WARNING_KEY) === 'true';
-    const [step,    setStep]    = useState<'warning' | 'form' | 'success'>(warningShown ? 'form' : 'warning');
+    const [step, setStep] = useState<'warning' | 'form' | 'success'>(warningShown ? 'form' : 'warning');
     const [loading, setLoading] = useState(false);
-    const [error,   setError]   = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const [dto, setDto] = useState<ICreatePyachokDto>({
-        date:    '',
-        time:    '',
+        date: '',
+        time: '',
         purpose: '',
         message: '',
     });
 
     const set = (field: keyof ICreatePyachokDto, value: any) =>
-        setDto(prev => ({ ...prev, [field]: value || undefined }));
+        setDto(prev => ({...prev, [field]: value || undefined}));
 
     const handleAcceptWarning = () => {
         localStorage.setItem(WARNING_KEY, 'true');
@@ -82,7 +82,6 @@ const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
                         </div>
 
                         <div className={css.form}>
-                            {/* Дата і час */}
                             <div className={css.row}>
                                 <div className={css.field}>
                                     <label className={css.label}>📅 Дата *</label>
@@ -132,11 +131,12 @@ const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
                                 <label className={css.label}>🧑‍🤝‍🧑 Бажана стать компанії</label>
                                 <div className={css.radioGroup}>
                                     {[
-                                        { value: PyachokGenderEnum.ANY,    label: 'Будь-яка' },
-                                        { value: PyachokGenderEnum.MALE,   label: '👨 Чоловіча' },
-                                        { value: PyachokGenderEnum.FEMALE, label: '👩 Жіноча' },
+                                        {value: PyachokGenderEnum.ANY, label: 'Будь-яка'},
+                                        {value: PyachokGenderEnum.MALE, label: '👨 Чоловіча'},
+                                        {value: PyachokGenderEnum.FEMALE, label: '👩 Жіноча'},
                                     ].map(o => (
-                                        <label key={o.value} className={`${css.radioBtn} ${dto.genderPreference === o.value ? css.radioBtnActive : ''}`}>
+                                        <label key={o.value}
+                                               className={`${css.radioBtn} ${dto.genderPreference === o.value ? css.radioBtnActive : ''}`}>
                                             <input
                                                 type="radio"
                                                 name="gender"
@@ -154,12 +154,13 @@ const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
                                 <label className={css.label}>💳 Хто оплачує</label>
                                 <div className={css.radioGroup}>
                                     {[
-                                        { value: PyachokPayerEnum.ANY,   label: 'Обговоримо' },
-                                        { value: PyachokPayerEnum.ME,    label: '👤 Я пригощаю' },
-                                        { value: PyachokPayerEnum.SPLIT, label: '🤝 Поровну' },
-                                        { value: PyachokPayerEnum.OTHER, label: '🎁 Мене пригощають' },
+                                        {value: PyachokPayerEnum.ANY, label: 'Обговоримо'},
+                                        {value: PyachokPayerEnum.ME, label: '👤 Я пригощаю'},
+                                        {value: PyachokPayerEnum.SPLIT, label: '🤝 Поровну'},
+                                        {value: PyachokPayerEnum.OTHER, label: '🎁 Мене пригощають'},
                                     ].map(o => (
-                                        <label key={o.value} className={`${css.radioBtn} ${dto.payer === o.value ? css.radioBtnActive : ''}`}>
+                                        <label key={o.value}
+                                               className={`${css.radioBtn} ${dto.payer === o.value ? css.radioBtnActive : ''}`}>
                                             <input
                                                 type="radio"
                                                 name="payer"
@@ -205,7 +206,7 @@ const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
                                     onClick={handleSubmit}
                                     disabled={loading}
                                 >
-                                    {loading ? <span className={css.spinner} /> : '🍺 Відправити запит'}
+                                    {loading ? <span className={css.spinner}/> : '🍺 Відправити запит'}
                                 </button>
                             </div>
                         </div>
@@ -228,4 +229,4 @@ const PyachokModal: FC<IProps> = ({ venueId, venueName, onClose }) => {
     );
 };
 
-export { PyachokModal };
+export {PyachokModal};

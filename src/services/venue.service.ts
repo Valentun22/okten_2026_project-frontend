@@ -1,11 +1,11 @@
-import { urls } from '../constants/urls';
-import { IVenueInterface } from '../interfaces/IVenueInterface';
-import { IPromise } from '../types/reduxType';
-import { axiosInstance } from './axiosInstance.service';
+import {urls} from '../constants/urls';
+import {IVenueInterface} from '../interfaces/IVenueInterface';
+import {IPromise} from '../types/reduxType';
+import {axiosInstance} from './axiosInstance.service';
 
 export const venueService = {
     getAll: (page: number): IPromise<IVenueInterface[]> =>
-        axiosInstance.get(urls.venue.base, { params: { page } }),
+        axiosInstance.get(urls.venue.base, {params: {page}}),
 
     getByVenueId: (id: string): IPromise<IVenueInterface> =>
         axiosInstance.get(urls.venue.venueById(id)),
@@ -17,7 +17,7 @@ export const venueService = {
         axiosInstance.patch(urls.venue.update(id), payload),
 
     setRating: (venueId: string, rating: number) =>
-        axiosInstance.post(urls.rating.set(venueId), { rating }),
+        axiosInstance.post(urls.rating.set(venueId), {rating}),
 
     removeRating: (venueId: string) =>
         axiosInstance.delete(urls.rating.remove(venueId)),
@@ -29,5 +29,5 @@ export const venueService = {
         axiosInstance.delete(urls.favorites.remove(venueId)),
 
     contactManager: (venueId: string, message: string) =>
-        axiosInstance.post(urls.contact.manager(venueId), { message }),
+        axiosInstance.post(urls.contact.manager(venueId), {message}),
 };

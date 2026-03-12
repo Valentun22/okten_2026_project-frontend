@@ -67,6 +67,18 @@ const logout = createAsyncThunk('auth/logout', async () => {
     saveUser(null);
 });
 
+const oauthLogin = createAsyncThunk<any, { provider: string; token: string }, { rejectValue: string }>(
+    'auth/oauthLogin',
+    async (dto, {rejectWithValue}) => {
+        try {
+            return await authService.oauthLogin(dto);
+        } catch (e) {
+            const err = e as AxiosError<any>;
+            return rejectWithValue(err.response?.data?.message ?? 'Помилка OAuth входу');
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -115,9 +127,25 @@ const authSlice = createSlice({
         .addCase(logout.fulfilled, state => {
             state.isAuth = false;
             state.user = null;
+        })
+
+        .addCase(oauthLogin.pending, state => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(oauthLogin.fulfilled, (state, {payload}) => {
+            saveTokens(payload);
+            state.loading = false;
+            state.isAuth = true;
+            state.user = payload?.user ?? null;
+            saveUser(payload?.user ?? null);
+        })
+        .addCase(oauthLogin.rejected, (state, {payload}) => {
+            state.loading = false;
+            state.error = payload ?? 'Помилка OAuth';
         }),
 });
 
 const {reducer: authReducer, actions} = authSlice;
-const authActions = {...actions, login, register, logout};
+const authActions = {...actions, login, register, logout, oauthLogin};
 export {authReducer, authActions};

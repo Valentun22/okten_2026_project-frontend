@@ -1,24 +1,15 @@
-import img16 from '../../img/img16.png';
 import css from './NavigationLogin.module.css';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import {NavLink, useLocation, useNavigate} from 'react-router-dom';
 
-type MyNavLink = {
-    label: string;
-    href: string;
-};
+type MyNavLink = { label: string; href: string };
+type Props = { navLinks: MyNavLink[]; isAuth: boolean; onSignOut?: () => void };
 
-type Props = {
-    navLinks: MyNavLink[];
-    isAuth: boolean;
-    onSignOut?: () => void;
-};
-
-const NavigationLogin = ({ navLinks, isAuth, onSignOut }: Props) => {
-    const { pathname } = useLocation();
+const NavigationLogin = ({navLinks, isAuth, onSignOut}: Props) => {
+    const {pathname} = useLocation();
     const navigate = useNavigate();
 
     return (
-        <div className={`${css.boxAll}`}>
+        <div className={css.boxAll}>
             {navLinks.map((link) => (
                 <NavLink
                     key={link.label}
@@ -31,41 +22,24 @@ const NavigationLogin = ({ navLinks, isAuth, onSignOut }: Props) => {
 
             {isAuth ? (
                 <div className={css.boxAuth}>
-                    <button
-                        type="button"
-                        className={css.buttonSecondary}
-                        onClick={() => navigate('/profile')}
-                    >
+                    <button type="button" className={css.buttonSecondary}
+                            onClick={() => navigate('/profile')}>
                         Профіль
                     </button>
-
-                    <button
-                        type="button"
-                        className={css.buttonPrimary}
-                        onClick={() => onSignOut?.()}
-                    >
+                    <button type="button" className={css.buttonPrimary}
+                            onClick={() => onSignOut?.()}>
                         Вийти
                     </button>
                 </div>
             ) : (
                 <div className={css.boxAuth}>
-                    <button
-                        type="button"
-                        className={css.buttonPrimary}
-                        onClick={() => navigate('/login')}
-                    >
-                        <span className={css.icon}>
-                          <img src={img16} alt="" />
-                        </span>
-                        Sign in
+                    <button type="button" className={css.buttonPrimary}
+                            onClick={() => navigate('/login')}>
+                        Увійти
                     </button>
-
-                    <button
-                        type="button"
-                        className={css.buttonSecondary}
-                        onClick={() => navigate('/register')}
-                    >
-                        Register
+                    <button type="button" className={css.buttonSecondary}
+                            onClick={() => navigate('/register')}>
+                        Реєстрація
                     </button>
                 </div>
             )}
@@ -73,4 +47,4 @@ const NavigationLogin = ({ navLinks, isAuth, onSignOut }: Props) => {
     );
 };
 
-export { NavigationLogin };
+export {NavigationLogin};

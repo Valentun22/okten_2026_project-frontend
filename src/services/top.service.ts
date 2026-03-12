@@ -1,7 +1,7 @@
-import { axiosInstance } from './axiosInstance.service';
-import { urls } from '../constants/urls';
-import { ITopCategory, ITopCategoryWithVenues } from '../interfaces/IVenueSearchInterface';
-import { IPromise } from '../types/reduxType';
+import {axiosInstance} from './axiosInstance.service';
+import {urls} from '../constants/urls';
+import {ITopCategory, ITopCategoryWithVenues} from '../interfaces/IVenueSearchInterface';
+import {IPromise} from '../types/reduxType';
 
 export const topService = {
     getCategories: (): IPromise<ITopCategory[]> =>

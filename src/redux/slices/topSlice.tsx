@@ -1,31 +1,31 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
-import { ITopCategory, ITopCategoryWithVenues } from '../../interfaces/IVenueSearchInterface';
-import { topService } from '../../services/top.service';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {AxiosError} from 'axios';
+import {ITopCategory, ITopCategoryWithVenues} from '../../interfaces/IVenueSearchInterface';
+import {topService} from '../../services/top.service';
 
 interface ITopState {
-    categories:      ITopCategory[];
-    activeSlug:      string | null;
-    activeCategory:  ITopCategoryWithVenues | null;
-    loadingList:     boolean;
-    loadingVenues:   boolean;
-    error:           string | null;
+    categories: ITopCategory[];
+    activeSlug: string | null;
+    activeCategory: ITopCategoryWithVenues | null;
+    loadingList: boolean;
+    loadingVenues: boolean;
+    error: string | null;
 }
 
 const initialState: ITopState = {
-    categories:    [],
-    activeSlug:    null,
+    categories: [],
+    activeSlug: null,
     activeCategory: null,
-    loadingList:   false,
+    loadingList: false,
     loadingVenues: false,
-    error:         null,
+    error: null,
 };
 
 const getCategories = createAsyncThunk<ITopCategory[], void, { rejectValue: string }>(
     'top/getCategories',
-    async (_, { rejectWithValue }) => {
+    async (_, {rejectWithValue}) => {
         try {
-            const { data } = await topService.getCategories();
+            const {data} = await topService.getCategories();
             return data;
         } catch (e) {
             const err = e as AxiosError;
@@ -36,9 +36,9 @@ const getCategories = createAsyncThunk<ITopCategory[], void, { rejectValue: stri
 
 const getCategoryBySlug = createAsyncThunk<ITopCategoryWithVenues, string, { rejectValue: string }>(
     'top/getCategoryBySlug',
-    async (slug, { rejectWithValue }) => {
+    async (slug, {rejectWithValue}) => {
         try {
-            const { data } = await topService.getCategoryBySlug(slug);
+            const {data} = await topService.getCategoryBySlug(slug);
             return data;
         } catch (e) {
             const err = e as AxiosError;
@@ -56,14 +56,32 @@ const topSlice = createSlice({
         },
     },
     extraReducers: builder => builder
-        .addCase(getCategories.pending,       state => { state.loadingList = true;   state.error = null; })
-        .addCase(getCategories.fulfilled,     (state, { payload }) => { state.loadingList = false; state.categories = payload; })
-        .addCase(getCategories.rejected,      (state, { payload }) => { state.loadingList = false; state.error = payload ?? 'Error'; })
-        .addCase(getCategoryBySlug.pending,   state => { state.loadingVenues = true;  state.error = null; })
-        .addCase(getCategoryBySlug.fulfilled, (state, { payload }) => { state.loadingVenues = false; state.activeCategory = payload; })
-        .addCase(getCategoryBySlug.rejected,  (state, { payload }) => { state.loadingVenues = false; state.error = payload ?? 'Error'; }),
+        .addCase(getCategories.pending, state => {
+            state.loadingList = true;
+            state.error = null;
+        })
+        .addCase(getCategories.fulfilled, (state, {payload}) => {
+            state.loadingList = false;
+            state.categories = payload;
+        })
+        .addCase(getCategories.rejected, (state, {payload}) => {
+            state.loadingList = false;
+            state.error = payload ?? 'Error';
+        })
+        .addCase(getCategoryBySlug.pending, state => {
+            state.loadingVenues = true;
+            state.error = null;
+        })
+        .addCase(getCategoryBySlug.fulfilled, (state, {payload}) => {
+            state.loadingVenues = false;
+            state.activeCategory = payload;
+        })
+        .addCase(getCategoryBySlug.rejected, (state, {payload}) => {
+            state.loadingVenues = false;
+            state.error = payload ?? 'Error';
+        }),
 });
 
-const { reducer: topReducer, actions } = topSlice;
-const topActions = { ...actions, getCategories, getCategoryBySlug };
-export { topReducer, topActions };
+const {reducer: topReducer, actions} = topSlice;
+const topActions = {...actions, getCategories, getCategoryBySlug};
+export {topReducer, topActions};

@@ -1,0 +1,103 @@
+.wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.name {
+    font-size: 26px;
+    font-weight: 900;
+    color: #111;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.ratingRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ratingVal {
+    font-size: 15px;
+    font-weight: 700;
+    color: #555;
+}
+
+.metaRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.metaChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #f4f4f4;
+    color: #444;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sectionLabel {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #aaa;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.catChip {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(193, 138, 102, .5);
+    background: transparent;
+    color: rgba(193, 138, 102, .96);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.catChip:hover {
+    background: rgba(193, 138, 102, .96);
+    color: #fff;
+    border-color: rgba(193, 138, 102, .96);
+}
+
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.featureChip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #bbf7d0;
+}
+
+@media (max-width: 600px) {
+    .name {
+        font-size: 22px;
+    }
+}

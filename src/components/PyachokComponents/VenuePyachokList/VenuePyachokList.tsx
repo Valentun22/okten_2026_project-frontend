@@ -1,33 +1,44 @@
-import { FC, useEffect, useState } from 'react';
-import { pyachokService } from '../../../services/pyachok.service';
-import { IPyachokItem, PyachokStatusEnum } from '../../../interfaces/IPyachokInterface';
-import { PyachokModal } from '../PyachokModal/PyachokModal';
+import {FC, useEffect, useState} from 'react';
+import {pyachokService} from '../../../services/pyachok.service';
+import {IPyachokItem, PyachokStatusEnum} from '../../../interfaces/IPyachokInterface';
+import {PyachokModal} from '../PyachokModal/PyachokModal';
 import css from './VenuePyachokList.module.css';
 
-interface IProps { venueId: string; venueName: string; }
+interface IProps {
+    venueId: string;
+    venueName: string;
+}
 
-const GENDER_LABELS: Record<string, string> = { any: 'Будь-яка', male: '👨 Чоловіча', female: '👩 Жіноча' };
-const PAYER_LABELS:  Record<string, string> = { any: 'Обговоримо', me: '👤 Я пригощаю', split: '🤝 Поровну', other: '🎁 Мене пригощають' };
+const GENDER_LABELS: Record<string, string> = {any: 'Будь-яка', male: '👨 Чоловіча', female: '👩 Жіноча'};
+const PAYER_LABELS: Record<string, string> = {
+    any: 'Обговоримо',
+    me: '👤 Я пригощаю',
+    split: '🤝 Поровну',
+    other: '🎁 Мене пригощають'
+};
 
-const VenuePyachokList: FC<IProps> = ({ venueId, venueName }) => {
-    const [items,      setItems]      = useState<IPyachokItem[]>([]);
-    const [total,      setTotal]      = useState(0);
-    const [loading,    setLoading]    = useState(true);
-    const [showModal,  setShowModal]  = useState(false);
+const VenuePyachokList: FC<IProps> = ({venueId, venueName}) => {
+    const [items, setItems] = useState<IPyachokItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const load = async () => {
         setLoading(true);
         try {
-            const { data } = await pyachokService.getVenueList(venueId, {
+            const {data} = await pyachokService.getVenueList(venueId, {
                 status: PyachokStatusEnum.OPEN, limit: 10,
             });
             setItems(data.data ?? []);
             setTotal(data.total ?? 0);
-        } catch { /* ignore */ }
+        } catch { /* ignore */
+        }
         setLoading(false);
     };
 
-    useEffect(() => { load(); }, [venueId]);
+    useEffect(() => {
+        load();
+    }, [venueId]);
 
     return (
         <section className={css.section}>
@@ -43,7 +54,7 @@ const VenuePyachokList: FC<IProps> = ({ venueId, venueName }) => {
 
             {loading && (
                 <div className={css.skeletons}>
-                    {[1,2,3].map(i => <div key={i} className={css.skeleton} />)}
+                    {[1, 2, 3].map(i => <div key={i} className={css.skeleton}/>)}
                 </div>
             )}
 
@@ -64,13 +75,17 @@ const VenuePyachokList: FC<IProps> = ({ venueId, venueName }) => {
                             <div className={css.cardHeader}>
                                 <div className={css.userInfo}>
                                     {item.user?.avatar
-                                        ? <img src={item.user.avatar} alt="" className={css.avatar} />
-                                        : <div className={css.avatarPlaceholder}>{item.user?.name?.[0]?.toUpperCase() ?? '?'}</div>
+                                        ? <img src={item.user.avatar} alt="" className={css.avatar}/>
+                                        : <div
+                                            className={css.avatarPlaceholder}>{item.user?.name?.[0]?.toUpperCase() ?? '?'}</div>
                                     }
                                     <div>
                                         <span className={css.userName}>{item.user?.name ?? 'Анонім'}</span>
                                         <span className={css.cardDate}>
-                                            📅 {new Date(item.date).toLocaleDateString('uk-UA', { day:'numeric', month:'long' })} · 🕐 {item.time}
+                                            📅 {new Date(item.date).toLocaleDateString('uk-UA', {
+                                            day: 'numeric',
+                                            month: 'long'
+                                        })} · 🕐 {item.time}
                                         </span>
                                     </div>
                                 </div>
@@ -103,11 +118,14 @@ const VenuePyachokList: FC<IProps> = ({ venueId, venueName }) => {
                 <PyachokModal
                     venueId={venueId}
                     venueName={venueName}
-                    onClose={() => { setShowModal(false); load(); }}
+                    onClose={() => {
+                        setShowModal(false);
+                        load();
+                    }}
                 />
             )}
         </section>
     );
 };
 
-export { VenuePyachokList };
+export {VenuePyachokList};

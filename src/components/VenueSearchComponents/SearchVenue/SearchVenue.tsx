@@ -1,23 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxHooks';
-import { venueSearchActions } from '../../../redux/slices/venueSearchSlice';
-import { IVenueSearchQuery, SortOrderEnum, VenueSortByEnum } from '../../../interfaces/IVenueSearchInterface';
+import {useState, useEffect, useCallback} from 'react';
+import {useSearchParams} from 'react-router-dom';
+import {useAppDispatch, useAppSelector} from '../../../hooks/useReduxHooks';
+import {venueSearchActions} from '../../../redux/slices/venueSearchSlice';
+import {IVenueSearchQuery, SortOrderEnum, VenueSortByEnum} from '../../../interfaces/IVenueSearchInterface';
 import css from './SearchVenue.module.css';
 import {SearchFilters} from "../SearchFilters/SearchFilters";
 import {VenueSearchCard} from "../VenueSearchCard/VenueSearchCard";
 
 const SearchVenue = () => {
     const dispatch = useAppDispatch();
-    const { venues, total, offset, limit, query, loading, loadingMore, error } =
+    const [searchParams] = useSearchParams();
+    const {venues, total, offset, limit, query, loading, loadingMore, error} =
         useAppSelector(state => state.venueSearch);
 
     const [inputValue, setInputValue] = useState(query.search ?? '');
     const hasMore = offset < total;
 
     useEffect(() => {
+        const tagFromUrl = searchParams.get('tag');
+        if (tagFromUrl) {
+            const q: IVenueSearchQuery = {tag: tagFromUrl, offset: 0};
+            dispatch(venueSearchActions.setQuery(q));
+            dispatch(venueSearchActions.search(q));
+        }
+    }, []);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             if (inputValue.trim()) {
-                const q = { ...query, search: inputValue.trim(), offset: 0 };
+                const q = {...query, search: inputValue.trim(), offset: 0};
                 dispatch(venueSearchActions.setQuery(q));
                 dispatch(venueSearchActions.search(q));
             } else if (!inputValue) {
@@ -28,7 +39,7 @@ const SearchVenue = () => {
     }, [inputValue]);
 
     const handleFiltersApply = useCallback((filters: IVenueSearchQuery) => {
-        const q = { ...filters, search: inputValue || undefined, offset: 0, limit };
+        const q = {...filters, search: inputValue || undefined, offset: 0, limit};
         dispatch(venueSearchActions.setQuery(q));
         dispatch(venueSearchActions.search(q));
     }, [dispatch, inputValue, limit]);
@@ -39,7 +50,7 @@ const SearchVenue = () => {
     };
 
     const handleLoadMore = () => {
-        dispatch(venueSearchActions.loadMore({ ...query, offset, limit }));
+        dispatch(venueSearchActions.loadMore({...query, offset, limit}));
     };
 
     const defaultQuery: IVenueSearchQuery = {
@@ -67,12 +78,15 @@ const SearchVenue = () => {
                         autoFocus
                     />
                     {inputValue && (
-                        <button className={css.clearBtn} onClick={() => { setInputValue(''); dispatch(venueSearchActions.resetSearch()); }}>
+                        <button className={css.clearBtn} onClick={() => {
+                            setInputValue('');
+                            dispatch(venueSearchActions.resetSearch());
+                        }}>
                             ✕
                         </button>
                     )}
                 </div>
-                <SearchFilters query={defaultQuery} onApply={handleFiltersApply} onReset={handleFiltersReset} />
+                <SearchFilters query={defaultQuery} onApply={handleFiltersApply} onReset={handleFiltersReset}/>
             </div>
 
             {!loading && total > 0 && (
@@ -81,8 +95,8 @@ const SearchVenue = () => {
 
             {loading && (
                 <div className={css.grid}>
-                    {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className={css.skeleton} />
+                    {Array.from({length: 8}).map((_, i) => (
+                        <div key={i} className={css.skeleton}/>
                     ))}
                 </div>
             )}
@@ -111,14 +125,14 @@ const SearchVenue = () => {
             {!loading && venues.length > 0 && (
                 <>
                     <div className={css.grid}>
-                        {venues.map(v => <VenueSearchCard key={v.id} venue={v} />)}
+                        {venues.map(v => <VenueSearchCard key={v.id} venue={v}/>)}
                     </div>
 
                     {hasMore && (
                         <div className={css.loadMoreWrap}>
                             <button className={css.loadMoreBtn} onClick={handleLoadMore} disabled={loadingMore}>
                                 {loadingMore
-                                    ? <span className={css.spinner} />
+                                    ? <span className={css.spinner}/>
                                     : `Показати ще (${total - offset})`
                                 }
                             </button>
@@ -130,4 +144,4 @@ const SearchVenue = () => {
     );
 };
 
-export { SearchVenue };
+export {SearchVenue};

@@ -79,18 +79,14 @@ export interface IVenueInterface extends IBaseModel {
 
 
     likes?: number;
-    // comments?: IComment[];
-    // news?: INews[];
-    // complaints?: IComplaint[];
     rating?: number;
-    // topItems?: ITopCategoryVenue[];
-    // pyachok?: IPyachok[];
     favoritedBy?: IUserShort[];
 }
+
 export interface IVenueExtended extends IVenueInterface {
-    ratingAvg?:    number;
-    ratingCount?:  number;
-    isLiked?:      boolean;
-    isFavorite?:   boolean;
-    likesCount?:   number;
+    ratingAvg?: number;
+    ratingCount?: number;
+    isLiked?: boolean;
+    isFavorite?: boolean;
+    likesCount?: number;
 }

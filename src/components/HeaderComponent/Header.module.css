@@ -84,3 +84,100 @@
 .naviBox {
     width: 15vw;
 }
+
+.burger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 16px;
+    z-index: 200;
+}
+
+.burger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: rgba(193, 138, 102, .96);
+    border-radius: 2px;
+    transition: transform .25s, opacity .2s;
+}
+
+.burgerOpen span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.burgerOpen span:nth-child(2) {
+    opacity: 0;
+}
+
+.burgerOpen span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+.mobileMenu {
+    position: fixed;
+    top: 9vh;
+    left: 0;
+    right: 0;
+    background: rgba(40, 40, 42, .97);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0 20px;
+    z-index: 150;
+    border-bottom: 1px solid rgba(193, 138, 102, .3);
+    animation: slideDown .2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mobileLink {
+    padding: 14px 24px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: rgba(193, 138, 102, .96);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.mobileLink:hover {
+    background: rgba(193, 138, 102, .12);
+}
+
+.mobileDivider {
+    height: 1px;
+    background: rgba(193, 138, 102, .2);
+    margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+    .infoBlock {
+        display: none !important;
+    }
+
+    .naviBox {
+        display: none !important;
+    }
+
+    .burger {
+        display: flex !important;
+    }
+}

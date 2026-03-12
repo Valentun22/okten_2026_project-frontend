@@ -569,3 +569,82 @@
     font-weight: 700;
     color: #111;
 }
+
+.tagClickable {
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.tagClickable:hover {
+    background: rgba(193, 138, 102, .25) !important;
+    color: rgba(140, 90, 50, 1) !important;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .left,
+    .right {
+        width: 100% !important;
+        max-width: 100%;
+    }
+
+    .mainPhoto {
+        max-height: 45vw;
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .left, .right {
+        padding: 0 12px;
+    }
+
+    .venueName {
+        font-size: 22px;
+    }
+
+    .heroSection {
+        padding: 16px 0;
+    }
+
+    .card {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .chips {
+        gap: 6px;
+    }
+
+    .chip {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .contactLink {
+        font-size: 14px;
+    }
+
+    .mapLink {
+        font-size: 14px;
+    }
+
+    .hoursTable {
+        font-size: 13px;
+    }
+}

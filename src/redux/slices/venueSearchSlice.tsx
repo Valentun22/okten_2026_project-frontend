@@ -1,45 +1,45 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {AxiosError} from 'axios';
 import {
     IVenueListItem, IVenueListResponse, IVenueSearchQuery,
     SortOrderEnum, VenueSortByEnum,
 } from '../../interfaces/IVenueSearchInterface';
-import { venueSearchService } from '../../services/venueSearch.service';
+import {venueSearchService} from '../../services/venueSearch.service';
 
 interface IVenueSearchState {
-    venues:      IVenueListItem[];
-    total:       number;
-    offset:      number;
-    limit:       number;
-    query:       IVenueSearchQuery;
-    loading:     boolean;
+    venues: IVenueListItem[];
+    total: number;
+    offset: number;
+    limit: number;
+    query: IVenueSearchQuery;
+    loading: boolean;
     loadingMore: boolean;
-    error:       string | null;
+    error: string | null;
 }
 
 const DEFAULT_QUERY: IVenueSearchQuery = {
-    limit:     12,
-    offset:    0,
-    sortBy:    VenueSortByEnum.CREATED,
+    limit: 12,
+    offset: 0,
+    sortBy: VenueSortByEnum.CREATED,
     sortOrder: SortOrderEnum.DESC,
 };
 
 const initialState: IVenueSearchState = {
-    venues:      [],
-    total:       0,
-    offset:      0,
-    limit:       12,
-    query:       DEFAULT_QUERY,
-    loading:     false,
+    venues: [],
+    total: 0,
+    offset: 0,
+    limit: 12,
+    query: DEFAULT_QUERY,
+    loading: false,
     loadingMore: false,
-    error:       null,
+    error: null,
 };
 
 const search = createAsyncThunk<IVenueListResponse, IVenueSearchQuery, { rejectValue: string }>(
     'venueSearch/search',
-    async (query, { rejectWithValue }) => {
+    async (query, {rejectWithValue}) => {
         try {
-            const { data } = await venueSearchService.search(query);
+            const {data} = await venueSearchService.search(query);
             return data;
         } catch (e) {
             const err = e as AxiosError;
@@ -48,14 +48,14 @@ const search = createAsyncThunk<IVenueListResponse, IVenueSearchQuery, { rejectV
             );
         }
     },
-    { condition: (q) => (q.search ?? '').trim() !== '' || Object.keys(q).length > 2 }
+    {condition: (q) => (q.search ?? '').trim() !== '' || Object.keys(q).length > 2}
 );
 
 const loadMore = createAsyncThunk<IVenueListResponse, IVenueSearchQuery, { rejectValue: string }>(
     'venueSearch/loadMore',
-    async (query, { rejectWithValue }) => {
+    async (query, {rejectWithValue}) => {
         try {
-            const { data } = await venueSearchService.search(query);
+            const {data} = await venueSearchService.search(query);
             return data;
         } catch (e) {
             const err = e as AxiosError;
@@ -69,36 +69,46 @@ const venueSearchSlice = createSlice({
     initialState,
     reducers: {
         setQuery(state, action: PayloadAction<IVenueSearchQuery>) {
-            state.query = { ...action.payload, limit: state.limit, offset: 0 };
+            state.query = {...action.payload, limit: state.limit, offset: 0};
             state.venues = [];
             state.offset = 0;
         },
         resetSearch(state) {
             state.venues = [];
             state.offset = 0;
-            state.total  = 0;
-            state.query  = DEFAULT_QUERY;
-            state.error  = null;
+            state.total = 0;
+            state.query = DEFAULT_QUERY;
+            state.error = null;
         },
     },
     extraReducers: builder => builder
-        .addCase(search.pending,    state => { state.loading = true;  state.error = null; })
-        .addCase(search.fulfilled,  (state, { payload }) => {
-            state.loading = false;
-            state.venues  = payload.data;
-            state.total   = payload.total;
-            state.offset  = payload.data.length;
+        .addCase(search.pending, state => {
+            state.loading = true;
+            state.error = null;
         })
-        .addCase(search.rejected,   (state, { payload }) => { state.loading = false; state.error = payload ?? 'Error'; })
-        .addCase(loadMore.pending,   state => { state.loadingMore = true; })
-        .addCase(loadMore.fulfilled, (state, { payload }) => {
+        .addCase(search.fulfilled, (state, {payload}) => {
+            state.loading = false;
+            state.venues = payload.data;
+            state.total = payload.total;
+            state.offset = payload.data.length;
+        })
+        .addCase(search.rejected, (state, {payload}) => {
+            state.loading = false;
+            state.error = payload ?? 'Error';
+        })
+        .addCase(loadMore.pending, state => {
+            state.loadingMore = true;
+        })
+        .addCase(loadMore.fulfilled, (state, {payload}) => {
             state.loadingMore = false;
             state.venues = [...state.venues, ...payload.data];
             state.offset += payload.data.length;
         })
-        .addCase(loadMore.rejected,  state => { state.loadingMore = false; }),
+        .addCase(loadMore.rejected, state => {
+            state.loadingMore = false;
+        }),
 });
 
-const { reducer: venueSearchReducer, actions } = venueSearchSlice;
-const venueSearchActions = { ...actions, search, loadMore };
-export { venueSearchReducer, venueSearchActions };
+const {reducer: venueSearchReducer, actions} = venueSearchSlice;
+const venueSearchActions = {...actions, search, loadMore};
+export {venueSearchReducer, venueSearchActions};

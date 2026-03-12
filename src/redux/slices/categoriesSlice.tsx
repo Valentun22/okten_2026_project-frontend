@@ -34,13 +34,13 @@ const getCategoryVenuesCount = createAsyncThunk<
     { rejectValue: string; state: IRootState }
 >(
     "categoriesSlice/getCategoryVenuesCount",
-    async (_, { getState, rejectWithValue }) => {
+    async (_, {getState, rejectWithValue}) => {
         try {
             const categories = getState().categories.categories;
             const counts: Record<string, number> = {};
 
             for (const category of categories) {
-                const { data } = await categoriesService.getByCategoryId(category.id, 1);
+                const {data} = await categoriesService.getByCategoryId(category.id, 1);
                 counts[category.id] = data.results.length;
             }
 
