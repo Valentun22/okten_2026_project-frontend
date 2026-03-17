@@ -1,3 +1,4 @@
+import {useNavigate} from 'react-router-dom';
 import {INewsItem, NewsTypeEnum} from '../../../interfaces/INewsInterface';
 import css from './NewsCard.module.css';
 
@@ -14,9 +15,11 @@ const formatDate = (iso: string): string =>
 
 const NewsCard = ({news}: Props) => {
     const imgSrc = news.avatarNews ?? news.images?.[0] ?? null;
+    const navigate = useNavigate();
 
     return (
-        <article className={css.card}>
+        <article className={css.card} onClick={() => navigate(`/venues/${news.venue.id}`)}
+                 style={{cursor: 'pointer'}}>
             <div className={css.imgWrap}>
                 {imgSrc ? (
                     <img src={imgSrc} alt={news.title} className={css.img}/>
@@ -31,7 +34,12 @@ const NewsCard = ({news}: Props) => {
             </div>
 
             <div className={css.content}>
-                <div className={css.venue}>
+                <div className={css.venue}
+                     onClick={e => {
+                         e.stopPropagation();
+                         navigate(`/venues/${news.venue.id}`);
+                     }}
+                     style={{cursor: 'pointer'}}>
                     {news.venue.avatarVenue && (
                         <img src={news.venue.avatarVenue} alt="" className={css.venueAvatar}/>
                     )}

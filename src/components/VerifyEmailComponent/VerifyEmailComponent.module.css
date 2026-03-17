@@ -1,0 +1,73 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+}
+
+.card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 12px;
+}
+
+.text {
+    font-size: 15px;
+    color: #666;
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: rgba(193, 138, 102, 0.96);
+    color: #fff;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: rgb(168, 118, 88);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f0f0f0;
+    border-top-color: rgba(193, 138, 102, 0.96);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

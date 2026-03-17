@@ -5,6 +5,7 @@ import {AxiosError} from 'axios';
 
 type VenuesState = {
     venues: IVenueInterface[];
+    total: number;
     page: number;
     loading: boolean;
     error: string | null;
@@ -14,6 +15,7 @@ type VenuesState = {
 
 const initialState: VenuesState = {
     venues: [],
+    total: 0,
     page: 1,
     loading: false,
     error: null,
@@ -21,11 +23,11 @@ const initialState: VenuesState = {
     loadingCard: false,
 };
 
-const getAll = createAsyncThunk<IVenueInterface[], number, { rejectValue: string }>(
+const getAll = createAsyncThunk<{data: IVenueInterface[], total: number}, {page: number, limit?: number}, { rejectValue: string }>(
     'venues/getAll',
-    async (page, {rejectWithValue}) => {
+    async ({page, limit}, {rejectWithValue}) => {
         try {
-            const {data} = await venueService.getAll(page);
+            const {data} = await venueService.getAll(page, limit);
             return data;
         } catch (e) {
             const err = e as AxiosError;
@@ -68,7 +70,8 @@ const venuesSlice = createSlice({
             })
             .addCase(getAll.fulfilled, (state, action) => {
                 state.loading = false;
-                state.venues = action.payload;
+                state.venues = action.payload.data;
+                state.total = action.payload.total;
             })
             .addCase(getAll.rejected, (state, action) => {
                 state.loading = false;

@@ -50,7 +50,7 @@ const UserPublicComponent = () => {
                 await axiosInstance.post(urls.users.followAdd(id!));
                 setFollowed(true);
             }
-        } catch { /* ignore */
+        } catch {
         }
         setFollowLoading(false);
     };

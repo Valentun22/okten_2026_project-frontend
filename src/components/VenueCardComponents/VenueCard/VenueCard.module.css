@@ -2,12 +2,13 @@
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 0 60px;
+
 }
 
 .hero {
     position: relative;
     width: 100%;
-    height: 380px;
+    height: 520px;
     border-radius: 0 0 20px 20px;
     overflow: hidden;
     margin-bottom: 36px;
@@ -18,6 +19,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    filter: none;
 }
 
 .heroPlaceholder {
@@ -27,13 +29,13 @@
     align-items: center;
     justify-content: center;
     font-size: 80px;
-    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    background: linear-gradient(135deg, rgba(193, 138, 102, 0.25) 0%, rgba(193, 138, 102, 0.08) 50%, rgba(240, 225, 210, 0.6) 100%);
 }
 
 .heroOverlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, .75) 0%, transparent 55%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.15) 45%, transparent 100%);
     display: flex;
     align-items: flex-end;
 }
@@ -140,7 +142,7 @@
     color: #111;
     margin: 0 0 14px;
     padding-bottom: 8px;
-    border-bottom: 2px solid #111;
+    border-bottom: 2px solid rgba(193, 138, 102, 0.96);
 }
 
 .desc {
@@ -160,10 +162,10 @@
 .chip {
     padding: 5px 14px;
     border-radius: 20px;
-    background: #f3f3f3;
+    background: rgba(193, 138, 102, 0.07);
     font-size: 13px;
-    color: #444;
-    border: 1.5px solid #e8e8e8;
+    color: #555;
+    border: 1.5px solid rgba(193, 138, 102, 0.25);
 }
 
 .tagChip {
@@ -173,7 +175,8 @@
 }
 
 .tagChip:hover {
-    border-color: #222;
+    border-color: rgba(193, 138, 102, 0.96);
+    color: rgba(193, 138, 102, 0.96);
     cursor: pointer;
 }
 
@@ -282,11 +285,12 @@
 }
 
 .card {
-    background: #fff;
-    border: 1.5px solid #ebebeb;
+    background: linear-gradient(145deg, rgba(193, 138, 102, 0.13) 0%, rgba(250, 243, 236, 0.97) 60%, #fff 100%);
+    border: 1.5px solid rgba(193, 138, 102, 0.4);
     border-radius: 14px;
     padding: 18px 20px;
     margin-bottom: 16px;
+    box-shadow: 0 4px 18px rgba(193, 138, 102, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .cardTitle {
@@ -335,17 +339,17 @@
     padding: 8px 12px;
     border-radius: 8px;
     background: #fafafa;
-    border: 1.5px solid #ebebeb;
+    border: 1.5px solid rgba(193, 138, 102, 0.3);
     transition: all .15s;
 }
 
 .contactLink:hover {
-    border-color: #222;
-    background: #f5f5f5;
+    border-color: rgba(193, 138, 102, 0.96);
+    background: rgba(193, 138, 102, 0.05);
 }
 
 .mapLink {
-    color: #1d4ed8;
+    color: rgba(193, 138, 102, 0.96);
     font-weight: 600;
 }
 
@@ -353,7 +357,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 10px 12px;
-    border: 1.5px solid #e0e0e0;
+    border: 1.5px solid rgba(193, 138, 102, 0.3);
     border-radius: 8px;
     font-size: 14px;
     resize: vertical;
@@ -363,14 +367,14 @@
 }
 
 .contactTextarea:focus {
-    border-color: #222;
+    border-color: rgba(193, 138, 102, 0.96);
 }
 
 .contactSubmit {
     margin-top: 10px;
     width: 100%;
     padding: 11px;
-    background: #222;
+    background: rgba(193, 138, 102, 0.96);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -390,10 +394,52 @@
 }
 
 .contactSuccess {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 14px 16px;
     font-size: 14px;
     color: #16a34a;
-    font-weight: 600;
+    font-weight: 500;
+}
+
+.contactSuccess span {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.contactSuccess p {
     margin: 0;
+    line-height: 1.5;
+}
+
+.contactRow {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.contactInput {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+    background: #fafafa;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contactInput:focus {
+    border-color: rgba(193, 138, 102, 0.7);
+    background: #fff;
 }
 
 .checkVal {
@@ -405,7 +451,7 @@
 
 .menuLink {
     font-size: 14px;
-    color: #1d4ed8;
+    color: rgba(193, 138, 102, 0.96);
     font-weight: 600;
     text-decoration: none;
 }
@@ -646,5 +692,211 @@
 
     .hoursTable {
         font-size: 13px;
+    }
+}
+
+.photosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.photoItem {
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1.5px solid #ebebeb;
+    transition: opacity .15s, transform .15s;
+}
+
+.photoItem:hover {
+    opacity: .9;
+    transform: scale(1.02);
+}
+
+.photoItem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.lightboxOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn .18s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.lightboxImg {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+    animation: zoomIn .18s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(.93);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.lightboxClose {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .15);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+    z-index: 1001;
+}
+
+.lightboxClose:hover {
+    background: rgba(255, 255, 255, .28);
+}
+
+.lightboxPrev,
+.lightboxNext {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .15);
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+    z-index: 1001;
+    line-height: 1;
+}
+
+.lightboxPrev {
+    left: 20px;
+}
+
+.lightboxNext {
+    right: 20px;
+}
+
+.lightboxPrev:hover,
+.lightboxNext:hover {
+    background: rgba(255, 255, 255, .28);
+}
+
+.lightboxCounter {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, .7);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.contactAuthWarn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #92400e;
+}
+
+.contactAuthWarn span {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.contactAuthWarn p {
+    margin: 0;
+}
+
+.contactAuthLink {
+    color: rgba(193, 138, 102, 0.96);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.contactAuthLink:hover {
+    color: rgb(168, 118, 88);
+}
+
+@media (max-width: 480px) {
+    .left, .right {
+        padding: 0 8px;
+    }
+
+    .venueName {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .features {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mainPhoto {
+        max-height: 55vw;
+    }
+
+    .contactRow {
+        flex-direction: column;
+    }
+
+    .ratingRow {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .scheduleGrid {
+        grid-template-columns: 1fr;
     }
 }

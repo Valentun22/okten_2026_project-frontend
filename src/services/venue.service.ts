@@ -4,8 +4,8 @@ import {IPromise} from '../types/reduxType';
 import {axiosInstance} from './axiosInstance.service';
 
 export const venueService = {
-    getAll: (page: number): IPromise<IVenueInterface[]> =>
-        axiosInstance.get(urls.venue.base, {params: {page}}),
+    getAll: (page: number, limit = 12): IPromise<{data: IVenueInterface[], total: number}> =>
+        axiosInstance.get(urls.venue.base, {params: {limit, offset: (page - 1) * limit}}),
 
     getByVenueId: (id: string): IPromise<IVenueInterface> =>
         axiosInstance.get(urls.venue.venueById(id)),

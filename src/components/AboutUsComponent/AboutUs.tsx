@@ -1,18 +1,33 @@
-import React from 'react';
+import {useEffect, useState} from 'react';
+import {axiosInstance} from '../../services/axiosInstance.service';
+import {urls} from '../../constants/urls';
 import css from './AboutUs.module.css';
 
 const AboutUs = () => {
+    const [settings, setSettings] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        axiosInstance.get(urls.admin.settingsPublic)
+            .then(({data}) => setSettings(typeof data === 'object' ? data : {}))
+            .catch(() => {
+            });
+    }, []);
+
+    const s = (key: string) => settings[key] || '';
+
     return (
         <div className={css.aboutPage}>
             <div className={css.hero}>
                 <div className={css.overlay}></div>
                 <div className={css.heroContent}>
-                    <h1>Про нас</h1>
+                    <h1>{s('about_title') || 'Про нас'}</h1>
                     <p>
-                        <strong>Пиячок</strong> – це сучасний сервіс для пошуку закладів, перегляду
-                        відгуків, створення власних добірок улюблених місць та планування зустрічей.
-                        Ми поєднуємо зручний пошук, реальні оцінки користувачів, новини закладів
-                        та функціонал, який допомагає знайти місце саме під ваш настрій, бюджет і мету.
+                        {s('about_text') || (
+                            <><strong>Пиячок</strong> – це сучасний сервіс для пошуку закладів, перегляду
+                                відгуків, створення власних добірок улюблених місць та планування зустрічей.
+                                Ми поєднуємо зручний пошук, реальні оцінки користувачів, новини закладів
+                                та функціонал, який допомагає знайти місце саме під ваш настрій, бюджет і мету.</>
+                        )}
                     </p>
                 </div>
             </div>
@@ -23,19 +38,25 @@ const AboutUs = () => {
                         <h2>Наша ідея</h2>
                         <div className={css.line}></div>
                     </div>
-                    <p>
-                        Ми створили <strong>Пиячок</strong> як платформу, яка допомагає людям
-                        швидко та зручно знаходити заклади для відпочинку, зустрічей, святкувань
-                        або просто приємного вечора. Нашою метою є створення простору, де кожен
-                        користувач може не лише знайти потрібне місце, а й поділитися власним
-                        досвідом, оцінити сервіс, атмосферу та загальне враження від закладу.
-                    </p>
-                    <p>
-                        Для нас важливо, щоб пошук був не просто списком закладів, а повноцінним
-                        інструментом вибору. Саме тому платформа поєднує в собі каталог,
-                        фільтрацію, сортування, рейтинги, новини, обрані заклади та додатковий
-                        функціонал для взаємодії між користувачами й закладами.
-                    </p>
+                    {s('about_idea') ? (
+                        <p>{s('about_idea')}</p>
+                    ) : (
+                        <>
+                            <p>
+                                Ми створили <strong>Пиячок</strong> як платформу, яка допомагає людям
+                                швидко та зручно знаходити заклади для відпочинку, зустрічей, святкувань
+                                або просто приємного вечора. Нашою метою є створення простору, де кожен
+                                користувач може не лише знайти потрібне місце, а й поділитися власним
+                                досвідом, оцінити сервіс, атмосферу та загальне враження від закладу.
+                            </p>
+                            <p>
+                                Для нас важливо, щоб пошук був не просто списком закладів, а повноцінним
+                                інструментом вибору. Саме тому платформа поєднує в собі каталог,
+                                фільтрацію, сортування, рейтинги, новини, обрані заклади та додатковий
+                                функціонал для взаємодії між користувачами й закладами.
+                            </p>
+                        </>
+                    )}
                 </section>
 
                 <section className={css.section}>
@@ -141,11 +162,11 @@ const AboutUs = () => {
 
                 <section className={css.section}>
                     <div className={css.sectionHeader}>
-                        <h2>Функція “Пиячок”</h2>
+                        <h2>Функція "Пиячок"</h2>
                         <div className={css.line}></div>
                     </div>
                     <p>
-                        Окремою особливістю сервісу є функція <strong>“Пиячок”</strong>. Вона
+                        Окремою особливістю сервісу є функція <strong>"Пиячок"</strong>. Вона
                         дозволяє обрати заклад, дату, час, описати мету зустрічі та додаткові
                         критерії, наприклад бажаний бюджет, кількість людей у компанії, хто
                         оплачує рахунок та інші деталі. Такий інструмент робить платформу
@@ -207,6 +228,75 @@ const AboutUs = () => {
                         </div>
                     </div>
                 </section>
+
+                ] {(s('contact_phone') || s('contact_email') || s('contact_address')) && (
+                <section className={css.section}>
+                    <div className={css.sectionHeader}>
+                        <h2>Контакти</h2>
+                        <div className={css.line}></div>
+                    </div>
+                    <div className={css.contactGrid}>
+                        {s('contact_phone') && (
+                            <div className={css.contactItem}>
+                                <span className={css.contactIcon}>📞</span>
+                                <div>
+                                    <p className={css.contactLabel}>Телефон</p>
+                                    <a href={`tel:${s('contact_phone')}`}
+                                       className={css.contactValue}>{s('contact_phone')}</a>
+                                </div>
+                            </div>
+                        )}
+                        {s('contact_email') && (
+                            <div className={css.contactItem}>
+                                <span className={css.contactIcon}>✉️</span>
+                                <div>
+                                    <p className={css.contactLabel}>Email</p>
+                                    <a href={`mailto:${s('contact_email')}`}
+                                       className={css.contactValue}>{s('contact_email')}</a>
+                                </div>
+                            </div>
+                        )}
+                        {s('contact_address') && (
+                            <div className={css.contactItem}>
+                                <span className={css.contactIcon}>📍</span>
+                                <div>
+                                    <p className={css.contactLabel}>Адреса</p>
+                                    <p className={css.contactValue}>{s('contact_address')}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
+
+                {(s('social_instagram') || s('social_facebook') || s('social_telegram')) && (
+                    <section className={css.section}>
+                        <div className={css.sectionHeader}>
+                            <h2>Ми в соцмережах</h2>
+                            <div className={css.line}></div>
+                        </div>
+                        <div className={css.socialRow}>
+                            {s('social_instagram') && (
+                                <a href={s('social_instagram')} target="_blank" rel="noreferrer"
+                                   className={css.socialBtn}>
+                                    📸 Instagram
+                                </a>
+                            )}
+                            {s('social_facebook') && (
+                                <a href={s('social_facebook')} target="_blank" rel="noreferrer"
+                                   className={css.socialBtn}>
+                                    👤 Facebook
+                                </a>
+                            )}
+                            {s('social_telegram') && (
+                                <a href={s('social_telegram')} target="_blank" rel="noreferrer"
+                                   className={css.socialBtn}>
+                                    ✈️ Telegram
+                                </a>
+                            )}
+                        </div>
+                    </section>
+                )}
 
                 <section className={css.finalBlock}>
                     <h2>Пиячок – більше, ніж просто каталог закладів</h2>

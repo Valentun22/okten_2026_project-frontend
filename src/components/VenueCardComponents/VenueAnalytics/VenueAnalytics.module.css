@@ -109,6 +109,13 @@
     overflow-x: auto;
 }
 
+.barCount {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(193, 138, 102, .96);
+    white-space: nowrap;
+}
+
 .barWrap {
     display: flex;
     flex-direction: column;

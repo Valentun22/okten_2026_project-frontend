@@ -1,0 +1,96 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    padding: 20px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 12px;
+    font-family: Arial, sans-serif;
+}
+
+.text {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 24px;
+}
+
+.details {
+    text-align: left;
+    background: #f8f8f8;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+}
+
+.details pre {
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #c62828;
+    font-size: 12px;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btnPrimary {
+    padding: 12px 24px;
+    background: rgba(193, 138, 102, 0.96);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+    background: rgb(168, 118, 88);
+}
+
+.btnSecondary {
+    padding: 12px 24px;
+    background: transparent;
+    color: #555;
+    border: 1.5px solid #ddd;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+    border-color: #999;
+    color: #222;
+}

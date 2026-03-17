@@ -21,16 +21,26 @@ interface IAuthState {
     error: string | null;
 }
 
+const restoreUser = (): IUser | null => {
+    try {
+        const raw = localStorage.getItem('user');
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+};
+
 const initialState: IAuthState = {
-    user: null,
+    user: restoreUser(),
     isAuth: !!tokenStorage.getAccess(),
     loading: false,
     error: null,
 };
 
 const saveTokens = (data: any) => {
-    if (data?.accessToken) tokenStorage.setAccess(data.accessToken);
-    if (data?.refreshToken) tokenStorage.setRefresh(data.refreshToken);
+    const t = data?.tokens ?? data;
+    if (t?.accessToken) tokenStorage.setAccess(t.accessToken);
+    if (t?.refreshToken) tokenStorage.setRefresh(t.refreshToken);
 };
 
 const saveUser = (user: IUser | null) => {
@@ -57,7 +67,8 @@ const register = createAsyncThunk<any, IRegisterDto, { rejectValue: string }>(
             return await authService.register(dto);
         } catch (e) {
             const err = e as AxiosError<any>;
-            return rejectWithValue(err.response?.data?.message ?? 'Помилка реєстрації');
+            const msg = err.response?.data?.message;
+            return rejectWithValue(Array.isArray(msg) ? msg[0] : msg ?? 'Помилка реєстрації');
         }
     }
 );
@@ -90,6 +101,12 @@ const authSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
+        forceLogout(state) {
+            state.isAuth = false;
+            state.user = null;
+            tokenStorage.clear();
+            localStorage.removeItem('user');
+        },
     },
     extraReducers: builder => builder
         .addCase(login.pending, state => {
@@ -112,12 +129,8 @@ const authSlice = createSlice({
             state.loading = true;
             state.error = null;
         })
-        .addCase(register.fulfilled, (state, {payload}) => {
-            saveTokens(payload);
+        .addCase(register.fulfilled, (state) => {
             state.loading = false;
-            state.isAuth = true;
-            state.user = payload?.user ?? null;
-            saveUser(payload?.user ?? null);
         })
         .addCase(register.rejected, (state, {payload}) => {
             state.loading = false;

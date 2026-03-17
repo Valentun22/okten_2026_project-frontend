@@ -307,3 +307,8 @@
 .successText strong {
     color: #111;
 }
+
+.inputError {
+    border-color: #ef4444 !important;
+    background: #fff5f5 !important;
+}

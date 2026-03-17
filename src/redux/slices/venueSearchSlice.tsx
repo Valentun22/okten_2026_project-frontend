@@ -48,7 +48,18 @@ const search = createAsyncThunk<IVenueListResponse, IVenueSearchQuery, { rejectV
             );
         }
     },
-    {condition: (q) => (q.search ?? '').trim() !== '' || Object.keys(q).length > 2}
+    {condition: (q) => {
+            const hasSearch = (q.search ?? '').trim() !== '';
+            const hasFilters = !!(
+                q.categories?.length || q.city || q.tag ||
+                q.averageCheckFrom || q.averageCheckTo ||
+                q.ratingFrom || q.ratingTo ||
+                q.hasWiFi || q.hasParking || q.liveMusic ||
+                q.petFriendly || q.hasTerrace || q.smokingAllowed || q.cardPayment ||
+                q.sortBy !== VenueSortByEnum.CREATED || q.sortOrder !== SortOrderEnum.DESC
+            );
+            return hasSearch || hasFilters;
+        }}
 );
 
 const loadMore = createAsyncThunk<IVenueListResponse, IVenueSearchQuery, { rejectValue: string }>(

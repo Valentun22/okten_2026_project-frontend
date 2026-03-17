@@ -73,95 +73,107 @@ const SearchFilters = ({query, onApply, onReset}: Props) => {
             </button>
 
             {open && (
-                <div className={css.panel}>
-                    <div className={css.section}>
-                        <p className={css.label}>Місто</p>
-                        <input className={css.input} type="text" placeholder="Введіть місто..."
-                               value={local.city ?? ''}
-                               onChange={e => setLocal(p => ({...p, city: e.target.value || undefined}))}/>
-                    </div>
+                <>
+                    <div className={css.overlay} onClick={() => setOpen(false)}/>
+                    <div className={css.panel}>
+                        <div className={css.section}>
+                            <p className={css.label}>Місто</p>
+                            <input className={css.input} type="text" placeholder="Введіть місто..."
+                                   value={local.city ?? ''}
+                                   onChange={e => setLocal(p => ({...p, city: e.target.value || undefined}))}/>
+                        </div>
 
-                    <div className={css.section}>
-                        <p className={css.label}>Сортування</p>
-                        <div className={css.row}>
-                            <select className={css.select}
-                                    value={local.sortBy ?? VenueSortByEnum.CREATED}
-                                    onChange={e => setLocal(p => ({...p, sortBy: e.target.value as VenueSortByEnum}))}>
-                                <option value={VenueSortByEnum.CREATED}>Нові</option>
-                                <option value={VenueSortByEnum.RATING}>Рейтинг</option>
-                                <option value={VenueSortByEnum.AVERAGE_CHECK}>Середній чек</option>
-                                <option value={VenueSortByEnum.NAME}>Назва</option>
-                            </select>
-                            <select className={css.select}
-                                    value={local.sortOrder ?? SortOrderEnum.DESC}
-                                    onChange={e => setLocal(p => ({...p, sortOrder: e.target.value as SortOrderEnum}))}>
-                                <option value={SortOrderEnum.DESC}>↓ Спад</option>
-                                <option value={SortOrderEnum.ASC}>↑ Зріст</option>
-                            </select>
+                        <div className={css.section}>
+                            <p className={css.label}>Сортування</p>
+                            <div className={css.row}>
+                                <select className={css.select}
+                                        value={local.sortBy ?? VenueSortByEnum.CREATED}
+                                        onChange={e => setLocal(p => ({
+                                            ...p,
+                                            sortBy: e.target.value as VenueSortByEnum
+                                        }))}>
+                                    <option value={VenueSortByEnum.CREATED}>Нові</option>
+                                    <option value={VenueSortByEnum.RATING}>Рейтинг</option>
+                                    <option value={VenueSortByEnum.AVERAGE_CHECK}>Середній чек</option>
+                                    <option value={VenueSortByEnum.NAME}>Назва</option>
+                                </select>
+                                <select className={css.select}
+                                        value={local.sortOrder ?? SortOrderEnum.DESC}
+                                        onChange={e => setLocal(p => ({
+                                            ...p,
+                                            sortOrder: e.target.value as SortOrderEnum
+                                        }))}>
+                                    <option value={SortOrderEnum.DESC}>↓ Спад</option>
+                                    <option value={SortOrderEnum.ASC}>↑ Зріст</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className={css.section}>
+                            <p className={css.label}>Категорія</p>
+                            <div className={css.chips}>
+                                {CATEGORIES.map(c => (
+                                    <button key={c}
+                                            className={`${css.chip} ${local.categories?.includes(c) ? css.chipActive : ''}`}
+                                            onClick={() => toggleCategory(c)}>
+                                        {CATEGORY_LABELS[c]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={css.section}>
+                            <p className={css.label}>Середній чек (₴)</p>
+                            <div className={css.row}>
+                                <input className={css.input} type="number" placeholder="від"
+                                       value={local.averageCheckFrom ?? ''}
+                                       onChange={e => setLocal(p => ({
+                                           ...p,
+                                           averageCheckFrom: +e.target.value || undefined
+                                       }))}/>
+                                <input className={css.input} type="number" placeholder="до"
+                                       value={local.averageCheckTo ?? ''}
+                                       onChange={e => setLocal(p => ({
+                                           ...p,
+                                           averageCheckTo: +e.target.value || undefined
+                                       }))}/>
+                            </div>
+                        </div>
+
+                        <div className={css.section}>
+                            <p className={css.label}>Рейтинг (1–10)</p>
+                            <div className={css.row}>
+                                <input className={css.input} type="number" min={1} max={10} placeholder="від"
+                                       value={local.ratingFrom ?? ''}
+                                       onChange={e => setLocal(p => ({
+                                           ...p,
+                                           ratingFrom: +e.target.value || undefined
+                                       }))}/>
+                                <input className={css.input} type="number" min={1} max={10} placeholder="до"
+                                       value={local.ratingTo ?? ''}
+                                       onChange={e => setLocal(p => ({...p, ratingTo: +e.target.value || undefined}))}/>
+                            </div>
+                        </div>
+
+                        <div className={css.section}>
+                            <p className={css.label}>Особливості</p>
+                            <div className={css.chips}>
+                                {FEATURES.map(({key, label}) => (
+                                    <button key={key}
+                                            className={`${css.chip} ${local[key] ? css.chipActive : ''}`}
+                                            onClick={() => toggleFeature(key)}>
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={css.actions}>
+                            <button className={css.resetBtn} onClick={handleReset}>Скинути</button>
+                            <button className={css.applyBtn} onClick={handleApply}>Застосувати</button>
                         </div>
                     </div>
-
-                    <div className={css.section}>
-                        <p className={css.label}>Категорія</p>
-                        <div className={css.chips}>
-                            {CATEGORIES.map(c => (
-                                <button key={c}
-                                        className={`${css.chip} ${local.categories?.includes(c) ? css.chipActive : ''}`}
-                                        onClick={() => toggleCategory(c)}>
-                                    {CATEGORY_LABELS[c]}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={css.section}>
-                        <p className={css.label}>Середній чек (₴)</p>
-                        <div className={css.row}>
-                            <input className={css.input} type="number" placeholder="від"
-                                   value={local.averageCheckFrom ?? ''}
-                                   onChange={e => setLocal(p => ({
-                                       ...p,
-                                       averageCheckFrom: +e.target.value || undefined
-                                   }))}/>
-                            <input className={css.input} type="number" placeholder="до"
-                                   value={local.averageCheckTo ?? ''}
-                                   onChange={e => setLocal(p => ({
-                                       ...p,
-                                       averageCheckTo: +e.target.value || undefined
-                                   }))}/>
-                        </div>
-                    </div>
-
-                    <div className={css.section}>
-                        <p className={css.label}>Рейтинг (1–10)</p>
-                        <div className={css.row}>
-                            <input className={css.input} type="number" min={1} max={10} placeholder="від"
-                                   value={local.ratingFrom ?? ''}
-                                   onChange={e => setLocal(p => ({...p, ratingFrom: +e.target.value || undefined}))}/>
-                            <input className={css.input} type="number" min={1} max={10} placeholder="до"
-                                   value={local.ratingTo ?? ''}
-                                   onChange={e => setLocal(p => ({...p, ratingTo: +e.target.value || undefined}))}/>
-                        </div>
-                    </div>
-
-                    <div className={css.section}>
-                        <p className={css.label}>Особливості</p>
-                        <div className={css.chips}>
-                            {FEATURES.map(({key, label}) => (
-                                <button key={key}
-                                        className={`${css.chip} ${local[key] ? css.chipActive : ''}`}
-                                        onClick={() => toggleFeature(key)}>
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={css.actions}>
-                        <button className={css.resetBtn} onClick={handleReset}>Скинути</button>
-                        <button className={css.applyBtn} onClick={handleApply}>Застосувати</button>
-                    </div>
-                </div>
+                </>
             )}
         </div>
     );

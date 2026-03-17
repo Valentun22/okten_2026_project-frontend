@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../hooks/useReduxHooks';
 import {authActions} from '../../redux/slices/authSlice';
@@ -28,17 +28,20 @@ const RegisterUser = () => {
     const navigate = useNavigate();
     const {loading, error} = useAppSelector(state => state.auth);
 
+    const [showPwd, setShowPwd] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
     const [form, setForm] = useState({name: '', email: '', password: '', confirm: ''});
     const set = (k: string, v: string) => setForm(p => ({...p, [k]: v}));
     const [localError, setLocalError] = useState('');
+    const [emailSent, setEmailSent] = useState(false);
     const [oauthLoading, setOauthLoading] = useState<string | null>(null);
 
-    const finishOAuth = async (provider: string, token: string) => {
+    const finishOAuth = useCallback(async (provider: string, token: string) => {
         setOauthLoading(provider);
         const res = await dispatch(authActions.oauthLogin({provider, token}));
         setOauthLoading(null);
         if (authActions.oauthLogin.fulfilled.match(res)) navigate('/');
-    };
+    }, [dispatch, navigate]);
 
     useEffect(() => {
         if (!GOOGLE_CLIENT_ID) return;
@@ -48,20 +51,21 @@ const RegisterUser = () => {
                 callback: (resp: any) => {
                     if (resp.credential) finishOAuth('google', resp.credential);
                 },
+                scope: 'openid email profile',
             });
             window.google?.accounts.id.renderButton(
                 document.getElementById('google-reg-btn'),
                 {theme: 'outline', size: 'large', width: 340, text: 'signup_with', locale: 'uk'},
             );
         });
-    }, []);
+    }, [finishOAuth]);
 
     useEffect(() => {
         if (!FACEBOOK_APP_ID) return;
         loadScript('https://connect.facebook.net/uk_UA/sdk.js', 'fb-sdk').then(() => {
             window.FB?.init({appId: FACEBOOK_APP_ID, cookie: true, xfbml: false, version: 'v19.0'});
         });
-    }, []);
+    }, [finishOAuth]);
 
     const handleFacebook = () => {
         if (!window.FB) return;
@@ -86,8 +90,33 @@ const RegisterUser = () => {
         const {name, email, password} = form;
         const deviceId = `web-${Math.random().toString(36).slice(2)}`;
         const res = await dispatch(authActions.register({name, email, password, deviceId}));
-        if (authActions.register.fulfilled.match(res)) navigate('/');
+        if (authActions.register.fulfilled.match(res)) {
+            setEmailSent(true);
+        } else if (authActions.register.rejected.match(res)) {
+            setLocalError((res.payload as string) || 'Помилка реєстрації');
+        }
     };
+
+    if (emailSent) {
+        return (
+            <div className={css.page}>
+                <div className={css.card}>
+                    <div style={{textAlign: 'center', padding: '20px 0'}}>
+                        <div style={{fontSize: 52, marginBottom: 16}}>📧</div>
+                        <h2 style={{fontSize: 22, fontWeight: 800, margin: '0 0 12px'}}>Перевірте пошту!</h2>
+                        <p style={{color: '#666', marginBottom: 24, lineHeight: 1.5}}>
+                            Ми надіслали лист з підтвердженням на вашу email адресу.<br/>
+                            Перейдіть за посиланням у листі щоб активувати акаунт.
+                        </p>
+                        <Link to="/login" className={css.submitBtn}
+                              style={{display: 'inline-block', textDecoration: 'none', textAlign: 'center'}}>
+                            Перейти до входу
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={css.page}>
@@ -98,8 +127,6 @@ const RegisterUser = () => {
                 {[
                     {key: 'name', label: "Ім'я", type: 'text', ph: 'Тарас Шевченко'},
                     {key: 'email', label: 'Email', type: 'email', ph: 'your@email.com'},
-                    {key: 'password', label: 'Пароль', type: 'password', ph: '••••••••'},
-                    {key: 'confirm', label: 'Підтвердіть пароль', type: 'password', ph: '••••••••'},
                 ].map(({key, label, type, ph}) => (
                     <div className={css.field} key={key}>
                         <label className={css.label}>{label}</label>
@@ -108,6 +135,28 @@ const RegisterUser = () => {
                                onChange={e => set(key, e.target.value)}/>
                     </div>
                 ))}
+
+                <div className={css.field}>
+                    <label className={css.label}>Пароль</label>
+                    <div className={css.pwdWrap}>
+                        <input className={css.input} type={showPwd ? 'text' : 'password'} placeholder="••••••••"
+                               value={form.password} onChange={e => set('password', e.target.value)}/>
+                        <button type="button" className={css.eyeBtn} onClick={() => setShowPwd(v => !v)}>
+                            {showPwd ? '🙈' : '👁'}
+                        </button>
+                    </div>
+                </div>
+
+                <div className={css.field}>
+                    <label className={css.label}>Підтвердіть пароль</label>
+                    <div className={css.pwdWrap}>
+                        <input className={css.input} type={showConfirm ? 'text' : 'password'} placeholder="••••••••"
+                               value={form.confirm} onChange={e => set('confirm', e.target.value)}/>
+                        <button type="button" className={css.eyeBtn} onClick={() => setShowConfirm(v => !v)}>
+                            {showConfirm ? '🙈' : '👁'}
+                        </button>
+                    </div>
+                </div>
 
                 {(localError || error) && <p className={css.error}>{localError || error}</p>}
 

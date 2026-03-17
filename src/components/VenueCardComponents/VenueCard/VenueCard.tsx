@@ -1,4 +1,5 @@
-import {FC, useState} from 'react';
+import {FC, useState, useEffect, useCallback} from 'react';
+import {useAppSelector} from '../../../hooks/useReduxHooks';
 import {IVenueInterface} from '../../../interfaces/IVenueInterface';
 import {venueService} from '../../../services/venue.service';
 import {axiosInstance} from '../../../services/axiosInstance.service';
@@ -9,8 +10,8 @@ import {ComplaintModal} from '../../PyachokComponents/ComplaintModal/ComplaintMo
 import {VenueNews} from '../VenueNews/VenueNews';
 import {VenueAnalytics} from '../VenueAnalytics/VenueAnalytics';
 import css from './VenueCard.module.css';
-import {VenueComments} from "../../VenueCommentsComponent/VenueComments";
 import {useNavigate} from "react-router-dom";
+import {VenueComments} from "../../VenueComments/VenueComments";
 
 interface IProps {
     venueCard: IVenueInterface;
@@ -32,6 +33,7 @@ const FEATURES: { key: keyof IVenueInterface; label: string; icon: string }[] = 
 ];
 
 const VenueCard: FC<IProps> = ({venueCard: vc}) => {
+    const {isAuth} = useAppSelector(state => state.auth);
     const [showPyachok, setShowPyachok] = useState(false);
     const [showComplaint, setShowComplaint] = useState(false);
 
@@ -41,19 +43,46 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
     const [likeLoading, setLikeLoading] = useState(false);
     const [likeCount, setLikeCount] = useState<number>((vc as any).likesCount ?? 0);
 
-    const [userRating, setUserRating] = useState<number | null>(null);
+    useEffect(() => {
+        setIsFav(!!(vc as any).isFavorite);
+        setIsLiked(!!(vc as any).isLiked);
+        setLikeCount((vc as any).likesCount ?? 0);
+    }, [(vc as any).isFavorite, (vc as any).isLiked, (vc as any).likesCount]);
+
+    const userRaw0 = localStorage.getItem('user');
+    const userId0 = userRaw0 ? JSON.parse(userRaw0)?.id : null;
+    const ratingKey = `rated_venue_${vc.id}_${userId0 ?? 'anon'}`;
+    const [userRating, setUserRating] = useState<number | null>(() => {
+        const saved = localStorage.getItem(ratingKey);
+        return saved ? Number(saved) : null;
+    });
     const [ratingHover, setRatingHover] = useState<number | null>(null);
     const [ratingLoading, setRatingLoading] = useState(false);
-    const [ratingDone, setRatingDone] = useState(false);
+    const [ratingDone, setRatingDone] = useState<boolean>(() => !!localStorage.getItem(ratingKey));
 
     const [contactMsg, setContactMsg] = useState('');
+    const [contactName, setContactName] = useState('');
+    const [contactEmail, setContactEmail] = useState('');
     const [contactSent, setContactSent] = useState(false);
     const [contactLoading, setContactLoading] = useState(false);
+    const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+    const galleryPhotos = vc.image ?? [];
+    const handleLightboxKey = useCallback((e: KeyboardEvent) => {
+        if (lightboxIdx === null) return;
+        if (e.key === 'Escape') setLightboxIdx(null);
+        if (e.key === 'ArrowRight') setLightboxIdx(i => i !== null ? (i + 1) % galleryPhotos.length : null);
+        if (e.key === 'ArrowLeft') setLightboxIdx(i => i !== null ? (i - 1 + galleryPhotos.length) % galleryPhotos.length : null);
+    }, [lightboxIdx, galleryPhotos.length]);
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleLightboxKey);
+        return () => window.removeEventListener('keydown', handleLightboxKey);
+    }, [handleLightboxKey]);
 
     const ratingAvg: number | undefined = (vc as any).ratingAvg;
 
-    const userRaw = localStorage.getItem('user');
-    const userId = userRaw ? JSON.parse(userRaw)?.id : null;
+    const userRaw = userRaw0 ?? localStorage.getItem('user');
+    const userId = userId0;
     const roles = (() => {
         try {
             const u = JSON.parse(userRaw ?? '{}');
@@ -62,8 +91,10 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
             return [] as string[];
         }
     })();
-    const isOwner = !!(userId && vc.user && (vc.user as any).id === userId)
-        || roles.some((r: string) => r === 'superadmin');
+    const isOwner = (
+        !!(userId && vc.user && (vc.user as any).id === userId)
+        && (roles.some((r: string) => r === 'venue_admin') || roles.some((r: string) => r === 'superadmin'))
+    ) || roles.some((r: string) => r === 'superadmin');
 
     const handleFav = async () => {
         setFavLoading(true);
@@ -104,6 +135,7 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
         try {
             await venueService.setRating(vc.id, val);
             setRatingDone(true);
+            localStorage.setItem(ratingKey, String(val));
         } catch {
             setUserRating(null);
         }
@@ -114,7 +146,13 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
         if (!contactMsg.trim()) return;
         setContactLoading(true);
         try {
-            await venueService.contactManager(vc.id, contactMsg);
+            const fullMessage = [
+                contactName.trim() ? `Від: ${contactName.trim()}` : '',
+                contactEmail.trim() ? `Email для відповіді: ${contactEmail.trim()}` : '',
+                '',
+                contactMsg.trim(),
+            ].filter(Boolean).join('\n');
+            await venueService.contactManager(vc.id, fullMessage);
         } catch {
         }
         setContactSent(true);
@@ -138,7 +176,8 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
                         <div className={css.heroMeta}>
                             {vc.city &&
                                 <span className={css.heroCity}>📍 {vc.city}{vc.address ? `, ${vc.address}` : ''}</span>}
-                            {ratingAvg && <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
+                            {ratingAvg != null && ratingAvg > 0 &&
+                                <span className={css.heroRating}>⭐ {Number(ratingAvg).toFixed(1)}</span>}
                             {vc.averageCheck && <span className={css.heroCheck}>≈ {vc.averageCheck} ₴</span>}
                             {isOwner && <span className={css.ownerBadge}>👑 Ви власник</span>}
                         </div>
@@ -176,6 +215,20 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
                         <section className={css.section}>
                             <h2 className={css.sectionTitle}>Про заклад</h2>
                             <p className={css.desc}>{vc.description}</p>
+                        </section>
+                    )}
+
+                    {vc.image && vc.image.length > 0 && (
+                        <section className={css.section}>
+                            <h2 className={css.sectionTitle}>Фото</h2>
+                            <div className={css.photosGrid}>
+                                {vc.image.map((src, i) => (
+                                    <div key={i} className={css.photoItem}
+                                         onClick={() => setLightboxIdx(i)}>
+                                        <img src={src} alt={`фото ${i + 1}`}/>
+                                    </div>
+                                ))}
+                            </div>
                         </section>
                     )}
 
@@ -220,21 +273,21 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
 
                     <section className={css.section}>
                         <h2 className={css.sectionTitle}>Рейтинг закладу</h2>
-                        {ratingAvg && (
+                        {ratingAvg != null && ratingAvg > 0 && (
                             <div className={css.stars}>
                                 {Array.from({length: 5}).map((_, i) => (
                                     <span key={i}
                                           className={i < Math.round(ratingAvg / 2) ? css.starOn : css.starOff}>★</span>
                                 ))}
                                 <span className={css.ratingVal}>{Number(ratingAvg).toFixed(1)} / 10</span>
-                                {(vc as any).ratingCount && (
+                                {(vc as any).ratingCount != null && (
                                     <span className={css.ratingCount}>({(vc as any).ratingCount} оцінок)</span>
                                 )}
                             </div>
                         )}
                         <div className={css.ratingForm}>
                             <p className={css.ratingFormLabel}>
-                                {ratingDone ? '✅ Дякуємо за оцінку!' : 'Поставте свою оцінку (1–10):'}
+                                {ratingDone ? `✅ Ваша оцінка: ${userRating} / 10` : 'Поставте свою оцінку (1–10):'}
                             </p>
                             {!ratingDone && (
                                 <div className={css.ratingStars}>
@@ -259,7 +312,7 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
 
                     {isOwner && <VenueAnalytics venueId={vc.id}/>}
 
-                    <VenuePyachokList venueId={vc.id} venueName={vc.name}/>
+                    <VenuePyachokList venueId={vc.id} venueName={vc.name} isVenueOwner={isOwner}/>
 
                     <VenueComments venueId={vc.id}/>
                 </div>
@@ -307,17 +360,34 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
 
                     <section className={css.card}>
                         <h3 className={css.cardTitle}>💬 Написати менеджеру</h3>
-                        {contactSent ? (
-                            <p className={css.contactSuccess}>✅ Повідомлення надіслано!</p>
+                        {!isAuth ? (
+                            <div className={css.contactAuthWarn}>
+                                <span>🔒</span>
+                                <p>Щоб написати менеджеру, потрібно <a href="/login" className={css.contactAuthLink}>увійти
+                                    в акаунт</a></p>
+                            </div>
+                        ) : contactSent ? (
+                            <div className={css.contactSuccess}>
+                                <span>✅</span>
+                                <p>Повідомлення надіслано! Менеджер зв'яжеться з вами найближчим часом.</p>
+                            </div>
                         ) : (
                             <>
+                                <div className={css.contactRow}>
+                                    <input className={css.contactInput} type="text"
+                                           placeholder="Ваше ім'я"
+                                           value={contactName} onChange={e => setContactName(e.target.value)}/>
+                                    <input className={css.contactInput} type="email"
+                                           placeholder="Ваш email для відповіді"
+                                           value={contactEmail} onChange={e => setContactEmail(e.target.value)}/>
+                                </div>
                                 <textarea className={css.contactTextarea} rows={4}
                                           placeholder="Ваше запитання або пропозиція..."
                                           value={contactMsg} onChange={e => setContactMsg(e.target.value)}/>
                                 <button className={css.contactSubmit}
                                         onClick={handleContact}
                                         disabled={contactLoading || !contactMsg.trim()}>
-                                    {contactLoading ? '...' : 'Надіслати'}
+                                    {contactLoading ? '⏳ Надсилається...' : '📨 Надіслати повідомлення'}
                                 </button>
                             </>
                         )}
@@ -343,8 +413,8 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
                         <section className={css.card}>
                             <h3 className={css.cardTitle}>👤 Власник</h3>
                             <a href={`/users/${(vc.user as any).id}`} className={css.ownerLink}>
-                                {(vc.user as any).avatar
-                                    ? <img src={(vc.user as any).avatar} alt="" className={css.ownerAvatar}/>
+                                {(vc.user as any).image
+                                    ? <img src={(vc.user as any).image} alt="" className={css.ownerAvatar}/>
                                     : <div
                                         className={css.ownerAvatarPlaceholder}>{vc.user.name?.[0]?.toUpperCase() ?? '?'}</div>
                                 }
@@ -360,6 +430,33 @@ const VenueCard: FC<IProps> = ({venueCard: vc}) => {
             )}
             {showComplaint && (
                 <ComplaintModal venueId={vc.id} venueName={vc.name} onClose={() => setShowComplaint(false)}/>
+            )}
+
+            {lightboxIdx !== null && vc.image && (
+                <div className={css.lightboxOverlay} onClick={() => setLightboxIdx(null)}>
+                    <button className={css.lightboxClose} onClick={() => setLightboxIdx(null)}>✕</button>
+                    {lightboxIdx > 0 && (
+                        <button className={css.lightboxPrev}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setLightboxIdx(i => i! - 1);
+                                }}>‹</button>
+                    )}
+                    <img
+                        src={vc.image[lightboxIdx]}
+                        alt={`фото ${lightboxIdx + 1}`}
+                        className={css.lightboxImg}
+                        onClick={e => e.stopPropagation()}
+                    />
+                    {lightboxIdx < vc.image.length - 1 && (
+                        <button className={css.lightboxNext}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setLightboxIdx(i => i! + 1);
+                                }}>›</button>
+                    )}
+                    <span className={css.lightboxCounter}>{lightboxIdx + 1} / {vc.image.length}</span>
+                </div>
             )}
         </div>
     );

@@ -819,7 +819,6 @@
     color: #fff;
 }
 
-/* ── Responsive Admin ── */
 @media (max-width: 900px) {
     .page {
         flex-direction: column;
@@ -830,10 +829,12 @@
         height: auto;
         position: static;
         flex-direction: row;
-        flex-wrap: wrap;
-        padding: 12px;
+        flex-wrap: nowrap;
+        padding: 10px 12px;
         align-items: center;
         gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .sidebarLogo {
@@ -843,16 +844,18 @@
     .sidebarNav {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px;
+        flex-wrap: nowrap;
+        gap: 4px;
         flex: 1;
+        overflow-x: auto;
     }
 
     .sidebarBtn {
-        padding: 6px 12px;
+        padding: 8px 10px;
         font-size: 12px;
         border-radius: 8px;
         width: auto;
+        flex-shrink: 0;
     }
 
     .sidebarIcon {
@@ -861,9 +864,11 @@
 
     .backBtn {
         margin-top: 0;
+        flex-shrink: 0;
         width: auto;
-        padding: 6px 14px;
+        padding: 8px 14px;
         font-size: 12px;
+        border-radius: 8px;
     }
 
     .main {
@@ -892,10 +897,18 @@
 
     .sidebarIcon {
         display: inline;
+        font-size: 18px;
+    }
+
+    .sidebarBtn {
+        padding: 8px;
+        min-width: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
-/* ── Drag highlight ── */
 .dragging {
     opacity: 0.5;
     border: 2px dashed rgba(193, 138, 102, .6) !important;
@@ -911,26 +924,79 @@
     touch-action: none;
 }
 
-/* ── CMS Tab ── */
 .cmsWrap {
-    max-width: 640px;
+    max-width: 900px;
+}
+
+.cmsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.cmsTitle {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 4px;
 }
 
 .cmsHint {
     font-size: 13px;
-    color: #666;
-    margin-bottom: 24px;
-    line-height: 1.6;
-    background: #f8f8f8;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border-left: 3px solid rgba(193, 138, 102, .6);
+    color: #888;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.cmsGroup {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.cmsGroupHeader {
+    background: #f8f9fa;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cmsGroupTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.cmsGroupHint {
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 400;
 }
 
 .cmsForm {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 20px;
+}
+
+.cmsForm .cmsField:has(textarea) {
+    grid-column: 1 / -1;
 }
 
 .cmsField {
@@ -940,93 +1006,141 @@
 }
 
 .cmsLabel {
-    font-size: 13px;
-    font-weight: 700;
-    color: #444;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    text-align: left !important;
 }
 
 .cmsInput {
-    padding: 10px 14px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 9px 13px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
     font-family: inherit;
-    transition: border-color .15s;
+    transition: border-color .15s, box-shadow .15s;
     outline: none;
+    background: #fafafa;
+    color: #222;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cmsInput:focus {
     border-color: rgba(193, 138, 102, .8);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(193, 138, 102, .1);
 }
 
 .cmsTextarea {
-    padding: 10px 14px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 9px 13px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
     font-family: inherit;
     resize: vertical;
-    transition: border-color .15s;
+    transition: border-color .15s, box-shadow .15s;
     outline: none;
     line-height: 1.6;
+    background: #fafafa;
+    color: #222;
+    min-height: 90px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cmsTextarea:focus {
     border-color: rgba(193, 138, 102, .8);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(193, 138, 102, .1);
 }
 
 .cmsActions {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 12px;
+}
+
+.cmsActionsBottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 8px 0 16px;
 }
 
 .cmsSaved {
     color: #16a34a;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 6px 12px;
+}
+
+.cmsError {
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 600;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 6px 12px;
 }
 
 @media (max-width: 768px) {
     .cmsWrap {
         max-width: 100%;
     }
+
+    .cmsForm {
+        grid-template-columns: 1fr;
+    }
+
+    .cmsHeader {
+        flex-direction: column;
+    }
 }
+
 .modalOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(0, 0, 0, .45);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     padding: 20px;
 }
+
 .modalBox {
     background: #fff;
     border-radius: 16px;
     padding: 32px 28px 24px;
     width: 100%;
     max-width: 420px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
+
 .modalTitle {
     font-size: 18px;
     font-weight: 800;
     color: #111;
     margin: 0;
 }
+
 .modalDesc {
     font-size: 14px;
     color: #666;
     margin: 0;
 }
+
 .modalLabel {
     font-size: 12px;
     font-weight: 700;
@@ -1034,6 +1148,7 @@
     text-transform: uppercase;
     letter-spacing: .05em;
 }
+
 .modalInput {
     padding: 10px 13px;
     border: 1.5px solid #e0e0e0;
@@ -1044,11 +1159,16 @@
     font-family: monospace;
     transition: border .15s;
 }
-.modalInput:focus { border-color: rgba(193,138,102,.8); }
+
+.modalInput:focus {
+    border-color: rgba(193, 138, 102, .8);
+}
+
 .modalRange {
     width: 100%;
-    accent-color: rgba(193,138,102,.96);
+    accent-color: rgba(193, 138, 102, .96);
 }
+
 .modalRangeTicks {
     display: flex;
     justify-content: space-between;
@@ -1056,12 +1176,14 @@
     font-weight: 700;
     margin-top: -4px;
 }
+
 .modalActions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
     margin-top: 4px;
 }
+
 .modalCancelBtn {
     padding: 9px 18px;
     border-radius: 8px;
@@ -1073,20 +1195,32 @@
     cursor: pointer;
     transition: all .15s;
 }
-.modalCancelBtn:hover { background: #f5f5f5; }
+
+.modalCancelBtn:hover {
+    background: #f5f5f5;
+}
+
 .modalPrimaryBtn {
     padding: 9px 20px;
     border-radius: 8px;
     border: none;
-    background: rgba(193,138,102,.96);
+    background: rgba(193, 138, 102, .96);
     color: #fff;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     transition: opacity .15s;
 }
-.modalPrimaryBtn:hover:not(:disabled) { opacity: .88; }
-.modalPrimaryBtn:disabled { opacity: .5; cursor: not-allowed; }
+
+.modalPrimaryBtn:hover:not(:disabled) {
+    opacity: .88;
+}
+
+.modalPrimaryBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
 .modalDangerBtn {
     padding: 9px 20px;
     border-radius: 8px;
@@ -1098,8 +1232,13 @@
     cursor: pointer;
     transition: opacity .15s;
 }
-.modalDangerBtn:hover { opacity: .88; }
+
+.modalDangerBtn:hover {
+    opacity: .88;
+}
 
 @media (max-width: 480px) {
-    .modalBox { padding: 24px 18px 20px; }
+    .modalBox {
+        padding: 24px 18px 20px;
+    }
 }

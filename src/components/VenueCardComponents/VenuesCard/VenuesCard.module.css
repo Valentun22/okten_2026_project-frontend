@@ -7,21 +7,22 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 20px;
-    margin: 20px 24px 0;
-    background: none;
-    border: 1.5px solid #ddd;
+    padding: 8px 18px;
+    margin: 24px 0 8px;
+    background: rgba(193, 138, 102, 0.08);
+    border: 1.5px solid rgba(193, 138, 102, 0.5);
     border-radius: 100px;
     font-size: 14px;
     font-weight: 500;
-    color: #444;
+    color: rgba(160, 110, 75, 1);
     cursor: pointer;
-    transition: all .15s;
+    transition: all .18s;
 }
 
 .backBtn:hover {
-    border-color: #222;
-    color: #111;
+    background: rgba(193, 138, 102, 0.18);
+    border-color: rgba(193, 138, 102, 0.96);
+    color: rgba(140, 90, 50, 1);
 }
 
 .skeletonWrap {
@@ -29,7 +30,7 @@
 }
 
 .skeletonHero {
-    height: 380px;
+    height: 520px;
     border-radius: 0 0 20px 20px;
     margin-bottom: 32px;
     background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);

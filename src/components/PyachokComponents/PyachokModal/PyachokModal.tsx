@@ -2,6 +2,7 @@ import {FC, useState} from 'react';
 import {pyachokService} from '../../../services/pyachok.service';
 import {
     ICreatePyachokDto,
+    IPyachokItem,
     PyachokGenderEnum,
     PyachokPayerEnum,
 } from '../../../interfaces/IPyachokInterface';
@@ -11,22 +12,37 @@ interface IProps {
     venueId: string;
     venueName: string;
     onClose: () => void;
+    editItem?: IPyachokItem;
 }
 
 const WARNING_KEY = 'pyachokWarningAccepted';
 
-const PyachokModal: FC<IProps> = ({venueId, venueName, onClose}) => {
+const PyachokModal: FC<IProps> = ({venueId, venueName, onClose, editItem}) => {
+    const isEditMode = !!editItem;
     const warningShown = localStorage.getItem(WARNING_KEY) === 'true';
-    const [step, setStep] = useState<'warning' | 'form' | 'success'>(warningShown ? 'form' : 'warning');
+    const [step, setStep] = useState<'warning' | 'form' | 'success'>(
+        isEditMode || warningShown ? 'form' : 'warning'
+    );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const [dto, setDto] = useState<ICreatePyachokDto>({
-        date: '',
-        time: '',
-        purpose: '',
-        message: '',
-    });
+    const [dto, setDto] = useState<ICreatePyachokDto>(
+        isEditMode ? {
+            date: editItem.date,
+            time: editItem.time,
+            purpose: editItem.purpose ?? '',
+            message: editItem.message ?? '',
+            peopleCount: editItem.peopleCount,
+            genderPreference: editItem.genderPreference as any,
+            payer: editItem.payer as any,
+            expectedBudget: editItem.expectedBudget,
+        } : {
+            date: '',
+            time: '',
+            purpose: '',
+            message: '',
+        }
+    );
 
     const set = (field: keyof ICreatePyachokDto, value: any) =>
         setDto(prev => ({...prev, [field]: value || undefined}));
@@ -37,17 +53,51 @@ const PyachokModal: FC<IProps> = ({venueId, venueName, onClose}) => {
     };
 
     const handleSubmit = async () => {
-        if (!dto.date || !dto.time) {
-            setError('Вкажіть дату та час');
+        // Перевіряємо кожне поле окремо
+        if (!dto.date) {
+            setError('❌ Вкажіть дату зустрічі');
+            return;
+        }
+        if (!dto.time) {
+            setError('❌ Вкажіть час зустрічі');
+            return;
+        }
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(dto.date);
+        if (isNaN(selectedDate.getTime())) {
+            setError('❌ Невірний формат дати. Використовуйте календар');
+            return;
+        }
+        const year = selectedDate.getFullYear();
+        if (year < 2020 || year > 2100) {
+            setError(`❌ Невірний рік: ${year}. Оберіть реальну дату`);
+            return;
+        }
+        if (selectedDate < today) {
+            setError(`❌ Дата ${dto.date} вже в минулому. Оберіть майбутню дату`);
             return;
         }
         setLoading(true);
         setError(null);
         try {
-            await pyachokService.create(venueId, dto);
+            const payload = {
+                ...dto,
+                message: dto.message?.trim() || undefined,
+                purpose: dto.purpose?.trim() || undefined,
+            };
+            if (isEditMode) {
+                await pyachokService.update(editItem.id, payload);
+            } else {
+                await pyachokService.create(venueId, payload);
+            }
             setStep('success');
-        } catch {
-            setError('Помилка при відправці. Спробуйте ще раз.');
+        } catch (e: any) {
+            const resp = e?.response?.data;
+            const msg = Array.isArray(resp?.messages)
+                ? resp.messages.join(', ')
+                : resp?.message || 'Помилка при відправці. Спробуйте ще раз.';
+            setError(msg);
         }
         setLoading(false);
     };
@@ -86,20 +136,42 @@ const PyachokModal: FC<IProps> = ({venueId, venueName, onClose}) => {
                                 <div className={css.field}>
                                     <label className={css.label}>📅 Дата *</label>
                                     <input
-                                        className={css.input}
+                                        className={`${css.input} ${error?.includes('дат') || error?.includes('рік') ? css.inputError : ''}`}
                                         type="date"
                                         min={new Date().toISOString().split('T')[0]}
+                                        max="2100-12-31"
                                         value={dto.date}
-                                        onChange={e => set('date', e.target.value)}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            set('date', val);
+                                            if (val) {
+                                                const d = new Date(val);
+                                                const yr = d.getFullYear();
+                                                const today = new Date();
+                                                today.setHours(0, 0, 0, 0);
+                                                if (yr < 2020 || yr > 2100) {
+                                                    setError(`❌ Невірний рік: ${yr}`);
+                                                } else if (d < today) {
+                                                    setError('❌ Дата вже в минулому');
+                                                } else {
+                                                    setError(null);
+                                                }
+                                            } else {
+                                                setError(null);
+                                            }
+                                        }}
                                     />
                                 </div>
                                 <div className={css.field}>
                                     <label className={css.label}>🕐 Час *</label>
                                     <input
-                                        className={css.input}
+                                        className={`${css.input} ${error?.includes('час') ? css.inputError : ''}`}
                                         type="time"
                                         value={dto.time}
-                                        onChange={e => set('time', e.target.value)}
+                                        onChange={e => {
+                                            set('time', e.target.value);
+                                            setError(null);
+                                        }}
                                     />
                                 </div>
                             </div>

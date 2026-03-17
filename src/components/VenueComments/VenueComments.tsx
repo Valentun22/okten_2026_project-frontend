@@ -39,8 +39,9 @@ const StarPicker: FC<{ value: number; onChange: (v: number) => void; disabled?: 
 const CommentCard: FC<{
     comment: IComment;
     onDelete: (id: string) => void;
-    onUpdate: (updated: IComment) => void
-}> = ({comment, onDelete, onUpdate}) => {
+    onUpdate: (updated: IComment) => void;
+    onImgClick: (src: string) => void;
+}> = ({comment, onDelete, onUpdate, onImgClick}) => {
     const [deleting, setDeleting] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTitle, setEditTitle] = useState(comment.title);
@@ -134,7 +135,13 @@ const CommentCard: FC<{
             {comment.image_check && (
                 <div className={css.checkImg}>
                     <span className={css.checkLabel}>📸 Фото чеку:</span>
-                    <img src={comment.image_check} alt="чек" className={css.checkPhoto}/>
+                    <img
+                        src={comment.image_check}
+                        alt="чек"
+                        className={css.checkPhoto}
+                        onClick={() => onImgClick(comment.image_check!)}
+                        style={{cursor: 'zoom-in'}}
+                    />
                 </div>
             )}
 
@@ -151,8 +158,10 @@ const CommentCard: FC<{
 };
 
 const VenueComments: FC<IProps> = ({venueId}) => {
-    const {isAuth} = useAppSelector(state => state.auth);
+    const {isAuth, user} = useAppSelector(state => state.auth);
+    const isCritic = user?.isCritic ?? false;
 
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const [comments, setComments] = useState<IComment[]>([]);
     const [total, setTotal] = useState(0);
     const [offset, setOffset] = useState(0);
@@ -233,7 +242,14 @@ const VenueComments: FC<IProps> = ({venueId}) => {
                 const uploaded = await uploadCheckFile();
                 if (uploaded) checkUrl = uploaded;
             }
-            const {data} = await commentService.create(venueId, {...form, image_check: checkUrl});
+            const payload: ICreateCommentDto = {
+                title: form.title,
+                body: form.body,
+                rating: form.rating,
+                image_check: checkUrl || undefined
+            };
+            if (form.recommendation) payload.recommendation = form.recommendation;
+            const {data} = await commentService.create(venueId, payload);
             setComments(prev => [data, ...prev]);
             setTotal(t => t + 1);
             setForm({title: '', body: '', rating: 0});
@@ -241,7 +257,8 @@ const VenueComments: FC<IProps> = ({venueId}) => {
             setCheckPreview('');
             setShowForm(false);
         } catch (e: any) {
-            setFormError(e?.response?.data?.message ?? 'Помилка при збереженні');
+            const msg = e?.response?.data?.message;
+            setFormError(Array.isArray(msg) ? msg.join(', ') : (msg ?? `Помилка при збереженні (${e?.response?.status})`));
         }
         setSubmitting(false);
     };
@@ -286,21 +303,23 @@ const VenueComments: FC<IProps> = ({venueId}) => {
                                   value={form.body} onChange={e => setF('body', e.target.value)}/>
                     </div>
 
-                    <div className={css.formField}>
-                        <label className={css.formLabel}>Рекомендація</label>
-                        <div className={css.recRow}>
-                            {[
-                                {v: CommentRecommendationEnum.RECOMMEND, l: '👍 Рекомендую'},
-                                {v: CommentRecommendationEnum.NOT_RECOMMEND, l: '👎 Не рекомендую'},
-                            ].map(({v, l}) => (
-                                <button key={v}
-                                        className={`${css.recBtn} ${form.recommendation === v ? css.recBtnActive : ''}`}
-                                        onClick={() => setF('recommendation', form.recommendation === v ? undefined : v)}>
-                                    {l}
-                                </button>
-                            ))}
+                    {isCritic && (
+                        <div className={css.formField}>
+                            <label className={css.formLabel}>Рекомендація</label>
+                            <div className={css.recRow}>
+                                {[
+                                    {v: CommentRecommendationEnum.RECOMMEND, l: '👍 Рекомендую'},
+                                    {v: CommentRecommendationEnum.NOT_RECOMMEND, l: '👎 Не рекомендую'},
+                                ].map(({v, l}) => (
+                                    <button key={v}
+                                            className={`${css.recBtn} ${form.recommendation === v ? css.recBtnActive : ''}`}
+                                            onClick={() => setF('recommendation', form.recommendation === v ? undefined : v)}>
+                                        {l}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {formError && <p className={css.formError}>{formError}</p>}
 
@@ -370,7 +389,8 @@ const VenueComments: FC<IProps> = ({venueId}) => {
                 <div className={css.list}>
                     {comments.map(c => (
                         <CommentCard key={c.id} comment={c} onDelete={handleDelete}
-                                     onUpdate={updated => setComments(p => p.map(x => x.id === updated.id ? updated : x))}/>
+                                     onUpdate={updated => setComments(p => p.map(x => x.id === updated.id ? updated : x))}
+                                     onImgClick={setLightboxSrc}/>
                     ))}
                 </div>
             )}
@@ -387,6 +407,40 @@ const VenueComments: FC<IProps> = ({venueId}) => {
                 <p className={css.loginHint}>
                     <a href="/login">Увійдіть</a>, щоб залишити відгук
                 </p>
+            )}
+
+            {lightboxSrc && (
+                <div
+                    onClick={() => setLightboxSrc(null)}
+                    style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 9999, cursor: 'zoom-out',
+                    }}
+                >
+                    <img
+                        src={lightboxSrc}
+                        alt="фото чеку"
+                        style={{
+                            maxWidth: '90vw', maxHeight: '90vh',
+                            borderRadius: 12, boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+                            objectFit: 'contain',
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    />
+                    <button
+                        onClick={() => setLightboxSrc(null)}
+                        style={{
+                            position: 'absolute', top: 20, right: 24,
+                            background: 'rgba(255,255,255,0.15)', border: 'none',
+                            color: '#fff', fontSize: 28, cursor: 'pointer',
+                            width: 44, height: 44, borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            lineHeight: 1,
+                        }}
+                    >✕
+                    </button>
+                </div>
             )}
         </section>
     );

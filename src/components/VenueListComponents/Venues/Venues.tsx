@@ -7,19 +7,19 @@ import css from './Venues.module.css';
 const LIMIT = 12;
 
 const Venues = () => {
-    const {venues, loading, error} = useAppSelector(state => state.venues);
+    const {venues, loading, error, total} = useAppSelector(state => state.venues);
     const dispatch = useAppDispatch();
     const [page, setPage] = useState(1);
 
     useEffect(() => {
-        dispatch(venuesActions.getAll(page));
+        dispatch(venuesActions.getAll({page, limit: LIMIT}));
     }, [dispatch, page]);
 
     return (
         <div className={css.wrap}>
             <div className={css.headerRow}>
                 <h2 className={css.title}>Всі заклади</h2>
-                <span className={css.count}>{venues.length > 0 ? `${venues.length}+ закладів` : ''}</span>
+                <span className={css.count}>{total > 0 ? `${total} закладів` : ''}</span>
             </div>
 
             {loading && (
@@ -34,7 +34,8 @@ const Venues = () => {
                 <div className={css.state}>
                     <span>😕</span>
                     <p>{error}</p>
-                    <button className={css.retryBtn} onClick={() => dispatch(venuesActions.getAll(page))}>
+                    <button className={css.retryBtn}
+                            onClick={() => dispatch(venuesActions.getAll({page, limit: LIMIT}))}>
                         Спробувати знову
                     </button>
                 </div>
@@ -53,13 +54,14 @@ const Venues = () => {
                 </div>
             )}
 
-            {!loading && venues.length >= LIMIT && (
+            {!loading && total > LIMIT && (
                 <div className={css.pagination}>
                     <button className={css.pageBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>
                         ← Попередня
                     </button>
-                    <span className={css.pageNum}>Сторінка {page}</span>
-                    <button className={css.pageBtn} onClick={() => setPage(p => p + 1)}>
+                    <span className={css.pageNum}>Сторінка {page} / {Math.ceil(total / LIMIT)}</span>
+                    <button className={css.pageBtn} disabled={page >= Math.ceil(total / LIMIT)}
+                            onClick={() => setPage(p => p + 1)}>
                         Наступна →
                     </button>
                 </div>

@@ -42,6 +42,7 @@ export interface IPyachokItem {
     user?: {
         id: string;
         name?: string;
+        image?: string;
         avatar?: string;
     };
     venue?: {
@@ -52,7 +53,8 @@ export interface IPyachokItem {
 }
 
 export interface IPyachokListResponse {
-    data: IPyachokItem[];
+    items?: IPyachokItem[];
+    data?: IPyachokItem[];
     total: number;
     page: number;
     limit: number;

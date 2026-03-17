@@ -20,9 +20,18 @@ export const pyachokService = {
     getMyList: (query?: IPyachokListQuery) =>
         axiosInstance.get<IPyachokListResponse>(urls.pyachok.myList, {params: query}),
 
+    update: (id: string, dto: ICreatePyachokDto) =>
+        axiosInstance.patch<IPyachokItem>(urls.pyachok.update(id), dto),
+
     close: (id: string) =>
         axiosInstance.patch<IPyachokItem>(urls.pyachok.close(id)),
 
+    closeAny: (id: string) =>
+        axiosInstance.patch<IPyachokItem>(urls.pyachok.closeAny(id)),
+
     delete: (id: string) =>
         axiosInstance.delete<void>(urls.pyachok.delete(id)),
+
+    deleteAny: (id: string) =>
+        axiosInstance.delete<void>(urls.pyachok.deleteAny(id)),
 };

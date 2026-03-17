@@ -970,3 +970,395 @@
     flex-direction: column;
     gap: 4px;
 }
+
+.sidebarBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.ownerBadge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.adminMiniBadge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.actionBtnSoft {
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.actionBtnSoft:hover {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+}
+
+.sidebarBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.ownerBadge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.adminMiniBadge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.actionBtnSoft {
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.actionBtnSoft:hover {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+}
+
+.roleErrorMsg {
+    width: 100%;
+    margin: 0 0 10px;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.favGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.favCard {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid #ebebeb;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+}
+
+.favCard:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .1);
+    transform: translateY(-3px);
+}
+
+.favImg {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #f5f1ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.favImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.favInfo {
+    padding: 12px 14px 14px;
+}
+
+.favName {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 4px;
+}
+
+.favCity {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+}
+
+.favRemove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, .45);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background .18s, transform .18s;
+    z-index: 2;
+}
+
+.favRemove:hover {
+    background: rgba(220, 38, 38, .85);
+    transform: scale(1.1);
+}
+
+.passwordSection {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.changePasswordBtn {
+    width: 100%;
+    margin-top: 8px;
+    background: rgba(193, 138, 102, 0.1);
+    border: 1.5px solid rgba(193, 138, 102, 0.6);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(193, 138, 102, 1);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.changePasswordBtn:hover {
+    background: rgba(193, 138, 102, 0.96);
+    color: #fff;
+    border-color: rgba(193, 138, 102, 0.96);
+}
+
+.passwordForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #ebebeb;
+}
+
+.passwordFormTitle {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    color: #222;
+}
+
+.editSuccess {
+    font-size: 13px;
+    color: #16a34a;
+    font-weight: 600;
+    margin: 0;
+}
+
+.pwdInputWrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pwdInputWrap .editInput {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.eyeBtn:hover {
+    opacity: 1;
+}
+
+.cancelBtn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1.5px solid #f0a0a0;
+    background: #fff5f5;
+    color: #c0392b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+}
+
+.saveBtn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(193, 138, 102, 0.96);
+    background: rgba(193, 138, 102, 0.96);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.saveBtn:hover {
+    background: rgb(168, 118, 88);
+    border-color: rgb(168, 118, 88);
+}
+
+.saveBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 0 !important;
+    }
+
+    .layout {
+        padding: 12px 8px 40px !important;
+        gap: 16px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .sidebar {
+        padding: 20px 16px !important;
+    }
+
+    .avatarWrap {
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    .tabsRow, .tabs {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+
+    .tab {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+    }
+
+    .statsRow {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pwdWrap {
+        flex-direction: row;
+    }
+
+    .roleCard {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .roleBtn {
+        width: 100% !important;
+        text-align: center !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .page {
+        padding: 8px !important;
+    }
+
+    .userName {
+        font-size: 18px !important;
+    }
+
+    .cancelBtn, .saveBtn {
+        width: 100%;
+    }
+
+    .formGrid, .editGrid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.backToMenu {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(193, 138, 102, 0.1);
+    border: 1.5px solid rgba(193, 138, 102, 0.3);
+    border-radius: 10px;
+    color: rgba(193, 138, 102, 0.96);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .backToMenu {
+        display: flex;
+    }
+
+    .sidebarHidden {
+        display: none !important;
+    }
+
+    .mainHidden {
+        display: none !important;
+    }
+}

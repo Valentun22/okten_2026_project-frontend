@@ -1,22 +1,36 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import css from './Header.module.css';
 import img1 from '../../img/img1.png';
 import {NavLink, useNavigate} from 'react-router-dom';
 import {NavigationLogin} from '../NavigationLoginComponent/NavigationLogin';
 import {useAppDispatch, useAppSelector} from '../../hooks/useReduxHooks';
 import {authActions} from '../../redux/slices/authSlice';
+import {messageService} from "../../services/massage.service";
 
 const Header = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const {isAuth} = useAppSelector(state => state.auth);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const userRaw = localStorage.getItem('user');
     const userObj = userRaw ? JSON.parse(userRaw) : null;
     const roles = Array.isArray(userObj?.role) ? userObj.role : (userObj?.role ? [userObj.role] : []);
     const isVenueAdmin = roles.includes('venue_admin');
-    const isAdmin = roles.includes('superadmin') || isVenueAdmin;
+    const isAdmin = roles.includes('superadmin');
+
+    useEffect(() => {
+        if (!isAuth) {
+            setUnreadCount(0);
+            return;
+        }
+        const fetch = () => messageService.getUnreadCount().then(({data}) => setUnreadCount(data.count)).catch(() => {
+        });
+        fetch();
+        const interval = setInterval(fetch, 60000);
+        return () => clearInterval(interval);
+    }, [isAuth]);
 
     const handleSignOut = () => {
         dispatch(authActions.logout());
@@ -26,13 +40,14 @@ const Header = () => {
 
     const NAV_LINKS = [
         {label: 'Головна', path: '/'},
-        {label: 'Пошук', path: '/searchVenue'},
+        {label: 'Заклади', path: '/venues'},
         {label: 'Топ', path: '/topVenues'},
         {label: 'Новини', path: '/news'},
         {label: 'Пиячок', path: '/pyachok'},
         ...(isVenueAdmin ? [{label: '+Заклад', path: '/venues/create'}] : []),
         ...(isAdmin ? [{label: '⚙️ Адмін', path: '/admin'}] : []),
         {label: 'Про нас', path: '/aboutUs'},
+        {label: 'Пошук', path: '/searchVenue', highlight: true},
     ];
 
     const handleNav = (path: string) => {
@@ -47,15 +62,19 @@ const Header = () => {
             </div>
 
             <nav className={`${css.infoBlock} ${css.flex}`}>
-                {NAV_LINKS.map(({label, path}) => (
-                    <button key={path} className={css.btn2} onClick={() => navigate(path)}>
+                {NAV_LINKS.map(({label, path, highlight}: any) => (
+                    <button
+                        key={path}
+                        className={css.btn2}
+                        style={highlight ? {background: 'rgba(193,138,102,0.96)', color: '#fff'} : undefined}
+                        onClick={() => navigate(path)}>
                         {label}
                     </button>
                 ))}
             </nav>
 
             <div className={`${css.naviBox} ${css.flex}`}>
-                <NavigationLogin navLinks={[]} isAuth={isAuth} onSignOut={handleSignOut}/>
+                <NavigationLogin navLinks={[]} isAuth={isAuth} onSignOut={handleSignOut} unreadCount={unreadCount}/>
             </div>
 
             <button
@@ -76,6 +95,9 @@ const Header = () => {
                     {isAuth
                         ? <>
                             <button className={css.mobileLink} onClick={() => handleNav('/profile')}>👤 Профіль</button>
+                            <button className={css.mobileLink} onClick={() => handleNav('/messages')}>
+                                ✉️ Повідомлення{unreadCount > 0 ? ` (${unreadCount})` : ''}
+                            </button>
                             <button className={css.mobileLink} onClick={handleSignOut}>🚪 Вийти</button>
                         </>
                         : <>

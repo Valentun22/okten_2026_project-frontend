@@ -2,11 +2,11 @@ import {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAppSelector} from '../../hooks/useReduxHooks';
 import {adminService} from '../../services/admin.service';
+import {toast} from '../../services/toast.service';
 import {axiosInstance} from '../../services/axiosInstance.service';
 import {urls} from '../../constants/urls';
 import css from './AdminComponent.module.css';
 
-/* ── Types ── */
 type AdminTab = 'venues' | 'pending' | 'users' | 'complaints' | 'comments' | 'top' | 'cms';
 
 interface IAdminVenue {
@@ -52,6 +52,7 @@ const VenuesTab = () => {
     const navigate = useNavigate();
     const [items, setItems] = useState<IAdminVenue[]>([]);
     const [total, setTotal] = useState(0);
+    const adminId = JSON.parse(localStorage.getItem('user') ?? '{}')?.id ?? '';
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [filterMod, setFilterMod] = useState<string>('all');
@@ -60,11 +61,14 @@ const VenuesTab = () => {
     const LIMIT = 15;
 
     const [ownerModal, setOwnerModal] = useState<{ id: string; name: string } | null>(null);
-    const [ownerInput, setOwnerInput] = useState('');
     const [ownerLoading, setOwnerLoading] = useState(false);
+    const [ownerSearch, setOwnerSearch] = useState('');
+    const [ownerSearchResults, setOwnerSearchResults] = useState<IAdminUser[]>([]);
+    const [ownerSearchLoading, setOwnerSearchLoading] = useState(false);
+    const [ownerSelected, setOwnerSelected] = useState<IAdminUser | null>(null);
+    const ownerSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const [ratingModal, setRatingModal] = useState<{ id: string; name: string } | null>(null);
-    const [ratingUserId, setRatingUserId] = useState('');
     const [ratingValue, setRatingValue] = useState(5);
     const [ratingLoading, setRatingLoading] = useState(false);
 
@@ -83,45 +87,75 @@ const VenuesTab = () => {
             else setItems(p => [...p, ...list]);
             setTotal(data.total ?? list.length);
             setOffset(off + list.length);
-        } catch { /* ignore */ }
+        } catch { /* ignore */
+        }
         setLoading(false);
     };
 
-    useEffect(() => { load(0); }, [search, filterMod, filterActive]); // eslint-disable-line
+    useEffect(() => {
+        void load(0);
+    }, [search, filterMod, filterActive]); // eslint-disable-line
 
     const handleModerate = async (id: string) => {
-        await adminService.moderateVenue(id).catch(() => {});
+        await adminService.moderateVenue(id)
+            .then(() => toast.success('Заклад схвалено!'))
+            .catch(() => toast.error('Помилка схвалення'));
         setItems(p => p.map(v => v.id === id ? {...v, isModerated: true} : v));
     };
     const handleToggle = async (id: string, cur: boolean) => {
-        await adminService.toggleActive(id).catch(() => {});
+        await adminService.toggleActive(id).catch(() => {
+        });
         setItems(p => p.map(v => v.id === id ? {...v, isActive: !cur} : v));
     };
     const handleDeleteConfirmed = async () => {
         if (!deleteConfirm) return;
-        await adminService.deleteVenue(deleteConfirm.id).catch(() => {});
+        await adminService.deleteVenue(deleteConfirm.id).catch(() => {
+        });
         setItems(p => p.filter(v => v.id !== deleteConfirm.id));
         setTotal(t => t - 1);
         setDeleteConfirm(null);
     };
+    const handleOwnerSearchChange = (val: string) => {
+        setOwnerSearch(val);
+        setOwnerSelected(null);
+        if (ownerSearchTimer.current) clearTimeout(ownerSearchTimer.current);
+        if (!val.trim()) {
+            setOwnerSearchResults([]);
+            return;
+        }
+        ownerSearchTimer.current = setTimeout(async () => {
+            setOwnerSearchLoading(true);
+            try {
+                const {data} = await adminService.getUsers({limit: 10, search: val});
+                setOwnerSearchResults(data.data ?? data ?? []);
+            } catch {
+            }
+            setOwnerSearchLoading(false);
+        }, 300);
+    };
+
     const handleChangeOwnerSubmit = async () => {
-        if (!ownerModal || !ownerInput.trim()) return;
+        if (!ownerModal || !ownerSelected) return;
         setOwnerLoading(true);
-        await adminService.changeOwner(ownerModal.id, ownerInput.trim()).catch(() => {});
+        await adminService.changeOwner(ownerModal.id, ownerSelected.id).catch(() => {
+        });
         setOwnerLoading(false);
         setOwnerModal(null);
-        setOwnerInput('');
-        load(0);
+        setOwnerSearch('');
+        setOwnerSelected(null);
+        setOwnerSearchResults([]);
+        void load(0);
     };
     const handleSetRatingSubmit = async () => {
-        if (!ratingModal || !ratingUserId.trim()) return;
+        if (!ratingModal) return;
         setRatingLoading(true);
         await adminService.setVenueRating(ratingModal.id, {
-            userId: ratingUserId.trim(), rating: ratingValue,
-        }).catch(() => {});
+            userId: adminId, rating: ratingValue,
+        }).catch(() => {
+        });
         setRatingLoading(false);
+        setItems(p => p.map(v => v.id === ratingModal.id ? {...v, ratingAvg: ratingValue} : v));
         setRatingModal(null);
-        setRatingUserId('');
         setRatingValue(5);
     };
 
@@ -201,10 +235,18 @@ const VenuesTab = () => {
                                             onClick={() => navigate(`/venues/${v.id}/edit`)}>✏️
                                     </button>
                                     <button className={css.editBtn} title="Змінити власника"
-                                            onClick={() => { setOwnerModal({id: v.id, name: v.name}); setOwnerInput(''); }}>👤
+                                            onClick={() => {
+                                                setOwnerModal({id: v.id, name: v.name});
+                                                setOwnerSearch('');
+                                                setOwnerSelected(null);
+                                                setOwnerSearchResults([]);
+                                            }}>👤
                                     </button>
                                     <button className={css.editBtn} title="Виставити рейтинг"
-                                            onClick={() => { setRatingModal({id: v.id, name: v.name}); setRatingUserId(''); setRatingValue(5); }}>⭐
+                                            onClick={() => {
+                                                setRatingModal({id: v.id, name: v.name});
+                                                setRatingValue(5);
+                                            }}>⭐
                                     </button>
                                     <button className={css.deleteBtn}
                                             onClick={() => setDeleteConfirm({id: v.id, name: v.name})}>🗑
@@ -231,7 +273,8 @@ const VenuesTab = () => {
                         <h3 className={css.modalTitle}>Видалити заклад?</h3>
                         <p className={css.modalDesc}>«{deleteConfirm.name}» буде видалено назавжди.</p>
                         <div className={css.modalActions}>
-                            <button className={css.modalCancelBtn} onClick={() => setDeleteConfirm(null)}>Скасувати</button>
+                            <button className={css.modalCancelBtn} onClick={() => setDeleteConfirm(null)}>Скасувати
+                            </button>
                             <button className={css.modalDangerBtn} onClick={handleDeleteConfirmed}>Видалити</button>
                         </div>
                     </div>
@@ -243,17 +286,140 @@ const VenuesTab = () => {
                     <div className={css.modalBox}>
                         <h3 className={css.modalTitle}>Змінити власника</h3>
                         <p className={css.modalDesc}>Заклад: «{ownerModal.name}»</p>
-                        <label className={css.modalLabel}>UUID нового власника</label>
-                        <input
-                            className={css.modalInput}
-                            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                            value={ownerInput}
-                            onChange={e => setOwnerInput(e.target.value)}
-                            autoFocus
-                        />
+                        <label className={css.modalLabel}>Пошук нового власника</label>
+                        <div style={{position: 'relative'}}>
+                            <input
+                                className={css.modalInput}
+                                placeholder="Введіть ім'я або email..."
+                                value={ownerSelected ? `${ownerSelected.name ?? ''} (${(ownerSelected as any).email ?? ''})` : ownerSearch}
+                                onChange={e => {
+                                    if (!ownerSelected) handleOwnerSearchChange(e.target.value);
+                                }}
+                                onClick={() => {
+                                    if (ownerSelected) {
+                                        setOwnerSelected(null);
+                                        setOwnerSearch('');
+                                        setOwnerSearchResults([]);
+                                    }
+                                }}
+                                autoFocus
+                            />
+                            {ownerSearchLoading && (
+                                <div style={{
+                                    position: 'absolute',
+                                    right: 10,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    fontSize: 12,
+                                    color: '#aaa'
+                                }}>...</div>
+                            )}
+                            {!ownerSelected && ownerSearchResults.length > 0 && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    right: 0,
+                                    background: 'var(--modalBg,#fff)',
+                                    border: '1px solid #e0d6ca',
+                                    borderTop: 'none',
+                                    borderRadius: '0 0 8px 8px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    zIndex: 10,
+                                    maxHeight: 220,
+                                    overflowY: 'auto'
+                                }}>
+                                    {ownerSearchResults.map(u => (
+                                        <div key={u.id}
+                                             style={{
+                                                 display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
+                                                 cursor: 'pointer', borderBottom: '1px solid #f5f0eb'
+                                             }}
+                                             onMouseDown={() => {
+                                                 setOwnerSelected(u);
+                                                 setOwnerSearch('');
+                                                 setOwnerSearchResults([]);
+                                             }}
+                                        >
+                                            {u.image
+                                                ? <img src={u.image} alt="" style={{
+                                                    width: 28,
+                                                    height: 28,
+                                                    borderRadius: '50%',
+                                                    objectFit: 'cover'
+                                                }}/>
+                                                : <div style={{
+                                                    width: 28,
+                                                    height: 28,
+                                                    borderRadius: '50%',
+                                                    background: '#c18a66',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: '#fff',
+                                                    fontSize: 13,
+                                                    fontWeight: 600
+                                                }}>
+                                                    {u.name?.[0]?.toUpperCase() ?? '?'}
+                                                </div>
+                                            }
+                                            <div>
+                                                <div style={{
+                                                    fontSize: 13,
+                                                    fontWeight: 600,
+                                                    color: '#2d2d2d'
+                                                }}>{u.name ?? '—'}</div>
+                                                <div
+                                                    style={{fontSize: 11, color: '#888'}}>{(u as any).email ?? ''}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {ownerSelected && (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                                marginTop: 10,
+                                padding: '8px 12px',
+                                background: '#f0ebe4',
+                                borderRadius: 8
+                            }}>
+                                {ownerSelected.image
+                                    ? <img src={ownerSelected.image} alt=""
+                                           style={{width: 32, height: 32, borderRadius: '50%', objectFit: 'cover'}}/>
+                                    : <div style={{
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: '50%',
+                                        background: '#c18a66',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#fff',
+                                        fontSize: 14,
+                                        fontWeight: 600
+                                    }}>
+                                        {ownerSelected.name?.[0]?.toUpperCase() ?? '?'}
+                                    </div>
+                                }
+                                <div>
+                                    <div style={{fontSize: 13, fontWeight: 600}}>✓ {ownerSelected.name}</div>
+                                    <div style={{fontSize: 11, color: '#888'}}>{(ownerSelected as any).email}</div>
+                                </div>
+                            </div>
+                        )}
                         <div className={css.modalActions}>
-                            <button className={css.modalCancelBtn} onClick={() => setOwnerModal(null)}>Скасувати</button>
-                            <button className={css.modalPrimaryBtn} disabled={!ownerInput.trim() || ownerLoading}
+                            <button className={css.modalCancelBtn} onClick={() => {
+                                setOwnerModal(null);
+                                setOwnerSearch('');
+                                setOwnerSelected(null);
+                                setOwnerSearchResults([]);
+                            }}>Скасувати
+                            </button>
+                            <button className={css.modalPrimaryBtn} disabled={!ownerSelected || ownerLoading}
                                     onClick={handleChangeOwnerSubmit}>
                                 {ownerLoading ? '...' : 'Зберегти'}
                             </button>
@@ -267,14 +433,6 @@ const VenuesTab = () => {
                     <div className={css.modalBox}>
                         <h3 className={css.modalTitle}>Встановити рейтинг</h3>
                         <p className={css.modalDesc}>Заклад: «{ratingModal.name}»</p>
-                        <label className={css.modalLabel}>UUID користувача</label>
-                        <input
-                            className={css.modalInput}
-                            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                            value={ratingUserId}
-                            onChange={e => setRatingUserId(e.target.value)}
-                            autoFocus
-                        />
                         <label className={css.modalLabel}>Оцінка: <strong>{ratingValue}</strong> / 10</label>
                         <input
                             type="range" min={1} max={10} step={1}
@@ -283,13 +441,14 @@ const VenuesTab = () => {
                             className={css.modalRange}
                         />
                         <div className={css.modalRangeTicks}>
-                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                                 <span key={n} style={{color: n <= ratingValue ? '#c18a66' : '#ccc'}}>{n}</span>
                             ))}
                         </div>
                         <div className={css.modalActions}>
-                            <button className={css.modalCancelBtn} onClick={() => setRatingModal(null)}>Скасувати</button>
-                            <button className={css.modalPrimaryBtn} disabled={!ratingUserId.trim() || ratingLoading}
+                            <button className={css.modalCancelBtn} onClick={() => setRatingModal(null)}>Скасувати
+                            </button>
+                            <button className={css.modalPrimaryBtn} disabled={ratingLoading}
                                     onClick={handleSetRatingSubmit}>
                                 {ratingLoading ? '...' : 'Встановити'}
                             </button>
@@ -311,13 +470,13 @@ const PendingTab = () => {
         try {
             const {data} = await adminService.getPending({limit: 50});
             setItems(data.data ?? data ?? []);
-        } catch { /* ignore */
+        } catch {
         }
         setLoading(false);
     };
 
     useEffect(() => {
-        load();
+        void load();
     }, []);
 
     const handleModerate = async (id: string) => {
@@ -369,6 +528,7 @@ const PendingTab = () => {
 };
 
 const UsersTab = () => {
+    const navigate = useNavigate();
     const [items, setItems] = useState<IAdminUser[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -392,13 +552,14 @@ const UsersTab = () => {
     };
 
     useEffect(() => {
-        load(0);
+        void load(0);
     }, [search]);
 
     const handleDelete = async (id: string) => {
         if (!window.confirm('Видалити користувача?')) return;
-        await adminService.deleteUser(id).catch(() => {
-        });
+        await adminService.deleteUser(id)
+            .then(() => toast.success('Користувача видалено'))
+            .catch(() => toast.error('Помилка видалення'));
         setItems(p => p.filter(u => u.id !== id));
         setTotal(t => t - 1);
     };
@@ -431,12 +592,19 @@ const UsersTab = () => {
                     {items.map(u => (
                         <tr key={u.id}>
                             <td>
-                                {u.image
-                                    ? <img src={u.image} alt="" className={css.thumbImg}/>
-                                    : <div className={css.thumbPlaceholder}>{u.name?.[0]?.toUpperCase() ?? '?'}</div>
-                                }
+                                <div style={{cursor: 'pointer'}} onClick={() => navigate(`/users/${u.id}`)}>
+                                    {u.image
+                                        ? <img src={u.image} alt="" className={css.thumbImg}/>
+                                        :
+                                        <div className={css.thumbPlaceholder}>{u.name?.[0]?.toUpperCase() ?? '?'}</div>
+                                    }
+                                </div>
                             </td>
-                            <td><span className={css.cellBold}>{u.name ?? '—'}</span></td>
+                            <td>
+                                <span className={css.venueName} onClick={() => navigate(`/users/${u.id}`)}>
+                                    {u.name ?? '—'}
+                                </span>
+                            </td>
                             <td className={css.cell}>{(u as any).email ?? '—'}</td>
                             <td>
                                 <div className={css.roleChips}>
@@ -486,13 +654,13 @@ const ComplaintsTab = () => {
             else setItems(p => [...p, ...list]);
             setTotal(data.total ?? list.length);
             setOffset(off + list.length);
-        } catch { /* ignore */
+        } catch {
         }
         setLoading(false);
     };
 
     useEffect(() => {
-        load(0);
+        void load(0);
     }, [filterStatus]);
 
     const handleStatus = async (id: string, status: string) => {
@@ -591,7 +759,7 @@ const TopTab = () => {
     const load = async () => {
         setLoading(true);
         try {
-            const { data } = await adminService.getTopCategories();
+            const {data} = await adminService.getTopCategories();
             setCats(Array.isArray(data) ? data : []);
         } catch {
         }
@@ -599,7 +767,7 @@ const TopTab = () => {
     };
 
     useEffect(() => {
-        load();
+        void load();
     }, []);
 
     const handleCatDragStart = (idx: number) => {
@@ -630,8 +798,9 @@ const TopTab = () => {
 
         await axiosInstance.patch(
             urls.admin.topCategoriesOrder,
-            { ids: newOrder.map(c => c.id) }
-        ).catch(() => {});
+            {ids: newOrder.map(c => c.id)}
+        ).catch(() => {
+        });
     };
 
     const touchCatStart = (idx: number) => {
@@ -648,13 +817,13 @@ const TopTab = () => {
     };
 
     const handleVenueDragStart = (catId: string, idx: number) => {
-        dragVenueInfo.current = { catId, idx };
-        setDraggingVenue({ catId, idx });
+        dragVenueInfo.current = {catId, idx};
+        setDraggingVenue({catId, idx});
     };
 
     const handleVenueDragOver = (e: React.DragEvent, catId: string, idx: number) => {
         e.preventDefault();
-        dragOverVenueInfo.current = { catId, idx };
+        dragOverVenueInfo.current = {catId, idx};
     };
 
     const handleVenueDrop = async (catId: string) => {
@@ -672,52 +841,57 @@ const TopTab = () => {
         const [moved] = venues.splice(from.idx, 1);
         venues.splice(to.idx, 0, moved);
 
-        setCats(p => p.map(c => c.id === catId ? { ...c, venues } : c));
+        setCats(p => p.map(c => c.id === catId ? {...c, venues} : c));
 
         dragVenueInfo.current = null;
         dragOverVenueInfo.current = null;
 
         await axiosInstance.patch(
             urls.admin.topCategoryVenueOrder(catId),
-            { ids: venues.map((v: any) => v.id) }
-        ).catch(() => {});
+            {ids: venues.map((v: any) => v.id)}
+        ).catch(() => {
+        });
     };
 
     const handleCreate = async () => {
         if (!newName.trim()) return;
         setAdding(true);
         try {
-            const { data } = await adminService.createTopCategory({
-                name: newName.trim(),
+            const {data} = await adminService.createTopCategory({
+                title: newName.trim(),
                 slug: newName.trim().toLowerCase().replace(/\s+/g, '-'),
             });
             setCats(p => [...p, data]);
             setNewName('');
-        } catch {
+        } catch (e) {
+            console.error('createTopCategory error:', e);
         }
         setAdding(false);
     };
 
     const handleDelete = async (id: string) => {
         if (!window.confirm('Видалити категорію?')) return;
-        await adminService.deleteTopCategory(id).catch(() => {});
+        await adminService.deleteTopCategory(id).catch(() => {
+        });
         setCats(p => p.filter(c => c.id !== id));
     };
 
     const handleAddVenue = async (catId: string) => {
         const venueId = (venueInputs[catId] ?? '').trim();
         if (!venueId) return;
-        await adminService.addVenueToTop(catId, { venueId }).catch(() => {});
-        setVenueInputs(p => ({ ...p, [catId]: '' }));
-        load();
+        await adminService.addVenueToTop(catId, {venueId}).catch(() => {
+        });
+        setVenueInputs(p => ({...p, [catId]: ''}));
+        void load();
     };
 
     const handleRemoveVenue = async (catId: string, venueId: string) => {
-        await adminService.removeVenueFromTop(catId, venueId).catch(() => {});
+        await adminService.removeVenueFromTop(catId, venueId).catch(() => {
+        });
         setCats(p =>
             p.map(c =>
                 c.id === catId
-                    ? { ...c, venues: (c.venues ?? []).filter((v: any) => v.id !== venueId) }
+                    ? {...c, venues: (c.venues ?? []).filter((v: any) => v.id !== venueId)}
                     : c
             )
         );
@@ -757,13 +931,12 @@ const TopTab = () => {
 
                         <div className={css.topCatHeader}>
                             <span className={css.dragHandle} title="Перетягнути">☰</span>
-                            <h3 className={css.topCatName}>{cat.name}</h3>
+                            <h3 className={css.topCatName}>{(cat as any).title ?? (cat as any).name}</h3>
                             <span className={css.topCatSlug}>/{cat.slug}</span>
                             <span className={css.topCatCount}>{(cat.venues ?? []).length} закладів</span>
                             <button className={css.deleteBtn} onClick={() => handleDelete(cat.id)}>🗑</button>
                         </div>
 
-                        {/* Заклади — draggable список */}
                         {cat.venues && cat.venues.length > 0 && (
                             <div className={css.topVenueList}>
                                 {cat.venues.map((v: any, vIdx: number) => (
@@ -852,7 +1025,7 @@ const CommentsTab = () => {
             if (off === 0) setItems(list); else setItems(p => [...p, ...list]);
             setTotal((data as any).total ?? list.length);
             setOffset(off + list.length);
-        } catch { /* ignore */
+        } catch {
         }
         setLoading(false);
     };
@@ -956,77 +1129,146 @@ const CommentsTab = () => {
 };
 
 const CmsTab = () => {
-    const FIELDS = [
-        {key: 'about_title', label: 'Заголовок "Про нас"', type: 'text' as const},
-        {key: 'about_text', label: 'Текст "Про нас"', type: 'textarea' as const},
-        {key: 'contact_phone', label: 'Телефон', type: 'text' as const},
-        {key: 'contact_email', label: 'Email', type: 'text' as const},
-        {key: 'contact_address', label: 'Адреса', type: 'text' as const},
+    const GROUPS = [
+        {
+            title: '📄 Сторінка «Про нас»',
+            hint: 'Відображається на сторінці /aboutUs',
+            fields: [
+                {key: 'about_title', label: 'Заголовок', type: 'text' as const},
+                {key: 'about_text', label: 'Основний текст', type: 'textarea' as const},
+                {key: 'about_idea', label: 'Блок «Наша ідея»', type: 'textarea' as const},
+            ],
+        },
+        {
+            title: '📞 Контактна інформація',
+            hint: 'Відображається на сторінках «Про нас» та «Головна»',
+            fields: [
+                {key: 'contact_phone', label: 'Телефон', type: 'text' as const},
+                {key: 'contact_email', label: 'Email', type: 'text' as const},
+                {key: 'contact_address', label: 'Адреса', type: 'text' as const},
+            ],
+        },
+        {
+            title: '🌐 Соціальні мережі',
+            hint: 'Повне посилання, наприклад https://instagram.com/pyachok',
+            fields: [
+                {key: 'social_instagram', label: 'Instagram', type: 'text' as const},
+                {key: 'social_facebook', label: 'Facebook', type: 'text' as const},
+                {key: 'social_telegram', label: 'Telegram', type: 'text' as const},
+            ],
+        },
+        {
+            title: '⚠️ Попередження при вході',
+            hint: 'Показується при першому відвіданні сайту',
+            fields: [
+                {key: 'warning_age', label: 'Текст попередження 18+', type: 'textarea' as const},
+                {key: 'warning_safety', label: 'Текст про безпеку (Пиячок)', type: 'textarea' as const},
+            ],
+        },
+        {
+            title: '🔍 SEO',
+            hint: 'Метадані для пошукових систем',
+            fields: [
+                {key: 'seo_title', label: 'Назва сайту (title)', type: 'text' as const},
+                {key: 'seo_description', label: 'Опис сайту (description)', type: 'textarea' as const},
+            ],
+        },
     ];
+
     const [form, setForm] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         setLoading(true);
         adminService.getCmsSettings()
             .then(({data}) => setForm(typeof data === 'object' && data ? data as Record<string, string> : {}))
-            .catch(() => {
-            })
+            .catch(() => setError('Помилка завантаження'))
             .finally(() => setLoading(false));
     }, []);
 
     const handleSave = async () => {
         setSaving(true);
         setSaved(false);
+        setError('');
         try {
             await adminService.updateCmsSettings(form);
             setSaved(true);
+            toast.success('Налаштування збережено!');
             setTimeout(() => setSaved(false), 3000);
         } catch {
+            setError('Помилка збереження');
+            toast.error('Помилка збереження налаштувань');
         }
         setSaving(false);
     };
+
+    const set = (key: string, val: string) => setForm(p => ({...p, [key]: val}));
 
     if (loading) return <div className={css.loadingRow}>Завантаження...</div>;
 
     return (
         <div className={css.cmsWrap}>
-            <p className={css.cmsHint}>
-                📝 Тексти на сторінці «Про нас» та контактна інформація. Зміни набудуть чинності одразу після збереження.
-            </p>
-            <div className={css.cmsForm}>
-                {FIELDS.map(({key, label, type}) => (
-                    <div key={key} className={css.cmsField}>
-                        <label className={css.cmsLabel}>{label}</label>
-                        {type === 'textarea' ? (
-                            <textarea
-                                className={css.cmsTextarea}
-                                rows={6}
-                                value={form[key] ?? ''}
-                                onChange={e => setForm(p => ({...p, [key]: e.target.value}))}
-                            />
-                        ) : (
-                            <input
-                                type="text"
-                                className={css.cmsInput}
-                                value={form[key] ?? ''}
-                                onChange={e => setForm(p => ({...p, [key]: e.target.value}))}
-                            />
-                        )}
-                    </div>
-                ))}
+            <div className={css.cmsHeader}>
+                <div>
+                    <h3 className={css.cmsTitle}>CMS — Управління контентом</h3>
+                    <p className={css.cmsHint}>Зміни відображаються на сайті одразу після збереження</p>
+                </div>
                 <div className={css.cmsActions}>
                     {saved && <span className={css.cmsSaved}>✓ Збережено!</span>}
+                    {error && <span className={css.cmsError}>{error}</span>}
                     <button className={css.approveBtn} onClick={handleSave} disabled={saving}>
-                        {saving ? 'Збереження...' : '💾 Зберегти'}
+                        {saving ? '⏳ Збереження...' : '💾 Зберегти все'}
                     </button>
                 </div>
+            </div>
+
+            {GROUPS.map(group => (
+                <div key={group.title} className={css.cmsGroup}>
+                    <div className={css.cmsGroupHeader}>
+                        <h4 className={css.cmsGroupTitle}>{group.title}</h4>
+                        <span className={css.cmsGroupHint}>{group.hint}</span>
+                    </div>
+                    <div className={css.cmsForm}>
+                        {group.fields.map(({key, label, type}) => (
+                            <div key={key} className={css.cmsField}>
+                                <label className={css.cmsLabel}>{label}</label>
+                                {type === 'textarea' ? (
+                                    <textarea
+                                        className={css.cmsTextarea}
+                                        rows={4}
+                                        value={form[key] ?? ''}
+                                        onChange={e => set(key, e.target.value)}
+                                        placeholder={`Введіть ${label.toLowerCase()}...`}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        className={css.cmsInput}
+                                        value={form[key] ?? ''}
+                                        onChange={e => set(key, e.target.value)}
+                                        placeholder={`Введіть ${label.toLowerCase()}...`}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+
+            <div className={css.cmsActionsBottom}>
+                {saved && <span className={css.cmsSaved}>✓ Збережено!</span>}
+                {error && <span className={css.cmsError}>{error}</span>}
+                <button className={css.approveBtn} onClick={handleSave} disabled={saving}>
+                    {saving ? '⏳ Збереження...' : '💾 Зберегти все'}
+                </button>
             </div>
         </div>
     );
 };
+
 
 const AdminComponent = () => {
     const navigate = useNavigate();

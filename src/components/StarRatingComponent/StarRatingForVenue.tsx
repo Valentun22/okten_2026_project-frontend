@@ -5,7 +5,8 @@ import css from './StarRatingForVenue.module.css';
 interface IProps {
     rating: number;
 }
-const sizeStars= {
+
+const sizeStars = {
     colors: {
         backgroundDefault: 'lightgray',
         backgroundColorActive: '#ffd500',
@@ -17,12 +18,12 @@ const sizeStars= {
 const StarRatingForVenue: React.FC<IProps> = ({rating}) => {
     return (
         <div className={css.starRating}>
-        <StarRating
-            numStars={10}
-            initialRating={rating}
-            readOnly={true}
-            theme={sizeStars}
-        />
+            <StarRating
+                numStars={10}
+                initialRating={rating}
+                readOnly={true}
+                theme={sizeStars}
+            />
         </div>
     );
 }

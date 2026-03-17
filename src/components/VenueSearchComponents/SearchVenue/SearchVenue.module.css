@@ -25,9 +25,8 @@
 .searchRow {
     display: flex;
     gap: 12px;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 28px;
-    flex-wrap: wrap;
 }
 
 .searchBox {
@@ -179,5 +178,32 @@
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .container, .wrap {
+        max-width: 100% !important;
+        padding: 0 16px !important;
+    }
+
+    .searchRow, .toolbar {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .sortRow {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr !important;
     }
 }

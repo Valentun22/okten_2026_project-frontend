@@ -2,8 +2,7 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    width: 14vw;
-    margin-right: 4vw;
+    margin-right: 1vw;
 }
 
 .boxAuth {
@@ -19,14 +18,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    text-align: center;
 
-    width: 7vw;
     height: 34px;
-    padding: 0 16px;
+    padding: 0 clamp(8px, 0.9vw, 18px);
 
     border-radius: 10px;
-    font-size: 0.9vw;
+    font-size: clamp(10px, 0.9vw, 14px);
     font-weight: 600;
     letter-spacing: 0.3px;
 
@@ -72,4 +70,64 @@
 
 .active {
     color: rgba(193, 138, 102, 0.96);
+}
+
+.avatarBtn {
+    position: relative;
+    background: none;
+    border: 2px solid rgba(193, 138, 102, 0.6);
+    border-radius: 50%;
+    padding: 0;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    transition: border-color 0.2s, transform 0.2s;
+    overflow: visible;
+}
+
+.avatarBtn:hover {
+    border-color: rgba(193, 138, 102, 0.96);
+    transform: translateY(-1px);
+}
+
+.avatarImg {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatarPlaceholder {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(193, 138, 102, 0.2);
+    color: rgba(193, 138, 102, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #e53e3e;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid rgba(53, 53, 55, 1);
+    line-height: 1;
+    pointer-events: none;
 }

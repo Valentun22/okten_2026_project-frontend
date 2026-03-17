@@ -219,25 +219,25 @@
 
 @media (max-width: 768px) {
     .hero {
-        min-height: 50vh;
-        padding: 60px 18px;
+        min-height: 0;
+        padding: 40px 18px;
     }
 
     .heroContent h1 {
-        font-size: 34px;
+        font-size: 28px;
     }
 
     .heroContent p {
-        font-size: 16px;
-        line-height: 1.7;
+        font-size: 15px;
+        line-height: 1.6;
     }
 
     .container {
-        padding: 50px 18px 70px;
+        padding: 32px 18px 50px;
     }
 
     .section {
-        margin-bottom: 56px;
+        margin-bottom: 40px;
     }
 
     .sectionHeader h2 {
@@ -256,4 +256,73 @@
     .finalBlock h2 {
         font-size: 28px;
     }
+}
+
+.contactGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contactItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #fdf8f4;
+    border-radius: 12px;
+    border-left: 4px solid rgba(193, 138, 102, 0.6);
+}
+
+.contactIcon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.contactLabel {
+    font-size: 12px;
+    color: #999;
+    margin: 0 0 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.contactValue {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2d2d2d;
+    text-decoration: none;
+    margin: 0;
+}
+
+a.contactValue:hover {
+    color: #c18a66;
+}
+
+.socialRow {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.socialBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #f5f0eb;
+    color: #c18a66;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    border: 1.5px solid rgba(193, 138, 102, 0.4);
+    transition: all 0.2s;
+}
+
+.socialBtn:hover {
+    background: #c18a66;
+    color: #fff;
+    border-color: #c18a66;
 }

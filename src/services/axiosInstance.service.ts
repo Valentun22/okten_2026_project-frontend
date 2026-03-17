@@ -1,4 +1,5 @@
 import axios, {AxiosError, InternalAxiosRequestConfig} from 'axios';
+import {toast} from './toast.service';
 import {baseUrl, urls} from '../constants/urls';
 import {tokenStorage} from './tokenStorage';
 
@@ -19,6 +20,10 @@ const runQueue = (token: string | null) => {
     queue = [];
 };
 
+const getStore = () => {
+    return require('../redux/slices/store/store').store;
+};
+
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token = tokenStorage.getAccess();
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -32,12 +37,20 @@ axiosInstance.interceptors.response.use(
 
         if (error.response?.status !== 401) return Promise.reject(error);
 
-        if (originalRequest?._retry) return Promise.reject(error);
+        if (originalRequest?._retry) {
+            const store = getStore();
+            const {authActions} = require('../redux/slices/authSlice');
+            store.dispatch(authActions.forceLogout());
+            toast.warning('Сесія закінчилась. Будь ласка, увійдіть знову.');
+            return Promise.reject(error);
+        }
         originalRequest._retry = true;
 
         const refreshToken = tokenStorage.getRefresh();
         if (!refreshToken) {
-            tokenStorage.clear();
+            const store = getStore();
+            const {authActions} = require('../redux/slices/authSlice');
+            store.dispatch(authActions.forceLogout());
             return Promise.reject(error);
         }
 
@@ -58,7 +71,8 @@ axiosInstance.interceptors.response.use(
 
             const {data} = await refreshClient.post<RefreshRes>(
                 urls.auth.refresh,
-                {refreshToken}
+                {},
+                {headers: {Authorization: `Bearer ${refreshToken}`}}
             );
 
             tokenStorage.setAccess(data.accessToken);
@@ -70,7 +84,10 @@ axiosInstance.interceptors.response.use(
             return axiosInstance(originalRequest);
         } catch (e) {
             runQueue(null);
-            tokenStorage.clear();
+            const store = getStore();
+            const {authActions} = require('../redux/slices/authSlice');
+            store.dispatch(authActions.forceLogout());
+            toast.warning('Сесія закінчилась. Будь ласка, увійдіть знову.');
             return Promise.reject(e);
         } finally {
             isRefreshing = false;

@@ -72,7 +72,7 @@ const PyachokComponent = () => {
             const list = (data as any).items ?? (data as any).data ?? [];
             if (p === 1) setItems(list); else setItems(prev => [...prev, ...list]);
             setTotal((data as any).total ?? 0);
-        } catch { /* ignore */
+        } catch {
         }
         setLoading(false);
     };
@@ -85,7 +85,7 @@ const PyachokComponent = () => {
             const list = (data as any).items ?? (data as any).data ?? [];
             if (p === 1) setMyItems(list); else setMyItems(prev => [...prev, ...list]);
             setMyTotal((data as any).total ?? 0);
-        } catch { /* ignore */
+        } catch {
         }
         setMyLoading(false);
     };

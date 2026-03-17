@@ -1,5 +1,6 @@
 import {FC, useEffect, useState} from 'react';
-import {adminService} from '../../../services/admin.service';
+import {axiosInstance} from '../../../services/axiosInstance.service';
+import {urls} from '../../../constants/urls';
 import css from './VenueAnalytics.module.css';
 
 interface IProps {
@@ -7,7 +8,8 @@ interface IProps {
 }
 
 interface ITimePoint {
-    date: string;
+    bucket: string;
+    date?: string;
     count: number;
 }
 
@@ -31,12 +33,13 @@ const VenueAnalytics: FC<IProps> = ({venueId}) => {
         const params = {from: from.toISOString(), to: to.toISOString(), bucket: 'day'};
         try {
             const [sumRes, tsRes] = await Promise.all([
-                adminService.getViewsSummary(venueId, params),
-                adminService.getViewsTimeseries(venueId, params),
+                axiosInstance.get(urls.analytics.viewsSummary(venueId), {params}),
+                axiosInstance.get(urls.analytics.viewsTimeseries(venueId), {params}),
             ]);
-            setSummary(sumRes.data ?? sumRes.data);
-            setSeries(Array.isArray(tsRes.data) ? tsRes.data : []);
-        } catch { /* ignore */
+            setSummary(sumRes.data?.data ?? sumRes.data);
+            const ts = tsRes.data?.data ?? tsRes.data;
+            setSeries(Array.isArray(ts) ? ts : []);
+        } catch {
         }
         setLoading(false);
     };
@@ -45,7 +48,7 @@ const VenueAnalytics: FC<IProps> = ({venueId}) => {
         load(period);
     }, [venueId, period]);
 
-    const maxCount = Math.max(...series.map(p => p.count), 1);
+    const maxCount = series.length > 0 ? Math.max(...series.map(p => p.count ?? 0), 1) : 1;
 
     return (
         <section className={css.section}>
@@ -88,15 +91,23 @@ const VenueAnalytics: FC<IProps> = ({venueId}) => {
 
                     {series.length > 0 ? (
                         <div className={css.chart}>
-                            {series.map((point, i) => (
-                                <div key={i} className={css.barWrap} title={`${point.date}: ${point.count}`}>
-                                    <div className={css.bar}
-                                         style={{height: `${Math.round((point.count / maxCount) * 100)}%`}}/>
-                                    <span className={css.barLabel}>
-                                        {new Date(point.date).getDate()}
-                                    </span>
-                                </div>
-                            ))}
+                            {series.map((point, i) => {
+                                const dateStr = point.bucket ?? point.date ?? '';
+                                const label = dateStr ? new Date(dateStr).getDate() : i + 1;
+                                const isSingle = series.length === 1;
+                                const pct = isSingle
+                                    ? 60
+                                    : Math.max(4, Math.round((point.count / maxCount) * 100));
+                                return (
+                                    <div key={i} className={css.barWrap}
+                                         style={isSingle ? {maxWidth: 60, flex: 'none'} : {}}
+                                         title={`${dateStr}: ${point.count} переглядів`}>
+                                        <span className={css.barCount}>{point.count}</span>
+                                        <div className={css.bar} style={{height: `${pct}%`}}/>
+                                        <span className={css.barLabel}>{label}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className={css.noData}>

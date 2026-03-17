@@ -1,7 +1,9 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import css from '../../CreateVenueComponent/CreateVenue.module.css';
 import {venueService} from "../../../services/venue.service";
+import {axiosInstance} from "../../../services/axiosInstance.service";
+import {urls} from "../../../constants/urls";
 
 const CATEGORIES = [
     'restaurant', 'bar', 'cafe', 'pub', 'club', 'fast_food', 'pizzeria',
@@ -34,6 +36,12 @@ const EditVenueComponent = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [photoUploading, setPhotoUploading] = useState(false);
+    const photoInputRef = useRef<HTMLInputElement>(null);
+    const [galleryFiles, setGalleryFiles] = useState<{ file: File; preview: string; url?: string }[]>([]);
+    const [galleryUploading, setGalleryUploading] = useState(false);
+    const [existingImages, setExistingImages] = useState<string[]>([]);
+    const galleryInputRef = useRef<HTMLInputElement>(null);
 
     const [form, setForm] = useState({
         name: '', description: '', city: '', address: '',
@@ -83,9 +91,34 @@ const EditVenueComponent = () => {
                 smokingAllowed: !!v.smokingAllowed,
                 cardPayment: !!v.cardPayment,
             });
+            setExistingImages(v.image ?? []);
         }).catch(() => setError('Не вдалося завантажити заклад'))
             .finally(() => setLoading(false));
     }, [id]);
+
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setPhotoUploading(true);
+        try {
+            const fd = new FormData();
+            fd.append('photo', file);
+            const {data} = await axiosInstance.post(urls.venue.uploadPhoto, fd, {
+                headers: {'Content-Type': 'multipart/form-data'},
+            });
+            setF('avatarVenue', data.url);
+        } catch {
+            setError('Помилка завантаження фото');
+        }
+        setPhotoUploading(false);
+        if (photoInputRef.current) photoInputRef.current.value = '';
+    };
+
+    const handleGallerySelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files ?? []).slice(0, 10 - existingImages.length - galleryFiles.length);
+        setGalleryFiles(p => [...p, ...files.map(f => ({file: f, preview: URL.createObjectURL(f)}))]);
+        if (galleryInputRef.current) galleryInputRef.current.value = '';
+    };
 
     const handleSave = async () => {
         if (!form.name.trim()) {
@@ -99,6 +132,22 @@ const EditVenueComponent = () => {
         setError('');
         setSaving(true);
         try {
+            const newUrls: string[] = [];
+            if (galleryFiles.length) {
+                setGalleryUploading(true);
+                for (const g of galleryFiles) {
+                    try {
+                        const fd = new FormData();
+                        fd.append('photo', g.file);
+                        const {data} = await axiosInstance.post(urls.venue.uploadPhoto, fd, {
+                            headers: {'Content-Type': 'multipart/form-data'},
+                        });
+                        newUrls.push(data.url);
+                    } catch {
+                    }
+                }
+                setGalleryUploading(false);
+            }
             const payload: any = {
                 name: form.name.trim(), description: form.description.trim() || undefined,
                 city: form.city.trim(), address: form.address.trim() || undefined,
@@ -116,6 +165,7 @@ const EditVenueComponent = () => {
                     telegram: form.telegram || undefined
                 },
                 workingHours: Object.keys(form.workingHours).length > 0 ? form.workingHours : undefined,
+                image: [...existingImages, ...newUrls],
             };
             await venueService.update(id!, payload);
             setSuccess(true);
@@ -285,14 +335,60 @@ const EditVenueComponent = () => {
 
                         <h2 className={css.stepTitle} style={{marginTop: '28px'}}>Головне фото</h2>
                         <div className={css.field}>
-                            <label className={css.label}>URL фото</label>
-                            <input className={css.input} value={form.avatarVenue}
-                                   onChange={e => setF('avatarVenue', e.target.value)}/>
+                            <label className={css.photoUploadBtn}>
+                                {photoUploading ? '⏳ Завантаження...' : '📷 Вибрати фото'}
+                                <input ref={photoInputRef} type="file" accept="image/*"
+                                       style={{display: 'none'}} onChange={handleAvatarUpload}
+                                       disabled={photoUploading}/>
+                            </label>
                         </div>
                         {form.avatarVenue && (
                             <div className={css.previewWrap}>
-                                <img src={form.avatarVenue} alt="preview" className={css.preview}
-                                     onError={e => (e.currentTarget.style.display = 'none')}/>
+                                <img src={form.avatarVenue} alt="preview" className={css.preview}/>
+                                <button type="button" onClick={() => setF('avatarVenue', '')}
+                                        style={{
+                                            display: 'block',
+                                            marginTop: 8,
+                                            fontSize: 12,
+                                            color: '#c18a66',
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer'
+                                        }}>
+                                    ✕ Видалити фото
+                                </button>
+                            </div>
+                        )}
+
+                        <h2 className={css.stepTitle} style={{marginTop: '28px'}}>Галерея фото</h2>
+                        <div className={css.field}>
+                            <label className={css.photoUploadBtn}>
+                                {galleryUploading ? '⏳ Завантаження...' : '🖼 Додати фото до галереї'}
+                                <input ref={galleryInputRef} type="file" accept="image/*" multiple
+                                       style={{display: 'none'}} onChange={handleGallerySelect}
+                                       disabled={galleryUploading}/>
+                            </label>
+                        </div>
+                        {(existingImages.length > 0 || galleryFiles.length > 0) && (
+                            <div className={css.galleryGrid}>
+                                {existingImages.map((src, i) => (
+                                    <div key={`ex-${i}`} className={css.galleryItem}>
+                                        <img src={src} alt={`фото ${i + 1}`}/>
+                                        <button type="button" onClick={() =>
+                                            setExistingImages(imgs => imgs.filter((_, j) => j !== i))
+                                        }>✕
+                                        </button>
+                                    </div>
+                                ))}
+                                {galleryFiles.map((g, i) => (
+                                    <div key={`new-${i}`} className={css.galleryItem}>
+                                        <img src={g.preview} alt={`нове фото ${i + 1}`}/>
+                                        <button type="button" onClick={() =>
+                                            setGalleryFiles(f => f.filter((_, j) => j !== i))
+                                        }>✕
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>

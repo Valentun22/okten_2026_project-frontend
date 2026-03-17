@@ -1,8 +1,8 @@
 import {FC, useEffect, useState} from 'react';
 import {axiosInstance} from '../../../services/axiosInstance.service';
-import {urls} from '../../../constants/urls';
 import {INewsItem, NewsTypeEnum} from '../../../interfaces/INewsInterface';
 import css from './VenueNews.module.css';
+import {urls} from "../../../constants/urls";
 
 interface IProps {
     venueId: string;
@@ -121,7 +121,8 @@ const VenueNews: FC<IProps> = ({venueId, isOwner}) => {
             else setItems(p => [...p, ...list]);
             setTotal(data?.total ?? list.length);
             setOffset(off + list.length);
-        } catch {}
+        } catch {
+        }
         setLoading(false);
     };
 
@@ -141,6 +142,12 @@ const VenueNews: FC<IProps> = ({venueId, isOwner}) => {
         await axiosInstance.patch(`${urls.newsVenue.update(item.id)}/active`, {isActive: !item.isActive}).catch(() => {
         });
         setItems(p => p.map(n => n.id === item.id ? {...n, isActive: !n.isActive} : n));
+    };
+
+    const handleTogglePaid = async (item: INewsItem) => {
+        await axiosInstance.patch(urls.newsVenue.setPaid(item.id), {isActive: !item.isPaid}).catch(() => {
+        });
+        setItems(p => p.map(n => n.id === item.id ? {...n, isPaid: !n.isPaid} : n));
     };
 
     if (!loading && items.length === 0 && !isOwner) return null;
@@ -186,6 +193,10 @@ const VenueNews: FC<IProps> = ({venueId, isOwner}) => {
                                     })}
                                     </span>
                                     {!item.isActive && <span className={css.inactiveBadge}>Приховано</span>}
+                                    {item.isPaid && (item.type === 'promotion' || item.type === 'event') &&
+                                        <span className={css.paidBadge}>💳 Опубліковано</span>}
+                                    {!item.isPaid && (item.type === 'promotion' || item.type === 'event') && isOwner &&
+                                        <span className={css.unpaidBadge}>⏳ Не опубліковано в стрічці</span>}
                                 </div>
                                 <h3 className={css.cardTitle}>{item.title}</h3>
                                 <p className={css.cardText}>{item.body.length > 200 ? item.body.slice(0, 200) + '...' : item.body}</p>
@@ -194,6 +205,15 @@ const VenueNews: FC<IProps> = ({venueId, isOwner}) => {
                                         <button className={css.toggleBtn} onClick={() => handleToggleActive(item)}>
                                             {item.isActive ? '👁 Приховати' : '👁 Показати'}
                                         </button>
+                                        {(item.type === 'promotion' || item.type === 'event') && (
+                                            <button
+                                                className={item.isPaid ? css.toggleBtn : css.paidBtn}
+                                                onClick={() => handleTogglePaid(item)}
+                                                title={item.isPaid ? 'Прибрати зі стрічки новин' : 'Опублікувати в загальній стрічці (платно)'}
+                                            >
+                                                {item.isPaid ? '📤 Зі стрічки' : '💳 Опублікувати'}
+                                            </button>
+                                        )}
                                         <button className={css.deleteBtn} onClick={() => handleDelete(item.id)}>🗑
                                             Видалити
                                         </button>

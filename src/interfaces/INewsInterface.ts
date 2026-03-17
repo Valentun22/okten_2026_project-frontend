@@ -17,6 +17,7 @@ export interface INewsItem {
     body: string;
     type: NewsTypeEnum;
     isActive: boolean;
+    isPaid: boolean;
     avatarNews?: string | null;
     images?: string[] | null;
     created: string;

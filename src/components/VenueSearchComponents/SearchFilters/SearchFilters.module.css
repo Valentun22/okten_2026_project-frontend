@@ -1,25 +1,28 @@
 .wrap {
     position: relative;
+    flex-shrink: 0;
 }
 
 .toggleBtn {
     display: flex;
     align-items: center;
-    gap: 3px;
-    padding: 5px 20px;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    white-space: nowrap;
     border-radius: 100px;
-    border: 1.5px solid #ddd;
-    background: #fff;
+    border: 2px solid rgba(193, 138, 102, 0.96);
+    background: rgba(193, 138, 102, 0.96);
     font-size: 14px;
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: #fff;
     cursor: pointer;
     transition: all .18s;
 }
 
 .toggleBtn:hover, .toggleBtn.open {
-    border-color: rgba(193, 138, 102, 1);
-    background: rgba(193, 138, 102, 1);
+    background: rgb(168, 118, 88);
+    border-color: rgb(168, 118, 88);
     color: #fff;
 }
 
@@ -37,17 +40,20 @@
 }
 
 .panel {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 100;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
     background: #fff;
     border: 1.5px solid #e0e0e0;
     border-radius: 16px;
     padding: 20px;
-    width: 420px;
-    max-width: 95vw;
-    box-shadow: 0 12px 40px rgb(96, 96, 94);
+    width: 460px;
+    max-width: calc(100vw - 32px);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -154,4 +160,11 @@
 
 .applyBtn:hover {
     opacity: .85;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.3);
 }
